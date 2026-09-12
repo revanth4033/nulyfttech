@@ -1,0 +1,64 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Absolute or root-relative path to the OG image in /public. */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = "Nulyft",
+  ogImage = "/images/og.jpg",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, canonical)} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- The two faces that paint above the fold: the hero headline and body. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/plex-sans-600.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin-var.woff2" crossorigin />
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- Fixed / overlay UI (nav, cursor, menu) lives OUTSIDE #smooth-content
+         so ScrollSmoother's transform doesn't break position: fixed. -->
+    <slot name="overlay" />
+
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <main id="main">
+          <slot />
+        </main>
+        <slot name="footer" />
+      </div>
+    </div>
+
+    <script>
+      import "../scripts/main.ts";
+    </script>
+  </body>
+</html>

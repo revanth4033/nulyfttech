@@ -1,0 +1,57 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import GridLines from "../ui/GridLines.astro";
+import CapabilityRow from "../wwd/CapabilityRow.astro";
+import { lightRows } from "../../data/whatWeDo";
+---
+
+<section class="wwd" id="capabilities" data-section="what-we-do">
+  <GridLines />
+
+  <div class="wwd__inner">
+    <SectionHeader
+      eyebrow="What we do"
+      title="From the first idea to the product in production"
+      body="We bring product thinking, design, engineering, and AI together to take ideas beyond prototypes and into products that work in the real world."
+      class="wwd__head"
+    />
+
+    {lightRows.map((row) => <CapabilityRow row={row} tone="light" />)}
+  </div>
+</section>
+
+<style>
+  .wwd {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .wwd__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    /* Rows sit 200px apart (100 bottom + 100 top of adjacent Figma frames). */
+    gap: 200px;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  /* Header -> first row is 64px, not the 200px between rows. */
+  .wwd__inner :global(.wwd__head) {
+    margin-bottom: -136px;
+  }
+
+  @media (max-width: 900px) {
+    .wwd__inner {
+      gap: 96px;
+      padding-block: 72px;
+    }
+
+    .wwd__inner :global(.wwd__head) {
+      margin-bottom: -48px;
+    }
+  }
+</style>

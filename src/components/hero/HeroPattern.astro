@@ -1,0 +1,89 @@
+---
+/**
+ * Hero background: ruled grid + hatched squares.
+ *
+ * Rebuilt from the Figma geometry rather than exported as one SVG — the
+ * export embedded rasters and came to 208KB, and a fixed bitmap could not
+ * stay crisp across viewports.
+ *
+ * Horizontal rules are uniform (every 126px) so they are a CSS gradient and
+ * run full-bleed. Vertical rules are hand-placed at irregular x positions,
+ * so they live in a centred 1440-wide SVG alongside the hatched squares.
+ */
+
+// Measured off the Figma frame — deliberately irregular, near-symmetric.
+const verticals = [120, 216, 360, 468, 600, 720, 839, 972, 1080, 1224, 1320];
+
+// 125x124 each. Only these two fall inside the 878px-tall hero; the other
+// two in the Figma frame sit below the cut and never render.
+const hatches = [
+  { x: 91, y: 128 },
+  { x: 1352, y: 254 },
+];
+---
+
+<div class="pattern" aria-hidden="true">
+  <div class="pattern__rows"></div>
+
+  <svg class="pattern__cols" viewBox="0 0 1440 878" width="1440" height="878" fill="none">
+    <defs>
+      <pattern
+        id="hero-hatch"
+        width="4"
+        height="4"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(-45)"
+      >
+        <line x1="0" y1="0" x2="0" y2="4" stroke="var(--c-hatch)" stroke-width="1"></line>
+      </pattern>
+    </defs>
+
+    {
+      verticals.map((x) => (
+        <line
+          x1={x + 0.5}
+          y1="0"
+          x2={x + 0.5}
+          y2="878"
+          stroke="var(--c-rule)"
+          stroke-width="1"
+        />
+      ))
+    }
+
+    {
+      hatches.map((h) => (
+        <rect x={h.x} y={h.y} width="125" height="124" fill="url(#hero-hatch)" />
+      ))
+    }
+  </svg>
+</div>
+
+<style>
+  .pattern {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-pattern);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .pattern__rows {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--c-rule) 0 1px,
+      transparent 1px 126px
+    );
+  }
+
+  .pattern__cols {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: var(--frame-w);
+    height: 878px;
+  }
+</style>

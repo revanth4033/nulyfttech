@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Design tokens — read off the Figma file (node 435:51 / 438:784).
+   The file defines only one Figma variable, so these were extracted from
+   the layers themselves. Every value here appears in the design.
+   ========================================================================== */
+
+:root {
+  /* --- Color ------------------------------------------------------------ */
+  --c-bg-light: #f5f3ff;      /* page ground for light sections */
+  --c-bg-dark: #18102b;       /* page ground for dark sections (= heading ink) */
+  --c-bg-footer: #0f0a1c;
+  --c-surface: #ffffff;       /* cards */
+  --c-cta-card: #322159;
+
+  --c-accent: #834dfb;        /* the only accent in the whole design */
+  --c-accent-tint: #ebe2ff;   /* icon chip on light bands */
+  --c-chip-dark: #241640;     /* icon chip on dark bands */
+  --c-accent-glow: #dccdfe;   /* blurred ellipse behind the hero stage */
+
+  --c-eyebrow-bg: #f3eeff;
+  --c-eyebrow-border: #e3d7ff;
+  --c-eyebrow-bg-hero: rgba(131, 77, 251, 0.08);
+  --c-eyebrow-border-hero: rgba(131, 77, 251, 0.15);
+  --c-eyebrow-border-studio: rgba(131, 77, 251, 0.16);
+  --c-eyebrow-text-dark: rgba(245, 243, 255, 0.8);
+
+  /* --- Studio page ------------------------------------------------------ */
+  --c-tab-rule: #c7affd;      /* the 2px track under the filter tabs */
+  --c-project-title: #1a1625;
+  --c-plate-outer: rgba(219, 219, 219, 0.24);
+  --c-plate-inner: rgba(255, 255, 255, 0.3);
+  --c-deck-bar: #333639;      /* PDF-viewer toolbar */
+  --c-deck-divider: #717375;
+  --c-deck-chip: rgba(0, 0, 0, 0.8);
+
+  /* --- Talent Intelligence ---------------------------------------------- */
+  --c-card-border-strong: rgba(22, 19, 32, 0.2);  /* scorecard rules */
+  --c-meter-track: #e6e6e6;
+  --c-live: #e14942;          /* "Round 2 · Live" */
+  --c-step-bg: rgba(131, 77, 251, 0.08);
+
+  /* --- Careers ----------------------------------------------------------- */
+  --c-perk-border: #f3edff;   /* the bento cards' hairline */
+  --c-perk-body: #747080;     /* a touch warmer than --c-muted */
+  --c-photo-tint: rgba(227, 214, 246, 0.15);
+  --c-job-rule: rgba(143, 143, 143, 0.5);
+
+  /* --- Case study -------------------------------------------------------- */
+  --c-danger: #e14942;        /* the challenge list's crosses */
+  --c-case-eyebrow-bg: #f8f5ff;  /* pill behind a case-study eyebrow */
+
+  --c-heading: #18102b;
+  --c-ink: #161320;           /* body ink / emphasis */
+  --c-muted: #636363;
+
+  --c-rule: #ecebf3;          /* hero grid lines */
+  --c-hatch: #e1d5fe;         /* hero hatched squares */
+  --c-card-border: rgba(22, 19, 32, 0.12);
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --fs-hero: 48px;            /* IBM Plex Sans SemiBold, capitalize */
+  --fs-h2: 40px;              /* tracking -2px */
+  --fs-h3: 32px;              /* split-section headings, same -2px tracking */
+  --fs-stat: 40px;
+  --fs-lg: 24px;
+  --fs-md: 20px;
+  --fs-body: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 13px;
+  --fs-xxs: 12px;
+
+  --lh-body: 24px;
+  --lh-card: 28px;
+  --lh-button: 19.5px;
+
+  --tr-tight: -0.03em;
+  --tr-h2: -2px;
+  --tr-body: -0.16px;
+  --tr-card: -0.28px;
+  --tr-label: -0.32px;
+  --tr-eyebrow: 1.04px;
+  --tr-eyebrow-sm: 0.6px;
+  --tr-eyebrow-lg: 2.4px;     /* Studio hero badge */
+  --tr-hero-studio: -3px;     /* Studio hero headline */
+  --tr-meta: 2px;             /* Studio project meta line */
+  --tr-project-title: -0.44px;
+  --tr-nav: 2px;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --frame-w: 1440px;          /* Figma frame */
+  --content-w: 1240px;        /* frame minus 100px gutters */
+  --gutter: 100px;
+  --nav-h: 83px;
+  --hero-h: 882px;
+
+  /* --- Radius & elevation ----------------------------------------------- */
+  --r-card: 8px;
+  --r-chip: 4px;
+  --r-eyebrow: 20px;
+  --r-eyebrow-sm: 30px;
+  --r-browser: 20px;
+  --r-pill: 999px;
+
+  --tilt: -0.65deg;           /* every pill button carries this */
+
+  --sh-nav: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --sh-button-inset: inset 0 4px 4px rgba(0, 0, 0, 0.25);
+  --sh-card: 0 4px 24px rgba(24, 16, 43, 0.06);
+  --sh-browser: 0 24px 64px rgba(24, 16, 43, 0.12);
+
+  --grad-pill: linear-gradient(
+    100.43deg,
+    #834dfb 4.28%,
+    #7b41fb 16.78%,
+    #763afb 32.05%,
+    #7437fb 48.49%,
+    #6d2efa 61.44%,
+    #6c2cfa 78.6%,
+    #6624fa 97.16%
+  );
+
+  /* Technology orbs: a flat vertical ramp with a white specular highlight
+     up and to the left, and a warm trailing cast that banks with the orb. */
+  --grad-orb: linear-gradient(180deg, #834dfb 0%, #6624fa 100%);
+  --grad-orb-spec: radial-gradient(
+    circle 36.53px at 11.5px 7.5px,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0)
+  );
+  --sh-orb: 0 2px 8px rgba(0, 0, 0, 0.06), 34px -3px 14px rgba(174, 42, 9, 0.01),
+    19px -2px 12px rgba(174, 42, 9, 0.05), 9px -1px 9px rgba(174, 42, 9, 0.09),
+    2px 0 5px rgba(174, 42, 9, 0.1);
+  --sh-tech-card: 0 8px 8px rgba(0, 0, 0, 0.02), 0 3px 3px rgba(0, 0, 0, 0.05),
+    0 1px 1px rgba(0, 0, 0, 0.15);
+  --sh-tech-chip: drop-shadow(0 5px 1px rgba(131, 77, 251, 0.01))
+    drop-shadow(0 3px 1px rgba(131, 77, 251, 0.05))
+    drop-shadow(0 1px 0.5px rgba(131, 77, 251, 0.09))
+    drop-shadow(0 0 0.5px rgba(131, 77, 251, 0.1));
+
+  /* --- Motion ----------------------------------------------------------- */
+  --dur-fast: 0.3s;
+  --dur-base: 0.6s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Z-index ---------------------------------------------------------- */
+  --z-pattern: 0;
+  --z-content: 2;
+  --z-stage: 1;
+  --z-nav: 100;
+}

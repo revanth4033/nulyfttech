@@ -1,0 +1,512 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import screen1 from "../../assets/images/cta/screen-1.png";
+import screen2 from "../../assets/images/cta/screen-2.png";
+import screen3 from "../../assets/images/cta/screen-3.png";
+import starfield from "../../assets/images/cta/starfield.png";
+import facebook from "../../assets/icons/social/facebook.png";
+import { screens, FAN_W, FAN_H, CARD_W, CARD_H } from "../../data/cta";
+
+/**
+ * CTA over the footer. Figma overlaps them: the CTA card runs y 0–416 while
+ * the footer starts at 258, so the footer carries 240px of top padding to
+ * clear it and the CTA is positioned over the seam.
+ *
+ * Footer is deliberately static. Motion for the card fan lives in
+ * `src/scripts/cta-fan.ts`.
+ */
+const rasters = { "screen-1": screen1, "screen-2": screen2, "screen-3": screen3 };
+
+/**
+ * The Studio page's Talent tab carries its own CTA copy (Figma 501:3810), so
+ * the block is prop-driven. `studio-tabs.ts` swaps the text when that tab is
+ * selected and restores this default on the others.
+ */
+interface Props {
+  title?: string;
+  body?: string;
+}
+
+const {
+  title = "Have a product worth building? Let\u2019s talk about it",
+  body = "Tell us what you\u2019re trying to solve, where you\u2019re stuck, or what you\u2019re planning next. We\u2019ll figure out the right way forward together.",
+} = Astro.props;
+
+/** Each points at its row inside What We Do, from whichever page we are on. */
+const capabilities = [
+  { label: "AI & Automation", href: "/#ai-automation" },
+  { label: "Product Design & Engineering", href: "/#product-design" },
+  { label: "Narrative Intelligence", href: "/#narrative" },
+  { label: "Talent Intelligence", href: "/#talent" },
+];
+/** Blogs has no target yet — `anchors.ts` leaves an unresolved hash inert
+ *  rather than letting the browser jump to the top of the page. */
+const company = [
+  { label: "Careers", href: "/careers" },
+  { label: "Blogs", href: "#blogs" },
+];
+const work = [
+  { label: "Case Studies", href: "/#work" },
+  { label: "Studio", href: "/studio" },
+];
+---
+
+<div class="outro">
+  <section class="cta" data-section="cta">
+    <span class="cta__stars" aria-hidden="true">
+      <Image src={starfield} alt="" width={2000} widths={[1256, 2000]} sizes="1256px" quality={50} />
+    </span>
+    <span class="cta__tint" aria-hidden="true"></span>
+    <span class="cta__arcs" aria-hidden="true"><Icon name="brand/cta-arcs" width={965} height={965} /></span>
+
+    <div class="cta__copy">
+      <h2 class="cta__title" data-animate data-cta-title>{title}</h2>
+      <p class="cta__body" data-animate data-cta-body>{body}</p>
+      <a class="cta__btn" href="#contact" data-animate>
+        <span class="cta__btn-label">Start a Conversation</span>
+        <span class="cta__btn-arrow"><Icon name="icons/arrow-cta" width={33.2} height={33.2} /></span>
+      </a>
+    </div>
+
+    <div class="cta__fan" data-fan>
+      {
+        screens.map((s, i) => (
+          <span class="cta__card" data-card data-slot={i}>
+            <Image
+              class="cta__shot"
+              src={rasters[s.src as keyof typeof rasters]}
+              alt={s.alt}
+              width={1160}
+              widths={[580, 1160]}
+              sizes="580px"
+              quality={62}
+              style={`width:${s.crop.w}%;height:${s.crop.h}%;left:${s.crop.x}%;top:${s.crop.y}%`}
+            />
+          </span>
+        ))
+      }
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot__top">
+      <div class="foot__brand">
+        <span class="foot__logo">
+          <Icon name="brand/nulyft-wordmark" width={97.083} height={48.539} />
+          <span class="foot__logo-sub"><em>technologies</em><em>Pvt Ltd</em></span>
+        </span>
+        <p class="foot__tagline">Products designed for people. Built for business.</p>
+        <div class="foot__social">
+          <span class="foot__social-label">Follow us on</span>
+          <ul class="foot__social-list">
+            <li>
+              <a class="foot__social-btn" href="#" aria-label="Facebook">
+                <Image src={facebook} alt="" width={14.222} height={14.222} densities={[1, 2]} />
+              </a>
+            </li>
+            <li><a class="foot__social-btn" href="#" aria-label="YouTube"><Icon name="icons/social/youtube" size={17.067} /></a></li>
+            <li><a class="foot__social-btn" href="#" aria-label="Instagram"><Icon name="icons/social/instagram" size={14.222} /></a></li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="foot__nav">
+        <div class="foot__col">
+          <h3 class="foot__col-title">Capabilities</h3>
+          <ul>{capabilities.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        </div>
+        <div class="foot__col foot__col--narrow">
+          <h3 class="foot__col-title">Company</h3>
+          <ul>{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        </div>
+        <div class="foot__col foot__col--narrow">
+          <h3 class="foot__col-title">Work</h3>
+          <ul>{work.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="foot__bar">
+      <p>&copy; 2026 NuLyft. All rights reserved.</p>
+      <ul class="foot__legal">
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+  </footer>
+</div>
+
+<style define:vars={{ fanW: `${FAN_W}px`, fanH: `${FAN_H}px`, cardW: `${CARD_W}px`, cardH: `${CARD_H}px` }}>
+  /* flow-root, not padding: the footer's top margin is what sets the
+     overlap, and without a BFC here it collapses out of the wrapper and
+     drags the whole block down instead. Padding would work too, but an
+     absolutely positioned child resolves `top` against the padding box, so
+     it would push the CTA down with it. */
+  .outro {
+    position: relative;
+    display: flow-root;
+    background: var(--c-bg-light);
+  }
+
+  /* --- CTA --------------------------------------------------------------- */
+
+  /* Sits over the seam: the footer's 240px top padding clears its lower half. */
+  .cta {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 0;
+    width: var(--content-w);
+    height: 416px;
+    translate: -50% 0;
+    border: 1px solid var(--c-cta-card);
+    border-radius: 24px;
+    /* Figma builds the ground from a luminosity starfield over a colour
+       layer, and a blend needs a known backdrop — `isolate` stops it reaching
+       the page behind.
+    
+       The base is the tint colour rather than the page's light one. Both
+       resolve to the same dark purple (luminosity takes the starfield's
+       luminance either way), but this one is already correct before the
+       lazy-loaded starfield decodes, so the card never flashes light on the
+       way in. */
+    background: var(--c-heading);
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .cta__stars,
+  .cta__tint,
+  .cta__arcs {
+    position: absolute;
+    display: block;
+    line-height: 0;
+  }
+
+  .cta__stars {
+    left: calc(50% + 8px);
+    top: -14.83px;
+    width: 1256px;
+    height: 868px;
+    translate: -50% 0;
+    mix-blend-mode: luminosity;
+  }
+
+  .cta__stars :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cta__tint {
+    left: 50%;
+    top: -1.22px;
+    width: var(--content-w);
+    height: 531px;
+    translate: -50% 0;
+    background: var(--c-heading);
+    mix-blend-mode: color;
+  }
+
+  .cta__arcs {
+    left: -484px;
+    top: -309px;
+    rotate: -90deg;
+  }
+
+  .cta__copy {
+    position: absolute;
+    z-index: 2;
+    left: calc(50% - 280.5px);
+    top: calc(50% + 0.24px);
+    translate: -50% -50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 504px;
+  }
+
+  .cta__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -1px;
+    color: #fff;
+  }
+
+  .cta__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: -0.16px;
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  /* Figma tilts the pill and counter-rotates the arrow so it stays level. */
+  .cta__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    background: var(--c-accent);
+    box-shadow: inset 0 4px 4px rgba(0, 0, 0, 0.25);
+    rotate: var(--tilt);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-button);
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .cta__btn-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20.226px;
+    height: 20.226px;
+    rotate: calc(var(--tilt) * -1);
+    line-height: 0;
+  }
+
+  .cta__btn-arrow :global(svg) {
+    /* The badge art carries its own glow bleed either side of the 20px mark. */
+    width: 33.2px;
+    height: 33.2px;
+    max-width: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cta__btn {
+      transition:
+        background var(--dur-fast) ease,
+        translate var(--dur-fast) ease;
+    }
+
+    .cta__btn-arrow {
+      transition: translate var(--dur-fast) ease;
+    }
+
+    .cta__btn:hover {
+      background: #7437fb;
+      translate: 0 -2px;
+    }
+
+    .cta__btn:hover .cta__btn-arrow {
+      translate: 4px 0;
+    }
+  }
+
+  /* --- card fan ---------------------------------------------------------- */
+
+  .cta__fan {
+    position: absolute;
+    z-index: 1;
+    left: calc(50% + 517.47px);
+    top: 59px;
+    width: var(--fanW);
+    height: var(--fanH);
+    translate: -50% 0;
+  }
+
+  .cta__card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--cardW);
+    height: var(--cardH);
+    overflow: hidden;
+    will-change: transform;
+  }
+
+  .cta__card :global(img.cta__shot) {
+    position: absolute;
+    max-width: none;
+    pointer-events: none;
+  }
+
+  /* --- footer ------------------------------------------------------------ */
+
+  .foot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--c-bg-footer);
+    margin-top: 258px;
+  }
+
+  .foot__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 64px;
+    width: 100%;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 240px var(--gutter) 80px;
+    border-top: 1px solid #120b23;
+  }
+
+  .foot__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 438px;
+  }
+
+  .foot__logo {
+    position: relative;
+    display: block;
+    width: 138.732px;
+    height: 48px;
+    line-height: 0;
+  }
+
+  .foot__logo-sub {
+    position: absolute;
+    left: 71.67%;
+    top: 47.14%;
+    display: flex;
+    flex-direction: column;
+    font-family: "Jost", var(--font-sans);
+    font-weight: 500;
+    font-size: 7.024px;
+    line-height: normal;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .foot__logo-sub em {
+    font-style: normal;
+  }
+
+  .foot__tagline {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  .foot__social {
+    display: flex;
+    align-items: center;
+    gap: 23px;
+  }
+
+  .foot__social-label {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    text-transform: uppercase;
+    color: var(--c-bg-light);
+  }
+
+  .foot__social-list {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+  }
+
+  /* The Facebook mark is a raster; without this its intrinsic 512px height
+     survives `max-width` clamping and it renders as a 32x512 sliver. */
+  .foot__social-btn :global(img) {
+    width: 14.222px;
+    height: 14.222px;
+  }
+
+  .foot__social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--c-bg-light);
+    color: #212121;
+  }
+
+  .foot__nav {
+    display: flex;
+    align-items: flex-start;
+    gap: 64px;
+  }
+
+  .foot__col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .foot__col--narrow {
+    width: 122px;
+  }
+
+  .foot__col-title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    text-transform: uppercase;
+    color: var(--c-bg-light);
+  }
+
+  .foot__col ul {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    list-style: none;
+  }
+
+  .foot__col a,
+  .foot__legal a {
+    font-size: var(--fs-body);
+    color: var(--c-eyebrow-text-dark);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .foot__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 40px var(--gutter);
+    border-top: 1px solid #333;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  .foot__legal {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .foot__col a,
+    .foot__legal a,
+    .foot__social-btn {
+      transition: color var(--dur-fast) ease, opacity var(--dur-fast) ease;
+    }
+
+    .foot__col a:hover,
+    .foot__legal a:hover {
+      color: var(--c-bg-light);
+    }
+
+    .foot__social-btn:hover {
+      opacity: 0.82;
+    }
+  }
+</style>

@@ -1,0 +1,247 @@
+---
+import { Image } from "astro:assets";
+import PillButton from "../ui/PillButton.astro";
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import DeckChrome from "./DeckChrome.astro";
+import type { Project } from "../../data/studio";
+
+/**
+ * One Studio project — media over a caption.
+ *
+ * Two of the three media kinds sit on the same frosted plate: 612x400 with a
+ * 12px pad to an inner 588x376 shell, then another 12px to the 564x352 window
+ * that holds the chrome and the screenshot. The phone kind has no plate — the
+ * devices stand free on the page ground.
+ *
+ * Each card is its own `data-section` so `reveal.ts` gives it its own trigger.
+ * One trigger for the whole 3,400px grid would fire every card at once, most
+ * of them still far below the fold.
+ */
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { media } = project;
+
+/** The button names what it opens; Narrative's cards are decks, not studies. */
+const ctaLabel = project.ctaLabel ?? (media.kind === "deck" ? "View Pitch Deck" : "Full Case Study");
+
+/** Figma slot x positions; the artwork overflows each slot by 5.67px a side. */
+const PHONE_SLOTS = [0, 330, 660, 990];
+const PHONE_BLEED = 5.67;
+const PHONE_W = 261.33;
+---
+
+<article class:list={["pcard", `pcard--${project.span}`]} data-section data-project={project.id}>
+  <div class="pcard__media" data-animate>
+    {
+      (media.kind === "browser" || media.kind === "deck") && (
+        <div class="plate">
+          <div class="plate__inner">
+            <div class="plate__window">
+              {media.kind === "browser" ? (
+                <BrowserChrome />
+              ) : (
+                <DeckChrome file={media.file} pages={media.pages} />
+              )}
+
+              <Image
+                src={media.src}
+                alt={media.alt}
+                width={1128}
+                widths={[564, 1128]}
+                sizes="564px"
+                class="plate__shot"
+                style={media.position ? `object-position:${media.position}` : undefined}
+              />
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      media.kind === "phones" && (
+        <div class="phones" role="img" aria-label={media.alt}>
+          {media.shots.map((shot, i) => (
+            <Image
+              src={shot}
+              alt=""
+              width={524}
+              widths={[262, 524]}
+              sizes="262px"
+              class="phones__unit"
+              style={`left:${PHONE_SLOTS[i] - PHONE_BLEED}px;width:${PHONE_W}px`}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+
+  <div class="pcard__caption" data-animate>
+    <div class="pcard__head">
+      <h3 class="pcard__title">{project.title}</h3>
+
+      {
+        project.href ? (
+          <PillButton href={project.href} variant="outline" arrow={20}>
+            {ctaLabel}
+          </PillButton>
+        ) : (
+          /* The case-study pages do not exist yet — the button is present in
+             the design, so it renders, but it goes nowhere and is skipped by
+             the keyboard until it has a destination. */
+          <PillButton variant="outline" arrow={20} disabled>
+            {ctaLabel}
+          </PillButton>
+        )
+      }
+    </div>
+
+    <p class="pcard__meta">{project.meta}</p>
+  </div>
+</article>
+
+<style>
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .pcard--full {
+    grid-column: 1 / -1;
+  }
+
+  /* --- plate -------------------------------------------------------------- */
+
+  .plate {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    padding: 12px;
+    background: var(--c-plate-outer);
+    border: 1px solid #fff;
+    border-radius: 32px;
+    backdrop-filter: blur(10px);
+  }
+
+  .plate__inner {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding: 12px;
+    background: var(--c-plate-inner);
+    border: 1px solid #fff;
+    border-radius: 24px;
+    box-shadow:
+      0 -2px 4px rgba(0, 0, 0, 0.05),
+      0 -27px 68.9px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(10px);
+  }
+
+  .plate__window {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--c-surface);
+    border: 1px solid #fff;
+    border-radius: 16px;
+    box-shadow:
+      0 -2px 4px rgba(0, 0, 0, 0.05),
+      0 7px 15px rgba(106, 114, 128, 0.05),
+      0 25px 80px rgba(106, 114, 128, 0.05),
+      0 12px 20px rgba(106, 114, 128, 0.05);
+  }
+
+  /* The shots are taller or wider than the window; Figma covers and anchors
+     them, top-centre unless the project overrides it. */
+  .plate__window :global(.plate__shot) {
+    display: block;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  /* --- phones ------------------------------------------------------------- */
+
+  .phones {
+    position: relative;
+    height: 542px;
+  }
+
+  .phones :global(.phones__unit) {
+    position: absolute;
+    top: -5.67px;
+    display: block;
+    height: auto;
+  }
+
+  /* --- caption ------------------------------------------------------------ */
+
+  .pcard__caption {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .pcard__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .pcard__title {
+    font-weight: 500;
+    font-size: var(--fs-lg);
+    line-height: 26.4px;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-project-title);
+  }
+
+  /* Figma marks this node `nowrap`, and it needs to be: the longest meta line
+     ("… · HR RECRUITMENT · 2025") measures 582.5px against the 580px the
+     caption leaves it, so it would otherwise drop "2025" onto a second line.
+     The negative margin reclaims the trailing letter-space CSS adds after the
+     final glyph, which is most of the overshoot; the rest is absorbed by the
+     caption's own 16px padding. */
+  .pcard__meta {
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: normal;
+    letter-spacing: var(--tr-meta);
+    margin-right: calc(-1 * var(--tr-meta));
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--c-muted);
+  }
+
+  /* A button with nowhere to go should not advertise itself as pressable. */
+  .pcard__head :global(.pill[disabled]) {
+    cursor: default;
+  }
+
+  .pcard__head :global(.pill[disabled]:hover) {
+    transform: none;
+    background: transparent;
+  }
+
+  /* --- responsive --------------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .plate {
+      height: auto;
+      aspect-ratio: 612 / 400;
+    }
+  }
+</style>

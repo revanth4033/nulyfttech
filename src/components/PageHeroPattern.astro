@@ -1,0 +1,95 @@
+---
+/**
+ * Shared page-hero background: ruled grid, two hatched squares, and the mask
+ * that clears the grid from behind the headline. Used by every inner page's
+ * hero (Studio, Careers).
+ *
+ * Unlike the home hero — whose verticals are hand-placed at irregular x
+ * positions — this grid is uniform on both axes: rules every 126px, verticals
+ * from x=90, horizontals from y=35.5. The horizontals run full-bleed so they
+ * are a CSS gradient; the verticals belong to the 1440 frame, so they live in
+ * the centred SVG alongside the squares.
+ *
+ * The Figma `Union` node (493:2844) is not a glow: it is a solid #F5F3FF shape
+ * painted over the grid so the headline sits on clean ground, with a step in
+ * its lower edge where the sub-copy hangs below. Kept as a path rather than an
+ * exported asset — it is five straight edges, and this way it recolours with
+ * the page instead of baking the background in.
+ */
+
+// Uniform 126px pitch across the 1440 frame.
+const verticals = [90, 216, 342, 468, 594, 720, 846, 972, 1098, 1224, 1350];
+
+// 125x124 each. Only these two fall inside the 816px-tall hero; the other two
+// in the Figma frame sit below the cut and never render.
+const hatches = [
+  { x: 91, y: 163 },
+  { x: 1352, y: 289 },
+];
+
+// The Union shape, drawn in its own 1240x316 box at (100, 289).
+const UNION = "M1240 294.138H958.086V316H239.76V294.138H0V0H1240V294.138Z";
+---
+
+<div class="pattern" aria-hidden="true">
+  <div class="pattern__rows"></div>
+
+  <svg class="pattern__art" viewBox="0 0 1440 830" width="1440" height="830" fill="none">
+    <defs>
+      <pattern
+        id="page-hatch"
+        width="4"
+        height="4"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(-45)"
+      >
+        <line x1="0" y1="0" x2="0" y2="4" stroke="var(--c-hatch)" stroke-width="1"></line>
+      </pattern>
+    </defs>
+
+    {
+      verticals.map((x) => (
+        <line x1={x + 0.5} y1="0" x2={x + 0.5} y2="830" stroke="var(--c-rule)" stroke-width="1" />
+      ))
+    }
+
+    {
+      hatches.map((h) => (
+        <rect x={h.x} y={h.y} width="125" height="124" fill="url(#page-hatch)" />
+      ))
+    }
+
+    <path d={UNION} transform="translate(100 289)" fill="var(--c-bg-light)"></path>
+  </svg>
+</div>
+
+<style>
+  .pattern {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-pattern);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* 1px rule every 126px, the first covering the pixel row at y=35. */
+  .pattern__rows {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 35px,
+      var(--c-rule) 35px 36px,
+      transparent 36px 126px
+    );
+  }
+
+  .pattern__art {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: var(--frame-w);
+    height: 830px;
+  }
+</style>

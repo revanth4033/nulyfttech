@@ -1,0 +1,414 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import GridLines from "../ui/GridLines.astro";
+import Icon from "../ui/Icon.astro";
+import AiDataCard from "../tech/AiDataCard.astro";
+import CloudCard from "../tech/CloudCard.astro";
+import TechCard from "../tech/TechCard.astro";
+import glow from "../../assets/images/tech-glow.png";
+import {
+  orbs,
+  place,
+  CX,
+  CY,
+  ORB,
+  STAGE_W,
+  STAGE_H,
+  STAGE_TOP,
+  CARD_H,
+  TRAIL_W,
+  TRAIL_H,
+  TRAIL_X,
+  TRAIL_Y,
+  LABEL_Y,
+  LABEL_MAX_W,
+  orbOpacity,
+} from "../../data/technology";
+import {
+  stages,
+  RESTING,
+  BODY_W,
+  BODY_H,
+  PANEL_W,
+  SPINE_X,
+  CHIP_GAP,
+} from "../../data/engineering";
+
+/**
+ * The ring SVG is 1288x1327 with its circle centred at (644, 624) -- outer
+ * radius 620 plus the bleed of four stacked purple drop shadows. Pin that
+ * centre onto the orbit centre and give it Figma's 2.18deg tilt, which only
+ * shows in where the shadows fall.
+ */
+const RING_W = 1288;
+const RING_H = 1327;
+const RING_CX = 644;
+const RING_CY = 624;
+
+/** Trail and disc are placed from their centres, in the orb's own frame. */
+const trailLeft = TRAIL_X - TRAIL_W / 2;
+const trailTop = TRAIL_Y - TRAIL_H / 2;
+
+/** Resting positions, so the arrangement is right with no JS and under
+ *  prefers-reduced-motion -- the loop just picks up from here. */
+const resting = orbs.map((o) => place(o.base));
+---
+
+<section class="tech" data-section="technology">
+  <GridLines />
+
+  <div class="tech__inner">
+    <SectionHeader eyebrow="Technologies" title="The technology behind the products" />
+
+    <div class="tech__cards">
+      <TechCard icon="icons/tech/stack-solid" title="AI & Automation" height={CARD_H}>
+
+        <div class="tstage" data-orbit>
+          <span
+            class="tstage__ring"
+            style={`left:${CX - RING_CX}px;top:${CY - RING_CY}px;transform-origin:${RING_CX}px ${RING_CY}px`}
+          >
+            <Icon name="brand/tech-arc" width={RING_W} height={RING_H} />
+          </span>
+
+          <span class="tstage__haze" style={`background-image:url(${glow.src})`}></span>
+
+          {
+            orbs.map((o, i) => (
+              <div
+                class="orb"
+                data-orb
+                style={`transform:translate(${resting[i].x}px,${resting[i].y}px) rotate(${resting[i].rotation}deg);opacity:${orbOpacity(o.base)}`}
+              >
+                <span class="orb__trail" style={`left:${trailLeft}px;top:${trailTop}px`}>
+                  <Icon name="brand/tech-trail" width={TRAIL_W} height={TRAIL_H} />
+                </span>
+                <span class="orb__disc">
+                  <Icon name={o.icon} size={o.glyph} />
+                </span>
+                <span class="orb__label" style={`top:${LABEL_Y}px`}>{o.label}</span>
+              </div>
+            ))
+          }
+        </div>
+      </TechCard>
+
+      <div class="tech__row">
+        <TechCard icon="icons/eng/card-engineering" title="Engineering" height={493}>
+
+          <div class="eng" data-pipeline>
+            <span class="eng__panel"></span>
+
+            <span class="eng__spine">
+              <span class="eng__spine-lit" data-spine style={`--lit-b:${BODY_H - stages[RESTING].fill}px`}></span>
+            </span>
+
+            {
+              stages.map((st, i) => (
+                <div class="eng__row" style={`top:${st.y}px`} data-stage data-rest={i <= RESTING ? "" : undefined}>
+                  <span class="eng__node">
+                    <span class="eng__dot" />
+                    <span class="eng__glow" data-glow>
+                      <Icon name="brand/eng-node-glow1" class="eng__glow1" width={37.2} height={37.2} />
+                      <Icon name="brand/eng-node-glow2" class="eng__glow2" width={47.4} height={47.4} />
+                    </span>
+                  </span>
+
+                  <span
+                    class:list={["eng__chip", `eng__chip--${st.side}`]}
+                    style={st.side === "left" ? `right:${BODY_W - SPINE_X + CHIP_GAP}px` : `left:${SPINE_X + CHIP_GAP}px`}
+                    data-chip
+                  >
+                    <span class="eng__chip-lit" data-chip-lit />
+                    <Icon name={st.icon} size={20} class="eng__chip-icon" />
+                    <span class="eng__chip-label">{st.label}</span>
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </TechCard>
+
+        <AiDataCard />
+        <CloudCard />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style define:vars={{ stageW: `${STAGE_W}px`, stageH: `${STAGE_H}px`, stageTop: `${STAGE_TOP}px`, cardH: `${CARD_H}px`, orb: `${ORB}px`, labelW: `${LABEL_MAX_W}px`, bodyW: `${BODY_W}px`, bodyH: `${BODY_H}px`, panelW: `${PANEL_W}px`, spineX: `${SPINE_X}px` }}>
+  .tech {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .tech__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: 100%;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  .tech__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* --- Card ------------------------------------------------------------- */
+
+  /* --- Stage ------------------------------------------------------------ */
+
+  /* Fixed 1240-wide coordinate space, centred. Narrower viewports crop it
+     from the sides, which is what the Figma frame does too. */
+  .tstage {
+    position: absolute;
+    left: 50%;
+    top: var(--stageTop);
+    width: var(--stageW);
+    height: var(--stageH);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .tstage__ring,
+  .tstage__haze {
+    position: absolute;
+    display: block;
+  }
+
+  .tstage__ring {
+    transform: rotate(2.18deg);
+  }
+
+  .tstage__haze {
+    left: 147.018px;
+    top: 44.001px;
+    width: 959px;
+    height: 259px;
+    opacity: 0.5;
+    background-size: 453.611px 367.916px;
+    background-position: top left;
+  }
+
+  /* --- Orbs ------------------------------------------------------------- */
+
+  /* Zero-sized anchor: its origin is the orb's centre, so every child is
+     placed in the orb's own frame and banks with it. */
+  .orb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    will-change: transform;
+  }
+
+  .orb__trail,
+  .orb__disc,
+  .orb__label {
+    position: absolute;
+  }
+
+  .orb__disc {
+    left: calc(var(--orb) / -2);
+    top: calc(var(--orb) / -2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--orb);
+    height: var(--orb);
+    border-radius: 50%;
+    background: var(--grad-orb-spec), var(--grad-orb);
+    box-shadow: var(--sh-orb);
+  }
+
+  /* --- Engineering card ------------------------------------------------- */
+
+  /* Row 2 is a 3-up; AI & Data and Cloud & Infrastructure land beside this
+     one later, so the track is already three columns wide. */
+  .tech__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  /* The pipeline's own coordinate space, inset the way Figma insets it. */
+  .eng {
+    position: absolute;
+    left: 24px;
+    top: 128px;
+    width: var(--bodyW);
+    height: var(--bodyH);
+  }
+
+  .eng__panel {
+    position: absolute;
+    left: calc(50% + 0.84px);
+    top: 0;
+    width: var(--panelW);
+    height: var(--bodyH);
+    translate: -50% 0;
+    border-radius: 8px;
+    /* Figma's gradient handle runs well past the panel, so only the first
+       ~48% of the ramp actually lands on it. The codegen flattened that to a
+       bare 129.68deg, which CSS normalises to the box and lands ~18 levels
+       too dark. These stops put 0% on the bottom-left corner and 100% off
+       past the bottom-right, matching all four corners to within 2 levels. */
+    background:
+      radial-gradient(circle 229px at 119px 12px, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0)),
+      linear-gradient(129.68deg, #834dfb 43.4%, #6624fa 161.4%);
+    box-shadow: inset 0 0 18.4px rgba(255, 255, 255, 0.25);
+  }
+
+  /* Dim rail, with the lit segment clipped over the top of it. */
+  .eng__spine {
+    position: absolute;
+    left: calc(50% + 0.53px);
+    top: 0;
+    width: 1px;
+    height: var(--bodyH);
+    translate: -50% 0;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .eng__spine-lit {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    /* The lit segment. Both edges are tweened as real custom properties
+       rather than set from an onUpdate, so the fill cannot silently stop
+       animating if callbacks are ever suppressed. Starts empty. */
+    --lit-a: 0px;
+    --lit-b: var(--bodyH);
+    clip-path: inset(var(--lit-a) 0 var(--lit-b) 0);
+  }
+
+  .eng__row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+  }
+
+  /* No transform, opacity or filter anywhere on the way down to the glow
+     layers: each of those would open a stacking context and trap the blend
+     modes below, leaving them to composite against nothing instead of the
+     purple panel. Offsets are done with plain left/top for that reason. */
+  .eng__node {
+    position: absolute;
+    left: calc(var(--spineX) - 4px);
+    top: -4px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .eng__dot {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  /* Two additive layers over the panel — a 20% ring in plus-lighter and a
+     solid core in color-dodge — so a lit node reads as a bulb, not a
+     bigger circle. Both are blown well past their box by their blur. */
+  .eng__glow {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The resting frame — Figma state 1, which is how the main Technology frame
+     draws this card. Carries no-JS and reduced-motion; the timeline sets
+     inline styles from boot, which win over these. */
+  .eng__row[data-rest] .eng__chip-lit,
+  .eng__row[data-rest] .eng__glow1,
+  .eng__row[data-rest] .eng__glow2 {
+    opacity: 1;
+  }
+
+  .eng__row[data-rest] .eng__chip {
+    color: var(--c-ink);
+  }
+
+  /* Opacity lives on the blended layers themselves, never on a wrapper —
+     an element's own opacity still lets it blend with its backdrop, but a
+     parent's would group the two layers and isolate them. */
+  .eng__glow1,
+  .eng__glow2 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+  }
+
+  .eng__glow1 {
+    margin: -18.6px 0 0 -18.6px;
+    mix-blend-mode: plus-lighter;
+  }
+
+  .eng__glow2 {
+    margin: -23.7px 0 0 -23.7px;
+    mix-blend-mode: color-dodge;
+  }
+
+  .eng__chip {
+    position: absolute;
+    top: 0;
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px 10px 10px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20.2px);
+    /* Inset rather than a real border, so lighting up costs no layout. */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.25;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  /* The lit skin, cross-faded over the glass one. Carries the 2px ring as an
+     outset shadow so the chip never changes size. */
+  .eng__chip-lit {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.34),
+      0 1px 1px rgba(0, 0, 0, 0.1),
+      0 4px 2px rgba(0, 0, 0, 0.09),
+      0 10px 3px rgba(0, 0, 0, 0.05),
+      0 18px 3.5px rgba(0, 0, 0, 0.01);
+  }
+
+  .eng__chip-icon,
+  .eng__chip-label {
+    position: relative;
+  }
+
+  .orb__label {
+    left: 0;
+    translate: -50% -50%;
+    max-width: var(--labelW);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-lg);
+    line-height: 1.25;
+    letter-spacing: -0.48px;
+    text-align: center;
+    color: var(--c-ink);
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import GridLines from "../ui/GridLines.astro";
+import Icon from "../ui/Icon.astro";
+import { highlights as homeStats, type Highlight } from "../../data/highlights";
+
+/**
+ * A stat band over ruled columns.
+ *
+ * Defaults to the home page's copy so `index.astro` passes nothing; the Studio
+ * page's Talent tab overrides all of it and drops the eyebrow, which is the
+ * only structural difference between the two (Figma 435:156 and 501:3678).
+ */
+interface Props {
+  /** `null` drops the badge entirely — `undefined` would fall back to the
+   *  home page's default, which is not the same thing. */
+  eyebrow?: string | null;
+  title?: string;
+  body?: string;
+  stats?: Highlight[];
+  /** Figma: 80 on the home band, 64 on the Talent one. */
+  gap?: number;
+  /** Figma: 40px on the home band, 32px on the Talent one. */
+  size?: "lg" | "md";
+  id?: string;
+}
+
+const {
+  eyebrow = "Engineering at scale",
+  title = "The work should move the business forward",
+  body = "We track our work in delivered products and retained clients, not vanity metrics.",
+  stats = homeStats,
+  gap = 80,
+  size = "lg",
+  id = "highlights",
+} = Astro.props;
+---
+
+<section class="highlights" id={id} data-section="highlights" style={`--stack-gap:${gap}px`}>
+  <GridLines />
+
+  <div class="highlights__inner">
+    <SectionHeader eyebrow={eyebrow} title={title} body={body} size={size} />
+
+    <ul class="highlights__stats">
+      {
+        stats.map((h, i) => (
+          <>
+            {i > 0 && <li class="highlights__rule" role="presentation" data-animate />}
+            <li class="highlights__stat" data-animate>
+              <div class="highlights__text">
+                <span class="highlights__value">{h.value}</span>
+                <span class="highlights__label">{h.label}</span>
+              </div>
+              <Icon
+                name={h.illustration}
+                width={h.width}
+                height={h.height}
+                class="highlights__art"
+              />
+            </li>
+          </>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .highlights {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .highlights__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    /* 100 top + 131 header + 80 + 78 stats + 100 bottom = 489 */
+    gap: var(--stack-gap, 80px);
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  .highlights__stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .highlights__stat {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .highlights__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--c-ink);
+  }
+
+  .highlights__value {
+    font-weight: 700;
+    font-size: var(--fs-stat);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .highlights__label {
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: 22px;
+    letter-spacing: var(--tr-label);
+    text-transform: uppercase;
+  }
+
+  .highlights__rule {
+    flex: none;
+    width: 1px;
+    height: 70px;
+    background: var(--c-rule);
+  }
+
+  .highlights :global(.highlights__art) {
+    flex: none;
+  }
+
+  @media (max-width: 1080px) {
+    .highlights__stats {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px 56px;
+    }
+
+    .highlights__rule {
+      display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .highlights__inner {
+      gap: 56px;
+      padding-block: 72px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .highlights__stats {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+    }
+
+    .highlights__stat {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

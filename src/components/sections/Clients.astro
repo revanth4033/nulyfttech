@@ -1,0 +1,131 @@
+---
+import GridLines from "../ui/GridLines.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import Icon from "../ui/Icon.astro";
+
+/**
+ * Our Clients — header over a row of three logos, grey at rest and in their
+ * own colours on hover.
+ *
+ * Two SVGs per logo rather than one filtered copy: the resting state is a
+ * flat #B7B7B7, which no filter can produce from the coloured art. A
+ * `grayscale()` of the real logos would leave Automatorr's navy nearly black
+ * and its lime nearly white, instead of the single grey Figma draws.
+ *
+ * Note the colour only survives `download_assets` — `get_design_context`
+ * hands back a flattened grey version of these same nodes.
+ */
+const logos = [
+  { src: "brand/clients/asterdata", name: "Asterdata", w: 88, h: 95.906 },
+  { src: "brand/clients/automatorr", name: "Automatorr", w: 280, h: 64 },
+  { src: "brand/clients/acroplans", name: "Acroplans", w: 280, h: 64 },
+];
+---
+
+<section class="clients" data-section="clients">
+  <GridLines />
+
+  <div class="clients__inner">
+    <SectionHeader eyebrow="Our clients" title="Early partners betting on nuLyft" />
+
+    <ul class="clients__row">
+      {
+        logos.map((l) => (
+          <li class="clients__logo" data-animate style={`width:${l.w}px;height:${l.h}px`}>
+            <Icon class="clients__mono" name={l.src} width={l.w} height={l.h} />
+            <Icon class="clients__colour" name={`${l.src}-color`} width={l.w} height={l.h} />
+            <span class="visually-hidden">{l.name}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .clients {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .clients__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  .clients__row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 120px;
+    list-style: none;
+  }
+
+  .clients__logo {
+    position: relative;
+    display: block;
+    flex: none;
+    /* Figma's flat logo grey, inherited by the mono copy. */
+    color: #b7b7b7;
+    line-height: 0;
+  }
+
+  .clients__mono,
+  .clients__colour {
+    position: absolute;
+    inset: 0;
+  }
+
+  .clients__colour {
+    opacity: 0;
+  }
+
+  /* Hover brings the real logo up through the grey one. Costs no JS, so it
+     works with scripting off. */
+  @media (hover: hover) and (pointer: fine) {
+    .clients__logo {
+      transition: translate var(--dur-fast) ease;
+    }
+
+    .clients__mono,
+    .clients__colour {
+      transition: opacity var(--dur-fast) ease;
+    }
+
+    .clients__logo:hover {
+      translate: 0 -3px;
+    }
+
+    .clients__logo:hover .clients__mono {
+      opacity: 0;
+    }
+
+    .clients__logo:hover .clients__colour {
+      opacity: 1;
+    }
+  }
+
+  /* global.css already neutralises transitions under reduced motion, so the
+     swap becomes instant on its own; only the lift needs suppressing. */
+  @media (prefers-reduced-motion: reduce) {
+    .clients__logo:hover {
+      translate: none;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .clients__row {
+      flex-wrap: wrap;
+      gap: 64px;
+    }
+  }
+</style>

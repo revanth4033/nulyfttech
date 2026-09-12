@@ -1,0 +1,157 @@
+---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import PillButton from "../ui/PillButton.astro";
+import HeroPattern from "../hero/HeroPattern.astro";
+import HeroStage from "../hero/HeroStage.astro";
+---
+
+<section class="hero" data-hero>
+  <HeroPattern />
+
+  <div class="hero__frame">
+    <div class="hero__content">
+      <div class="hero__intro">
+        <EyebrowBadge variant="hero" class="hero__eyebrow" data-animate>
+          Enterprise AI &amp; Product Engineering
+        </EyebrowBadge>
+
+        <h1 class="hero__title" data-animate>
+          We turn complex business problems into{" "}
+          <em>products people can rely on</em>
+        </h1>
+
+        <p class="hero__body" data-animate>
+          From product strategy and design to engineering and AI, we help teams build digital
+          products that are clear, scalable, and ready for real-world use.
+        </p>
+      </div>
+
+      <div class="hero__actions" data-animate>
+        <PillButton href="#contact" arrow={20}>Start Building</PillButton>
+        <PillButton href="#work" variant="outline">View Our Work</PillButton>
+      </div>
+    </div>
+
+    <HeroStage />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: var(--hero-h);
+    padding-top: var(--nav-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .hero__frame {
+    position: relative;
+    width: 100%;
+    max-width: var(--frame-w);
+    height: calc(var(--hero-h) - var(--nav-h));
+    margin-inline: auto;
+  }
+
+  .hero__content {
+    position: absolute;
+    top: 199px; /* Figma y=282 minus the 83px nav */
+    left: 116px;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 618px;
+    max-width: 100%;
+  }
+
+  .hero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Only the badge hugs its text; the heading keeps the full column width
+     so it wraps onto three lines the way the Figma frame does. */
+  .hero__intro :global(.hero__eyebrow) {
+    align-self: flex-start;
+  }
+
+  .hero__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: 1.3;
+    text-transform: capitalize;
+    color: var(--c-heading);
+  }
+
+  .hero__title em {
+    font-weight: 500;
+    font-style: italic;
+    color: var(--c-ink);
+  }
+
+  .hero__body {
+    max-width: 603px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* --- responsive ------------------------------------------------------- */
+
+  @media (max-width: 1380px) {
+    .hero__content {
+      left: var(--gutter);
+      width: min(618px, 52%);
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .hero {
+      min-height: 0;
+      padding-bottom: 64px;
+    }
+
+    .hero__frame {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      height: auto;
+      padding-top: 72px;
+    }
+
+    .hero__content {
+      position: static;
+      width: 100%;
+      max-width: 618px;
+      padding-inline: var(--gutter);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .hero__title {
+      font-size: 36px;
+    }
+
+    .hero__frame {
+      gap: 32px;
+      padding-top: 48px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .hero__title {
+      font-size: 30px;
+    }
+  }
+</style>

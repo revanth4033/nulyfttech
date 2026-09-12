@@ -1,0 +1,323 @@
+---
+import Icon from "../ui/Icon.astro";
+import TechCard from "./TechCard.astro";
+import hatch from "../../assets/images/aid-hatch.png";
+import {
+  techs,
+  STATIONS,
+  HUB,
+  place,
+  badgeAt,
+  glyphAt,
+  slotX,
+  SLOT_REACH,
+  ORBIT_W,
+  ORBIT_H,
+  ORBIT_X,
+  ORBIT_Y,
+  CARD_H,
+  GHOST_W,
+  GHOST_H,
+  STRIP_W,
+  STRIP_H,
+  HALO,
+  AXIS_X,
+} from "../../data/aidata";
+
+/**
+ * AI & Data. Two halves locked together: five badges stepping round an
+ * ellipse, and a strip of slots below the header where the one currently at
+ * the hub is named. Motion lives in `src/scripts/aidata-orbit.ts`.
+ */
+
+/** Resting frame — Figma's "AI Agents" state, which is also what the main
+ *  Technology frame draws. Carries no-JS and reduced-motion. */
+const REST = 0;
+
+/**
+ * Station of techs[i] when techs[active] is on the hub. Checked against the
+ * Figma frames: with AI Agents active this puts Computer Vision on the right,
+ * Python on the left, LLM at the exit and RAG at the entry — exactly frame 1.
+ */
+const stationOf = (i: number, active: number) => (HUB + active - i + techs.length) % techs.length;
+
+const items = techs.map((t, i) => {
+  const s = stationOf(i, REST);
+  const deg = STATIONS[s];
+  const p = place(deg);
+  return { ...t, station: s, deg, x: p.x, y: p.y, d: badgeAt(deg), g: glyphAt(deg) };
+});
+
+/** Seven slots, offsets -3..+3; the centre one is the active pill. */
+const offsets = Array.from({ length: SLOT_REACH * 2 + 1 }, (_, i) => i - SLOT_REACH);
+const activeW = techs[REST].w;
+---
+
+<TechCard icon="icons/aidata/card-aidata" title="AI & Data" height={CARD_H} headTop={26} class="aid">
+  <div class="aid__strip" data-strip>
+    <span class="aid__rule"></span>
+    {
+      offsets.map((o) => (
+        <span class="aid__slot" data-slot data-far={Math.abs(o) >= 2 ? "" : undefined} data-active={o === 0 ? "" : undefined} style={`left:${slotX(o, activeW)}px;width:${o === 0 ? activeW : GHOST_W}px`}>
+          <span class="aid__ghost" data-ghost />
+          <span class="aid__pill" data-pill>
+            <span class="aid__label" data-label>{techs[REST].label}</span>
+          </span>
+        </span>
+      ))
+    }
+  </div>
+
+  <div class="aid__orbit" data-aid-orbit>
+    <span class="aid__axis aid__axis--up"></span>
+    <span class="aid__axis aid__axis--down"></span>
+    <span class="aid__halo"></span>
+
+    {
+      items.map((it) => (
+        <span class="aid__item" data-item style={`transform:translate(${it.x}px,${it.y}px);--d:${it.d}px;--g:${it.g}px`}>
+          <Icon name="brand/aid-badge" class="aid__badge" />
+          <Icon name={it.icon} class="aid__glyph" />
+        </span>
+      ))
+    }
+
+    <span class="aid__node aid__node--up"></span>
+    <span class="aid__node aid__node--down"></span>
+    <span class="aid__veil aid__veil--l"></span>
+    <span class="aid__veil aid__veil--r"></span>
+  </div>
+</TechCard>
+
+<style
+  define:vars={{
+    orbitW: `${ORBIT_W}px`,
+    orbitH: `${ORBIT_H}px`,
+    orbitX: `${ORBIT_X}px`,
+    orbitY: `${ORBIT_Y}px`,
+    stripW: `${STRIP_W}px`,
+    stripH: `${STRIP_H}px`,
+    ghostH: `${GHOST_H}px`,
+    halo: `${HALO}px`,
+    axisX: `${AXIS_X}px`,
+    hatch: `url(${hatch.src})`,
+  }}
+>
+  /* --- label strip ------------------------------------------------------ */
+
+  .aid__strip {
+    position: absolute;
+    left: -8px;
+    top: 130px;
+    width: var(--stripW);
+    height: var(--stripH);
+  }
+
+  /* 2-2 dash, matching the exported stroke rather than the browser's own
+     dash rhythm for `border-style: dashed`. */
+  .aid__rule {
+    position: absolute;
+    left: 50%;
+    top: 18px;
+    width: 414px;
+    height: 1px;
+    translate: -50% 0;
+    background: repeating-linear-gradient(to right, #d9d9d9 0 2px, transparent 2px 4px);
+  }
+
+  .aid__slot {
+    position: absolute;
+    top: 0;
+    height: var(--stripH);
+  }
+
+  .aid__ghost,
+  .aid__pill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-radius: 8px;
+  }
+
+  .aid__ghost {
+    top: calc((var(--stripH) - var(--ghostH)) / 2);
+    height: var(--ghostH);
+    background: #fff;
+    border: 1px dashed #d9d9d9;
+    overflow: hidden;
+  }
+
+  /* Figma tiles a 6px diagonal at 3.0776px and dims it by distance from the
+     centre — 25% on the outer pair, 10% on the inner. */
+  .aid__ghost::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background-image: var(--hatch);
+    background-size: 3.0776px 3.0776px;
+  }
+
+  .aid__slot[data-far] .aid__ghost::after {
+    opacity: 0.25;
+  }
+
+  /* Resting frame: the centre slot is the live pill, the rest are ghosts.
+     The timeline writes inline opacity from boot, which wins over these. */
+  .aid__pill {
+    opacity: 0;
+  }
+
+  .aid__slot[data-active] .aid__ghost {
+    opacity: 0;
+  }
+
+  .aid__slot[data-active] .aid__pill {
+    opacity: 1;
+  }
+
+  .aid__pill {
+    top: 0;
+    height: var(--stripH);
+    padding: 2px;
+    background: #f3f3f3;
+  }
+
+  .aid__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.1),
+      0 4px 2px rgba(0, 0, 0, 0.09),
+      0 10px 3px rgba(0, 0, 0, 0.05),
+      0 18px 3.5px rgba(0, 0, 0, 0.01);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 24px;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  /* --- orbit ------------------------------------------------------------ */
+
+  /* Wider than the card on purpose, so the two end stations are cut off. */
+  .aid__orbit {
+    position: absolute;
+    left: var(--orbitX);
+    top: var(--orbitY);
+    width: var(--orbitW);
+    height: var(--orbitH);
+  }
+
+  .aid__axis {
+    position: absolute;
+    left: var(--axisX);
+    width: 1px;
+  }
+
+  /* Both rules are strongest at the hub end, so they read as a signal
+     radiating from whatever is on top. */
+  .aid__axis--up {
+    top: 0;
+    height: 46px;
+    background: linear-gradient(180deg, rgba(131, 77, 251, 0.3), #834dfb);
+  }
+
+  .aid__axis--down {
+    top: 176px;
+    height: 99px;
+    background: linear-gradient(180deg, #834dfb, rgba(131, 77, 251, 0.3));
+  }
+
+  .aid__node {
+    position: absolute;
+    left: calc(var(--axisX) - 4px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #834dfb;
+  }
+
+  .aid__node--up {
+    top: 42px;
+  }
+
+  .aid__node--down {
+    top: 172px;
+  }
+
+  /* Fixed to the hub station, not carried by an item. */
+  .aid__halo {
+    position: absolute;
+    left: 153px;
+    top: 46px;
+    width: var(--halo);
+    height: var(--halo);
+    border-radius: 50%;
+    background:
+      linear-gradient(180deg, rgba(131, 77, 251, 0.12) 0%, rgba(131, 77, 251, 0.036) 100%),
+      rgba(255, 255, 255, 0.3);
+  }
+
+  /* Zero-sized anchor at the badge's centre; the timeline sets its transform
+     and the two size variables. */
+  .aid__item {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    --d: 70px;
+    --g: 32px;
+  }
+
+  /* The badge art is 1.44x the disc wide and 1.8x tall — the extra is the
+     drop shadow, which hangs below — so its disc centre sits at 50%/30%. */
+  .aid__badge {
+    position: absolute;
+    left: calc(var(--d) * -0.72);
+    top: calc(var(--d) * -0.54);
+    width: calc(var(--d) * 1.44);
+    height: calc(var(--d) * 1.8);
+  }
+
+  .aid__glyph {
+    position: absolute;
+    left: calc(var(--g) / -2);
+    top: calc(var(--g) / -2);
+    width: var(--g);
+    height: var(--g);
+    color: #fff;
+  }
+
+  /* Static veils over the two end stations: what washes the entering and
+     leaving badges out, and what lets the wrap hand over unseen.
+     
+     The Figma layer also carries a 2.5px background blur, but Figma's own
+     export does not rasterise it — a veiled badge's edge there steps
+     46 -> 243 in 2px, exactly as sharp as an unveiled one. Reproducing the
+     blur smeared the 2px glyph strokes and dropped their contrast well below
+     the frames (0.60 against Figma on the right-hand badge, versus 0.82
+     without). The gradient alone matches: 0.52 white over the badge against
+     Figma's 0.49. */
+  .aid__veil {
+    position: absolute;
+    top: 161px;
+    width: 60px;
+    height: 104px;
+  }
+
+  .aid__veil--l {
+    left: 6px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), #fff);
+  }
+
+  .aid__veil--r {
+    right: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
+  }
+</style>

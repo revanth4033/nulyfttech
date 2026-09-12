@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import PageHero from "../components/PageHero.astro";
+import StudioProjects from "../components/sections/StudioProjects.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+---
+
+<BaseLayout
+  title="Studio — nuLyft"
+  description="Design that thinks, feels, and responds. Selected product design, automation, and narrative work from the nuLyft design studio."
+>
+  <Nav slot="overlay" />
+
+  <PageHero
+    eyebrow="nuLyft Design Studio"
+    title="Design That Thinks, Feels, and"
+    emphasis="Responds"
+    body="We create intuitive, modern digital experiences that blend strategy and innovation to connect people with brands in meaningful, memorable ways."
+    height={700}
+  />
+  <StudioProjects />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+</script>

@@ -1,0 +1,82 @@
+---
+/**
+ * Inlines an SVG from src/assets at build time.
+ *
+ * Inlining (rather than <img src>) is what lets the animation layer target
+ * paths inside an icon and lets CSS recolour them.
+ */
+const icons = import.meta.glob<string>("../../assets/**/*.svg", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+
+interface Props {
+  /** Path under src/assets without extension, e.g. "icons/badge-check". */
+  name: string;
+  size?: number | string;
+  width?: number | string;
+  height?: number | string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { name, size, width, height, class: className, ...rest } = Astro.props;
+
+const key = `../../assets/${name}.svg`;
+const raw = icons[key];
+
+if (!raw) {
+  throw new Error(
+    `<Icon name="${name}" /> not found. Available: ${Object.keys(icons)
+      .map((k) => k.replace("../../assets/", "").replace(".svg", ""))
+      .join(", ")}`,
+  );
+}
+
+const w = width ?? size;
+const h = height ?? size;
+
+/**
+ * Namespace internal ids.
+ *
+ * Figma exports reuse generic ids (`filter0_d_0_4`, `clip0_...`), and these
+ * SVGs are inlined into one document — so two different icons on the same page
+ * can collide and one silently steals the other's gradient, clip or filter.
+ * Prefixing with the icon name keeps each self-contained.
+ */
+const slug = name.replace(/[^a-z0-9]+/gi, "-");
+const ids = new Set([...raw.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
+
+let body = raw;
+for (const id of ids) {
+  const esc = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  body = body
+    .replace(new RegExp(`\\bid="${esc}"`, "g"), `id="${slug}-${id}"`)
+    .replace(new RegExp(`url\\(#${esc}\\)`, "g"), `url(#${slug}-${id})`)
+    .replace(new RegExp(`href="#${esc}"`, "g"), `href="#${slug}-${id}"`);
+}
+
+// Force our own dimensions onto the sprite and make it inert to assistive tech.
+const svg = body
+  .replace(/^<svg /, `<svg aria-hidden="true" focusable="false" `)
+  .replace(/ width="[^"]*"/, w ? ` width="${w}"` : "")
+  .replace(/ height="[^"]*"/, h ? ` height="${h}"` : "");
+---
+
+<span class:list={["icon", className]} {...rest} style={w ? `--icon-w:${typeof w === "number" ? `${w}px` : w};--icon-h:${typeof h === "number" ? `${h}px` : h}` : undefined} set:html={svg} />
+
+<style>
+  .icon {
+    display: inline-flex;
+    flex: none;
+    width: var(--icon-w, auto);
+    height: var(--icon-h, auto);
+  }
+
+  .icon :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

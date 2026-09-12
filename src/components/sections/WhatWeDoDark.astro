@@ -1,0 +1,36 @@
+---
+import CapabilityRow from "../wwd/CapabilityRow.astro";
+import { darkRows } from "../../data/whatWeDo";
+---
+
+<section class="wwd-dark" data-section="what-we-do-dark">
+  <div class="wwd-dark__inner">
+    {darkRows.map((row) => <CapabilityRow row={row} tone="dark" />)}
+  </div>
+</section>
+
+<style>
+  .wwd-dark {
+    position: relative;
+    background: var(--c-bg-dark);
+    overflow: hidden;
+  }
+
+  /* No grid lines on this band — the Figma dark frames have no Lines child. */
+
+  .wwd-dark__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 200px;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  @media (max-width: 900px) {
+    .wwd-dark__inner {
+      gap: 96px;
+      padding-block: 72px;
+    }
+  }
+</style>

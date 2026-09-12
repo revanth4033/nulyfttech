@@ -1,0 +1,120 @@
+---
+import Icon from "./Icon.astro";
+
+/**
+ * The pill button from the design.
+ *
+ * Every pill in the Figma file is rotated -0.65deg with its arrow icon
+ * counter-rotated +0.65deg so the glyph stays upright. That tilt is
+ * deliberate and appears on all of them, so it lives here rather than
+ * being re-applied per instance.
+ */
+interface Props {
+  href?: string;
+  variant?: "solid" | "outline";
+  /** Arrow glyph size; the solid variant uses the white-disc version. */
+  arrow?: false | 16 | 20;
+  size?: "md" | "sm";
+  block?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = "solid",
+  arrow = false,
+  size = "md",
+  block = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+const iconName = variant === "solid" ? "icons/arrow-circle-20" : "icons/arrow-circle-16";
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : "button"}
+  class:list={["pill", `pill--${variant}`, `pill--${size}`, { "pill--block": block }, className]}
+  {...rest}
+>
+  <span class="pill__inner">
+    <span class="pill__label"><slot /></span>
+    {arrow && <Icon name={iconName} size={arrow} class="pill__arrow" />}
+  </span>
+</Tag>
+
+<style>
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 8px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-button);
+    white-space: nowrap;
+    rotate: var(--tilt);
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  .pill--sm {
+    height: 40px;
+    font-size: var(--fs-sm);
+  }
+
+  .pill--block {
+    display: flex;
+    width: 100%;
+  }
+
+  .pill__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Counter-rotate the glyph so it reads upright inside the tilted pill. */
+  .pill :global(.pill__arrow) {
+    rotate: calc(-1 * var(--tilt));
+  }
+
+  .pill--solid {
+    background-image: var(--grad-pill);
+    color: #fff;
+    box-shadow: var(--sh-button-inset);
+  }
+
+  .pill--outline {
+    border: 1px solid var(--c-accent);
+    color: var(--c-accent);
+    background: transparent;
+  }
+
+  .pill:hover {
+    transform: translateY(-2px);
+  }
+
+  .pill--outline:hover {
+    background: var(--c-eyebrow-bg);
+  }
+
+  .pill:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill:hover,
+    .pill:active {
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Nav from "../../components/Nav.astro";
+import CaseLmsHero from "../../components/sections/CaseLmsHero.astro";
+import CaseLmsOverview from "../../components/sections/CaseLmsOverview.astro";
+import CaseLmsApproach from "../../components/sections/CaseLmsApproach.astro";
+import CaseLmsSystem from "../../components/sections/CaseLmsSystem.astro";
+import CaseLmsScreens from "../../components/sections/CaseLmsScreens.astro";
+import CtaFooter from "../../components/sections/CtaFooter.astro";
+---
+
+<BaseLayout
+  title="Skill Wagon — LMS / Education SaaS — nuLyft"
+  description="A scalable SaaS learning platform that brings courses, learners, assessments, and insights into one seamless experience."
+>
+  <Nav slot="overlay" />
+
+  <CaseLmsHero />
+  <CaseLmsOverview />
+  <CaseLmsApproach />
+  <CaseLmsSystem />
+  <CaseLmsScreens />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../../scripts/reveal.ts";
+  import "../../scripts/anchors.ts";
+  import "../../scripts/cta-fan.ts";
+</script>

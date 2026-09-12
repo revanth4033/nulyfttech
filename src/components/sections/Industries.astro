@@ -1,0 +1,267 @@
+---
+import GridLines from "../ui/GridLines.astro";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import Icon from "../ui/Icon.astro";
+import {
+  pills,
+  anchorOf,
+  originOf,
+  BOX,
+  CX,
+  CY,
+  SPHERE,
+  RING_A,
+  RING_B,
+  R_OUTER,
+  PULSE_FROM,
+  PILL_H,
+} from "../../data/industries";
+
+/**
+ * Industries We Serve. Copy on the left, hub-and-constellation on the right.
+ * Motion lives in `src/scripts/industries.ts`.
+ */
+const links = pills.map((p) => ({ from: originOf(p), to: anchorOf(p) }));
+const pulse = R_OUTER * 2;
+---
+
+<section class="ind" data-section="industries">
+  <GridLines />
+
+  <div class="ind__inner">
+    <div class="ind__copy">
+      <EyebrowBadge variant="section" data-animate>Industries we serve</EyebrowBadge>
+      <h2 class="ind__title" data-animate>Different industries. Same focus on solving the right problem</h2>
+      <p class="ind__body" data-animate>
+        We adapt our product expertise across industries, designing solutions around each
+        domain&rsquo;s unique users, workflows, and business goals.
+      </p>
+    </div>
+
+    <div class="ind__stage" data-ind>
+      <span class="ind__halo" aria-hidden="true">
+        <Icon name="brand/ind-rings-b" width={RING_B.size} height={RING_B.size} />
+      </span>
+      <span class="ind__rings" data-rings aria-hidden="true">
+        <Icon name="brand/ind-rings-a" width={RING_A.size} height={RING_A.size} />
+      </span>
+
+      <span class="ind__pulse" data-pulse aria-hidden="true"></span>
+
+      <svg class="ind__links" viewBox={`0 0 ${BOX} ${BOX}`} width={BOX} height={BOX} fill="none" aria-hidden="true">
+        {
+          links.map((l) => (
+            <line class="ind__link" data-link x1={l.from.x} y1={l.from.y} x2={l.to.x} y2={l.to.y} />
+          ))
+        }
+      </svg>
+
+      <span class="ind__hub" aria-hidden="true">
+        <Icon name="brand/nulyft-mark" width={96} height={47} />
+      </span>
+
+      {
+        pills.map((p) => (
+          <div class="ind__pill" data-pill style={`left:${p.x}px;top:${p.y}px`}>
+            <span class="ind__tile"><Icon name={p.icon} size={18} /></span>
+            <span class="ind__label">{p.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style
+  define:vars={{
+    box: `${BOX}px`,
+    cx: `${CX}px`,
+    cy: `${CY}px`,
+    sphere: `${SPHERE}px`,
+    ringAOff: `${RING_A.offset}px`,
+    ringBOff: `${RING_B.offset}px`,
+    pulse: `${pulse}px`,
+    pulseOff: `${CX - R_OUTER}px`,
+    pulseFrom: PULSE_FROM,
+    pillH: `${PILL_H}px`,
+  }}
+>
+  .ind {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .ind__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--frame-w);
+    height: calc(var(--box) + 200px);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  /* --- copy -------------------------------------------------------------- */
+
+  /* Figma centres the block against the constellation, not the section. */
+  .ind__copy {
+    position: absolute;
+    left: var(--gutter);
+    top: 50%;
+    translate: 0 -50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .ind__title {
+    width: 469px;
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-heading);
+  }
+
+  .ind__body {
+    width: 624px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- constellation ----------------------------------------------------- */
+
+  /* The pills overflow this box by up to 145px either side on purpose; the
+     section clips them, not the stage. */
+  .ind__stage {
+    position: absolute;
+    left: calc(var(--gutter) + 742px);
+    top: 100px;
+    width: var(--box);
+    height: var(--box);
+  }
+
+  .ind__halo,
+  .ind__rings,
+  .ind__pulse,
+  .ind__links,
+  .ind__hub {
+    position: absolute;
+    display: block;
+    /* <Icon> renders inline-flex, which would otherwise leave a descender
+       gap under these wrappers and make their boxes taller than their art. */
+    line-height: 0;
+  }
+
+  /* Same four radii as the dashed set, but 11px strokes under a 30px blur. */
+  .ind__halo {
+    left: var(--ringBOff);
+    top: var(--ringBOff);
+  }
+
+  .ind__rings {
+    left: var(--ringAOff);
+    top: var(--ringAOff);
+    transform-origin: 50% 50%;
+  }
+
+  /* The wavefront. Starts at the sphere's edge and runs out past the last
+     ring; the border thickens as it scales, which reads as it dissipating. */
+  .ind__pulse {
+    left: var(--pulseOff);
+    top: var(--pulseOff);
+    width: var(--pulse);
+    height: var(--pulse);
+    border: 2px solid rgba(176, 140, 250, 0.5);
+    border-radius: 50%;
+    opacity: 0;
+    scale: var(--pulseFrom);
+    filter: blur(2px);
+  }
+
+  .ind__links {
+    left: 0;
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .ind__link {
+    stroke: var(--c-accent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0;
+  }
+
+  .ind__hub {
+    left: calc(var(--cx) - var(--sphere) / 2);
+    top: calc(var(--cy) - var(--sphere) / 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sphere);
+    height: var(--sphere);
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(to bottom, #834dfb, #4e05ef);
+    box-shadow:
+      0 7.9px 15.2px rgba(0, 0, 0, 0.05),
+      0 19.8px 47.4px rgba(0, 0, 0, 0.05),
+      0 47.4px 80.7px rgba(0, 0, 0, 0.15),
+      0 49.4px 37px rgba(0, 0, 0, 0.05),
+      inset 0 9.9px 15.8px rgba(255, 255, 255, 0.05),
+      inset 0 2px 2px rgba(255, 255, 255, 0.25);
+  }
+
+  /* --- pills ------------------------------------------------------------- */
+
+  .ind__pill {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: var(--pillH);
+    padding: 6px 16px 6px 6px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  .ind__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--c-accent);
+    box-shadow:
+      0 4px 4px rgba(0, 0, 0, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.05),
+      0 9px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .ind__label {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-ink);
+  }
+
+  @media (max-width: 1180px) {
+    .ind__body {
+      width: 520px;
+    }
+  }
+</style>

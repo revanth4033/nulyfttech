@@ -1,0 +1,261 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import type { CapabilityRow } from "../../data/whatWeDo";
+
+/**
+ * One capability row: copy + tag chips beside a 450x300 media panel.
+ *
+ * Figma geometry (all four rows share it): media 450 wide, copy 726 wide,
+ * 64px apart, copy vertically centred against the 300px media panel.
+ * Alternating sides via `reverse`.
+ */
+interface Props {
+  row: CapabilityRow;
+  tone?: "light" | "dark";
+}
+
+const { row, tone = "light" } = Astro.props;
+const { media } = row;
+---
+
+<div class:list={["row", `row--${tone}`, { "row--reverse": row.reverse }]} id={row.id} data-wwd-row>
+  <div class="row__copy" data-animate>
+    <div class="row__intro">
+      <h3 class="row__title">{row.title}</h3>
+      <p class="row__body">{row.body}</p>
+    </div>
+
+    <ul class="row__tags" style={row.tagsHeight ? `--tags-h:${row.tagsHeight}px` : undefined}>
+      {
+        row.tags.map((tag) => (
+          <li class="row__tag">
+            <span class="row__chip"><Icon name={tag.icon} size={24} /></span>
+            <span class="row__label">{tag.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="row__media" data-animate>
+    {
+      media.kind === "browser" && (
+        <div class="row__browser" data-tilt>
+          <BrowserChrome />
+          <Image src={media.src} alt={media.alt} widths={[450, 900]} sizes="450px" class="row__shot" />
+        </div>
+      )
+    }
+
+    {
+      media.kind === "plain" && (
+        <Image src={media.src} alt={media.alt} widths={[450, 900]} sizes="450px" class="row__plain" data-tilt />
+      )
+    }
+
+    {
+      media.kind === "collage" && (
+        <div class="row__collage" data-tilt>
+          {media.images.map((img, i) => (
+            <Image
+              src={img.src}
+              alt={img.alt}
+              widths={i === 2 ? [450, 900] : [217, 434]}
+              sizes={i === 2 ? "450px" : "217px"}
+              class={`row__photo row__photo--${i + 1}`}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+  }
+
+  .row--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .row__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 726px;
+    flex: none;
+  }
+
+  .row__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .row__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    letter-spacing: -0.4px;
+    color: var(--c-ink);
+  }
+
+  .row__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .row__tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    height: var(--tags-h, auto);
+  }
+
+  .row__tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .row__chip {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    background: var(--c-accent-tint);
+    border-radius: 12px;
+  }
+
+  .row__label {
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-card);
+    letter-spacing: var(--tr-label);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* --- dark band ---------------------------------------------------------- */
+
+  .row--dark .row__title,
+  .row--dark .row__label {
+    color: #fff;
+  }
+
+  .row--dark .row__body {
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  .row--dark .row__chip {
+    background: var(--c-chip-dark);
+  }
+
+  /* --- media -------------------------------------------------------------- */
+
+  .row__media {
+    width: 450px;
+    height: 300px;
+    flex: none;
+    /* Depth for the hover tilt. Tighter values distort hard at this size. */
+    perspective: 1200px;
+  }
+
+  /* Safari renders jagged edges on 3D-transformed containers that also clip
+     with a border-radius; promoting the layer avoids it. */
+  .row__media :global([data-tilt]) {
+    backface-visibility: hidden;
+  }
+
+  .row__browser {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: var(--sh-card);
+  }
+
+  .row__browser :global(.row__shot) {
+    display: block;
+    width: 100%;
+    flex: 1;
+    object-fit: cover;
+  }
+
+  .row :global(.row__plain) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .row__collage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 16px;
+    height: 100%;
+  }
+
+  .row__collage :global(.row__photo) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .row__collage :global(.row__photo--3) {
+    grid-column: 1 / -1;
+  }
+
+  /* --- responsive --------------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .row {
+      gap: 40px;
+    }
+
+    .row__copy {
+      width: auto;
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .row,
+    .row--reverse {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 32px;
+    }
+
+    .row__media {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .row__tags {
+      gap: 16px;
+      height: auto;
+    }
+
+    .row__label {
+      white-space: normal;
+    }
+  }
+</style>

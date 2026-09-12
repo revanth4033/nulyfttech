@@ -1,0 +1,215 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import GridLines from "../ui/GridLines.astro";
+import Icon from "../ui/Icon.astro";
+import { processSteps, TRACK_W, TRACK_H } from "../../data/process";
+
+/**
+ * The curve is rebuilt from the Figma vector. The original layer exported at
+ * 12.2MB because the stroke had been outlined into ~96,000 slivers; this is
+ * the same shape refitted as a smooth C1 spline (2.1KB, within ~2px of the
+ * original, with true horizontal tangents at every crest and trough).
+ */
+const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 379.3 108.0 386.2C128.0 392.1 148.0 395.9 168.0 397.9C178.0 398.9 188.0 399.5 198.0 399.5C212.7 399.5 227.3 398.7 242.0 396.8C266.0 393.7 290.0 387.9 314.0 378.9C334.7 371.2 355.3 361.1 376.0 347.8C393.3 336.7 410.7 323.4 428.0 306.1C438.7 295.5 449.3 283.4 460.0 268.6C481.7 238.6 503.3 199.0 525.0 170.8C534.3 158.6 543.7 148.6 553.0 140.9C568.7 127.9 584.3 119.9 600.0 114.1C617.7 107.5 635.3 104.1 653.0 103.3C655.7 103.1 658.3 103.1 661.0 103.1C678.0 103.1 695.0 105.3 712.0 110.4C729.3 115.7 746.7 123.4 764.0 136.7C776.3 146.1 788.7 158.7 801.0 174.9C830.3 213.4 859.7 271.8 889.0 301.5C900.7 313.2 912.3 321.3 924.0 327.1C937.3 333.6 950.7 336.8 964.0 337.7C966.0 337.9 968.0 338.0 970.0 338.0C979.3 338.0 988.7 337.1 998.0 335.2C1009.7 332.8 1021.3 328.9 1033.0 323.6C1069.0 307.3 1105.0 270.1 1141.0 249.6C1155.3 241.4 1169.7 236.6 1184.0 236.6C1184.7 236.6 1185.3 236.6 1186.0 236.6C1200.3 236.6 1214.7 240.1 1229.0 245.6C1267.0 260.3 1305.0 284.0 1343.0 300.2C1378.0 315.2 1413.0 330.0 1448.0 338.8C1472.0 344.8 1496.0 348.0 1520.0 348.0C1520.7 348.0 1521.3 348.0 1522.0 348.0C1545.7 348.0 1569.3 345.4 1593.0 339.8C1614.3 334.7 1635.7 327.2 1657.0 316.7C1675.7 307.5 1694.3 296.0 1713.0 280.9C1724.7 271.4 1736.3 260.7 1748.0 247.4C1770.7 221.6 1793.3 186.9 1816.0 162.4C1825.3 152.4 1834.7 144.1 1844.0 137.6C1856.7 128.8 1869.3 122.8 1882.0 118.3C1896.3 113.2 1910.7 110.3 1925.0 109.2C1929.7 108.8 1934.3 108.7 1939.0 108.7C1952.7 108.7 1966.3 110.4 1980.0 113.9C1996.3 118.1 2012.7 124.7 2029.0 135.6C2041.0 143.6 2053.0 154.2 2065.0 167.2C2092.3 196.9 2119.7 239.6 2147.0 264.0C2156.3 272.3 2165.7 278.8 2175.0 283.7C2185.0 289.0 2195.0 292.4 2205.0 294.5C2213.0 296.2 2221.0 297.0 2229.0 297.0C2233.0 297.0 2237.0 296.8 2241.0 296.4C2254.3 295.3 2267.7 292.1 2281.0 287.4C2322.7 272.8 2364.3 233.5 2406.0 222.9C2413.3 221.0 2420.7 220.0 2428.0 220.0C2445.0 220.0 2462.0 220.8 2479.0 222.1";
+---
+
+<section class="process" id="process" data-section="our-process">
+  <GridLines />
+
+  <div class="process__inner">
+    <SectionHeader
+      eyebrow="Our process"
+      title="A product process built around real constraints"
+      body="Good products evolve. We understand, validate, build, and improve with every insight."
+    />
+
+    <div class="process__viewport">
+      <div class="process__track" data-process-track style={`width:${TRACK_W}px;height:${TRACK_H}px`}>
+        <svg
+          class="process__curve"
+          viewBox={`0 0 ${TRACK_W} ${TRACK_H}`}
+          width={TRACK_W}
+          height={TRACK_H}
+          fill="none"
+          aria-hidden="true"
+        >
+          <path class="process__curve-base" d={CURVE_D} />
+          <path class="process__curve-trail" d={CURVE_D} data-process-trail />
+          <path id="process-path" d={CURVE_D} fill="none" stroke="none" data-process-path />
+        </svg>
+
+        {
+          processSteps.map((s) => (
+            <div class="process__step" data-process-step style={`left:${s.tx}px;top:${s.ty}px;width:${s.tw}px`}>
+              <span class="process__numeral" aria-hidden="true">{s.n}</span>
+              <h3 class="process__title">{s.title}</h3>
+              <p class="process__body">{s.body}</p>
+            </div>
+          ))
+        }
+
+        {
+          processSteps.map((s) => (
+            <span class="process__chip" data-process-chip style={`left:${s.cx}px;top:${s.cy}px`}>
+              <Icon name={s.icon} size={40} />
+            </span>
+          ))
+        }
+
+        <span class="process__ball" data-process-ball aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Pinned sections must be at least viewport-tall or the pin runs out of
+       scroll before it finishes. See WhyNulyft for the same constraint. */
+    min-height: 100svh;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .process__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: 100%;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  /* Shows 1240 of the 2482-wide track; the rest scrolls through. */
+  .process__viewport {
+    position: relative;
+    width: 100%;
+    max-width: var(--content-w);
+    height: 514px;
+    margin-inline: auto;
+    /* Must clip left/right for the horizontal scroll, but NOT top/bottom:
+       the numerals for steps 3 and 5 sit ~24px above the track and were
+       being sliced. A negative inset clips only the axis we need. */
+    clip-path: inset(-90px 0 -24px 0);
+  }
+
+  .process__track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+
+  .process__curve {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .process__curve-base,
+  .process__curve-trail {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  .process__curve-base {
+    stroke: var(--c-accent);
+    opacity: 0.28;
+  }
+
+  /* Revealed up to the ball via stroke-dashoffset, set from script. */
+  .process__curve-trail {
+    stroke: var(--c-accent);
+  }
+
+  .process__chip {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    translate: -50% -50%;
+    background: #f4f4f4;
+    border-radius: var(--r-pill);
+    box-shadow: 0 8px 16px rgba(131, 77, 251, 0.28);
+    transition: none;
+  }
+
+  .process__step {
+    position: absolute;
+  }
+
+  .process__numeral {
+    position: absolute;
+    top: -25px;
+    left: 283px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 132px;
+    line-height: 1;
+    background: linear-gradient(
+      to bottom,
+      #834dfb 0%,
+      #9d70fb 30%,
+      #b79bfc 62%,
+      #cdbbfd 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    pointer-events: none;
+  }
+
+  .process__title {
+    margin-top: 80px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    color: var(--c-ink);
+  }
+
+  .process__body {
+    margin-top: 12px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .process__ball {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    translate: -50% -50%;
+    border: 1.5px solid rgba(131, 77, 251, 0.45);
+    border-radius: 50%;
+    background: #fff;
+    /* The ring is what keeps the ball readable when it lands on a milestone
+       chip — the chip is #f4f4f4 and the ball is #fff, so without it the two
+       are indistinguishable. It is in the Figma ball too. */
+    box-shadow: 0 2px 10px rgba(131, 77, 251, 0.35);
+    will-change: transform;
+  }
+
+  @media (max-width: 1240px) {
+    .process__viewport {
+      height: 460px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .process__inner {
+      gap: 48px;
+      padding-block: 72px;
+    }
+  }
+</style>

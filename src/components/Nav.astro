@@ -1,0 +1,201 @@
+---
+import Icon from "../components/ui/Icon.astro";
+import PillButton from "./ui/PillButton.astro";
+
+/**
+ * The section links are root-relative so they resolve from any page, not just
+ * the home page. `anchors.ts` only intercepts links whose pathname matches the
+ * current page, so from /studio these navigate home natively and the hash is
+ * resolved on load once ScrollSmoother has measured.
+ *
+ * `#contact` has no destination yet and stays inert.
+ */
+const links = [
+  { label: "Work", href: "/#work" },
+  { label: "Capabilities", href: "/#capabilities" },
+  { label: "Process", href: "/#process" },
+  { label: "Studio", href: "/studio" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact Us", href: "#contact" },
+];
+
+/** Mark the page we are on, for both styling and assistive tech. */
+const here = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "") === here;
+---
+
+<header class="nav" data-nav>
+  <div class="nav__inner">
+    <a class="nav__logo" href="/" aria-label="nuLyft — home">
+      <Icon name="brand/nulyft-logo" width={64.72} height={32.36} />
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>{l.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <PillButton href="#contact" variant="outline" class="nav__cta">Build With Us</PillButton>
+
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+      <span class="visually-hidden">Menu</span>
+      <span class="nav__bars" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="nav__drawer" id="nav-menu" data-nav-drawer hidden>
+    <ul>
+      {links.map((l) => (
+        <li>
+          <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+    <PillButton href="#contact" variant="outline">Build With Us</PillButton>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-nav);
+    background: var(--c-bg-light);
+    box-shadow: var(--sh-nav);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: var(--nav-h);
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .nav__logo {
+    display: flex;
+    flex: none;
+  }
+
+  .nav__links {
+    flex: 1;
+  }
+
+  .nav__links ul {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .nav__links a {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    letter-spacing: var(--tr-nav);
+    text-transform: capitalize;
+    color: var(--c-ink);
+    white-space: nowrap;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__links a:hover,
+  .nav__links a[aria-current="page"],
+  .nav__drawer a[aria-current="page"] {
+    color: var(--c-accent);
+  }
+
+  .nav :global(.nav__cta) {
+    flex: none;
+    height: 44px;
+  }
+
+  /* --- mobile ----------------------------------------------------------- */
+
+  .nav__toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    place-items: center;
+  }
+
+  .nav__bars {
+    display: grid;
+    gap: 6px;
+  }
+
+  .nav__bars i {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--c-ink);
+    border-radius: 2px;
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__drawer {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px var(--gutter) 28px;
+    background: var(--c-bg-light);
+    border-top: 1px solid var(--c-rule);
+  }
+
+  .nav__drawer ul {
+    display: grid;
+    gap: 4px;
+  }
+
+  .nav__drawer a {
+    display: block;
+    padding: 10px 0;
+    font-weight: 500;
+    color: var(--c-ink);
+  }
+
+  @media (max-width: 1080px) {
+    .nav__links,
+    .nav :global(.nav__cta) {
+      display: none;
+    }
+
+    .nav__toggle {
+      display: grid;
+    }
+
+    .nav__drawer {
+      display: flex;
+    }
+
+    .nav__drawer[hidden] {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const drawer = document.querySelector<HTMLElement>("[data-nav-drawer]");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    if (drawer) drawer.hidden = open;
+  });
+
+  // Close the drawer after following an in-page link.
+  drawer?.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).closest("a")) {
+      toggle?.setAttribute("aria-expanded", "false");
+      drawer.hidden = true;
+    }
+  });
+</script>

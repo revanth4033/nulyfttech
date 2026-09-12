@@ -1,0 +1,121 @@
+---
+import { Image } from "astro:assets";
+import CaseHeader from "../case/CaseHeader.astro";
+import { screens } from "../../data/caseLms";
+
+/**
+ * UI Screens — Figma 505:4788.
+ *
+ * Five blocks. Two are captioned — screenshot on one side, title and copy on
+ * the other, mirrored between them — and three run the full column width.
+ * `layout` in the data decides which, so adding a screen is a data change.
+ */
+---
+
+<section class="scr" data-section>
+  <div class="container scr__inner">
+    <CaseHeader eyebrow={screens.eyebrow} title={screens.title} body={screens.body} />
+
+    <div class="scr__blocks">
+      {
+        screens.blocks.map((block) => (
+          <div class:list={["shot", `shot--${block.layout}`]} data-animate>
+            <figure class="shot__media">
+              <Image
+                src={block.src}
+                alt={block.alt}
+                width={block.layout === "full" ? 2480 : 1216}
+                widths={block.layout === "full" ? [1240, 2480] : [608, 1216]}
+                sizes={block.layout === "full" ? "1240px" : "608px"}
+              />
+            </figure>
+
+            {block.title && (
+              <div class="shot__copy">
+                <h3>{block.title}</h3>
+                <p>{block.body}</p>
+              </div>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .scr {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .scr__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  .scr__blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+  }
+
+  .shot__media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- captioned blocks ------------------------------------------------------ */
+
+  .shot--left,
+  .shot--right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+
+  /* `right` puts the screenshot on the right, so the copy takes column one. */
+  .shot--right .shot__media {
+    order: 2;
+  }
+
+  .shot__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .shot__copy h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 1.3;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-accent);
+  }
+
+  .shot__copy p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  @media (max-width: 900px) {
+    .scr__blocks {
+      gap: 72px;
+    }
+
+    .shot--left,
+    .shot--right {
+      grid-template-columns: 1fr;
+    }
+
+    .shot--right .shot__media {
+      order: 0;
+    }
+  }
+</style>

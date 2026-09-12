@@ -1,0 +1,218 @@
+---
+import Icon from "../ui/Icon.astro";
+import TechCard from "./TechCard.astro";
+import {
+  stages,
+  fillAt,
+  SLIDE,
+  CARD_H,
+  BODY_X,
+  BAR_Y,
+  BAR_W,
+  BAR_H,
+  TRACK_X,
+  TRACK_Y,
+  TRACK_W,
+  TRACK_H,
+  ROWS_Y,
+  ROWS_W,
+  ROWS_H,
+  ROW_H,
+  INDENT,
+  TILE,
+  TILE_INNER,
+  GLYPH,
+} from "../../data/cloud";
+
+/**
+ * Cloud & Infrastructure. Motion lives in `src/scripts/cloud-progress.ts`.
+ *
+ * Resting frame is Figma's first state — the bar at one quarter with only
+ * the AWS row in — which carries no-JS and reduced-motion.
+ */
+const REST = 0;
+---
+
+<TechCard icon="icons/cloud/card-cloud" title="Cloud & Infrastructure" height={CARD_H} class="cloud">
+  <div class="cloud__bar" data-bar style={`--p:${fillAt(REST)}px`}>
+    <span class="cloud__track"></span>
+    <span class="cloud__fill"></span>
+    <span class="cloud__handle"><span class="cloud__dot"></span></span>
+  </div>
+
+  <div class="cloud__rows" data-rows>
+    {
+      stages.map((s, i) => (
+        <div
+          class:list={["cloud__row", s.indent && "cloud__row--indent"]}
+          data-row
+          data-rest={i <= REST ? "" : undefined}
+        >
+          <span class="cloud__tile">
+            <span class="cloud__tile-in"><Icon name={s.icon} size={GLYPH} /></span>
+          </span>
+          <span class="cloud__label">{s.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</TechCard>
+
+<style
+  define:vars={{
+    bodyX: `${BODY_X}px`,
+    barY: `${BAR_Y}px`,
+    barW: `${BAR_W}px`,
+    barH: `${BAR_H}px`,
+    trackX: `${TRACK_X}px`,
+    trackY: `${TRACK_Y}px`,
+    trackW: `${TRACK_W}px`,
+    trackH: `${TRACK_H}px`,
+    rowsY: `${ROWS_Y}px`,
+    rowsW: `${ROWS_W}px`,
+    rowsH: `${ROWS_H}px`,
+    rowH: `${ROW_H}px`,
+    indent: `${INDENT}px`,
+    tile: `${TILE}px`,
+    tileIn: `${TILE_INNER}px`,
+    slide: `${SLIDE}px`,
+  }}
+>
+  /* --- progress bar ------------------------------------------------------ */
+
+  .cloud__bar {
+    position: absolute;
+    left: var(--bodyX);
+    top: var(--barY);
+    width: var(--barW);
+    height: var(--barH);
+    border: 1px solid #f2f2f2;
+    border-radius: 37px;
+  }
+
+  .cloud__track,
+  .cloud__fill {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    height: var(--trackH);
+  }
+
+  .cloud__track {
+    width: var(--trackW);
+    background: #f2f2f2;
+    border-radius: 36px;
+  }
+
+  /* Rounded on the leading edge only, as Figma draws it — at full width the
+     handle sits over the square end. `--p` is the single value the timeline
+     drives, so fill and handle can never drift apart. */
+  .cloud__fill {
+    width: var(--p);
+    background: var(--c-accent);
+    border-radius: 36px 0 0 36px;
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      inset 1px -1px 1px rgba(255, 255, 255, 0.15);
+  }
+
+  .cloud__handle {
+    position: absolute;
+    left: calc(3px + var(--p) - 2px);
+    top: -8px;
+    width: 4px;
+    height: 34px;
+    background: var(--c-accent);
+    border-radius: 24px;
+  }
+
+  .cloud__dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    translate: -50% -50%;
+    background: #fff;
+    border: 1px solid var(--c-accent);
+    border-radius: 50%;
+  }
+
+  /* --- rows -------------------------------------------------------------- */
+
+  /* 360 wide inside a 355 column, so it bleeds 2.5px either side. */
+  .cloud__rows {
+    position: absolute;
+    left: calc(var(--bodyX) - 2.5px);
+    top: var(--rowsY);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: var(--rowsW);
+    height: var(--rowsH);
+  }
+
+  /* Rows start out, and the resting frame marks the ones Figma's first state
+     already shows. The timeline writes inline styles from boot, which win. */
+  .cloud__row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: var(--rowH);
+    opacity: 0;
+    transform: translateX(calc(var(--slide) * -1));
+    will-change: transform, opacity;
+  }
+
+  .cloud__row[data-rest] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cloud__row--indent {
+    padding-left: var(--indent);
+  }
+
+  .cloud__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--tile);
+    height: var(--tile);
+    background: #fff;
+    border-radius: 10.714px;
+    filter:
+      drop-shadow(0 2px 2px rgba(55, 78, 141, 0.1))
+      drop-shadow(0 7px 3.5px rgba(55, 78, 141, 0.09))
+      drop-shadow(0 16px 4.5px rgba(55, 78, 141, 0.05))
+      drop-shadow(0 28px 5.5px rgba(55, 78, 141, 0.01));
+  }
+
+  .cloud__tile-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tileIn);
+    height: var(--tileIn);
+    border-radius: 9.524px;
+    color: #fff;
+    background:
+      radial-gradient(ellipse 45px 45px at 15px 2px, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)),
+      var(--c-accent);
+    box-shadow: inset 0 0 18.4px rgba(255, 255, 255, 0.25);
+  }
+
+  .cloud__label {
+    flex: 1 0 0;
+    min-width: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.25;
+    letter-spacing: -0.32px;
+    color: var(--c-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

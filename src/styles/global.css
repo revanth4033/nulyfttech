@@ -1,0 +1,189 @@
+@import "./fonts.css";
+@import "./tokens.css";
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* ScrollSmoother owns scrolling — never use CSS smooth */
+}
+
+body {
+  min-height: 100svh;
+  background: var(--c-bg-light);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: var(--lh-heading);
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* ==========================================================================
+   Layout primitives
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--frame-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@media (max-width: 900px) {
+  :root { --gutter: 32px; }
+}
+
+@media (max-width: 560px) {
+  :root { --gutter: 20px; }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 8px 16px;
+  background: var(--c-heading);
+  color: var(--c-surface);
+  border-radius: 6px;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Animation base state
+
+   Elements marked [data-animate] start hidden so there is no flash of
+   un-animated content before GSAP takes over. The `.gsap-ready` class is
+   added to <html> once the animation layer has booted; if JS fails or is
+   disabled, the fallback below reveals everything.
+   ========================================================================== */
+
+html.gsap-ready [data-animate] {
+  visibility: hidden;
+}
+
+html.no-js [data-animate],
+html.reduced-motion [data-animate] {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   ScrollSmoother wrapper
+   ========================================================================== */
+
+#smooth-wrapper {
+  position: relative;
+}
+
+/* Split-text helpers used across sections */
+.split-line {
+  display: block;
+  overflow: hidden;
+}

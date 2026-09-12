@@ -1,0 +1,232 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import { perksHeader, perks, perkPhotos } from "../../data/careers";
+
+/**
+ * Careers culture bento — Figma 503:3896.
+ *
+ * A 1240 row split 795 / 429 with a 16px gutter. The left side stacks a
+ * 389+390 pair over a full-width card; the right is one tall photo spanning
+ * both. Laid out as a grid so the tall photo's height is derived from the
+ * left column rather than hardcoded to Figma's 470.
+ */
+const [growth, empowering] = perks;
+---
+
+<section class="perks" id="culture" data-section>
+  <div class="container perks__inner">
+    <SectionHeader title={perksHeader.title} body={perksHeader.body} size="md" />
+
+    <div class="bento">
+      <article class="pcard bento__growth" data-animate>
+        <div class="pcard__head">
+          <span class="pcard__chip"><Icon name={growth.icon} size={20} /></span>
+          <h3 class="pcard__title">{growth.title}</h3>
+        </div>
+        <p class="pcard__body">{growth.body}</p>
+      </article>
+
+      <figure class="shot bento__wide" data-animate>
+        <Image
+          src={perkPhotos.wide.src}
+          alt={perkPhotos.wide.alt}
+          width={780}
+          widths={[390, 780]}
+          sizes="390px"
+        />
+      </figure>
+
+      <article class="pcard bento__empowering" data-animate>
+        <div class="pcard__head">
+          <span class="pcard__chip"><Icon name={empowering.icon} size={20} /></span>
+          <h3 class="pcard__title">{empowering.title}</h3>
+        </div>
+        <p class="pcard__body pcard__body--wide">{empowering.body}</p>
+
+        <Icon
+          name="illustrations/careers-curves"
+          width={190}
+          height={181}
+          class="pcard__curves"
+        />
+      </article>
+
+      <figure class="shot bento__tall" data-animate>
+        <Image
+          src={perkPhotos.tall.src}
+          alt={perkPhotos.tall.alt}
+          width={858}
+          widths={[429, 858]}
+          sizes="429px"
+        />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .perks {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .perks__inner {
+    display: flex;
+    flex-direction: column;
+    /* Figma: 100 top + 106 header + 64 + 470 bento + 100 bottom = 840 */
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  /* 795 + 16 + 429 = 1240. The tall photo spans both rows. */
+  .bento {
+    display: grid;
+    grid-template-columns: 389fr 390fr 429fr;
+    grid-template-rows: 248px 198px;
+    gap: 24px 16px;
+  }
+
+  .bento__growth {
+    grid-area: 1 / 1;
+  }
+  .bento__wide {
+    grid-area: 1 / 2;
+  }
+  .bento__empowering {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+  .bento__tall {
+    grid-area: 1 / 3 / 3 / 4;
+  }
+
+  /* --- cards --------------------------------------------------------------- */
+
+  .pcard {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 23px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-perk-border);
+    border-radius: 12px;
+  }
+
+  .bento__empowering {
+    padding: 24px;
+  }
+
+  .pcard__head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .pcard__chip {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    background: var(--c-step-bg);
+    border-radius: 10px;
+  }
+
+  .pcard__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--fs-lg);
+    line-height: 36px;
+    letter-spacing: -0.24px;
+    color: var(--c-ink);
+  }
+
+  .pcard__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-perk-body);
+  }
+
+  /* The curves art occupies the right third of the wide card, so the copy
+     stops short of it rather than running underneath. */
+  .pcard__body--wide {
+    max-width: 658px;
+  }
+
+  .pcard :global(.pcard__curves) {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    pointer-events: none;
+  }
+
+  /* --- photos -------------------------------------------------------------- */
+
+  .shot {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Figma lays a lavender veil over both photos so they sit back from the
+     cards rather than competing with them. */
+  .shot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--c-photo-tint);
+    pointer-events: none;
+  }
+
+  /* --- responsive ---------------------------------------------------------- */
+
+  @media (max-width: 1080px) {
+    .bento {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+    }
+
+    .bento__growth {
+      grid-area: auto;
+    }
+    .bento__wide {
+      grid-area: auto;
+    }
+    .bento__empowering {
+      grid-area: auto / span 2;
+    }
+    .bento__tall {
+      grid-area: auto / span 2;
+      min-height: 320px;
+    }
+
+    .pcard :global(.pcard__curves) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .bento {
+      grid-template-columns: 1fr;
+    }
+
+    .bento__empowering,
+    .bento__tall {
+      grid-area: auto;
+    }
+
+    .bento__wide {
+      min-height: 240px;
+    }
+  }
+</style>

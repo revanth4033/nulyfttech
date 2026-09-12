@@ -1,0 +1,75 @@
+---
+import Icon from "../ui/Icon.astro";
+
+/**
+ * Shared shell for the four Technology cards: white panel, icon chip, title,
+ * and a clipped body the card's own animation fills.
+ *
+ * It lives here rather than in Technology.astro because Astro scopes styles
+ * per component — a card rendered by its own file never picks up the
+ * section's `.tcard` rules, and silently loses its background.
+ */
+interface Props {
+  /** Path under src/assets, without extension. */
+  icon: string;
+  title: string;
+  height: number;
+  /** Figma insets the AI & Data header 2px lower than the rest. */
+  headTop?: number;
+  class?: string;
+}
+
+const { icon, title, height, headTop = 24, class: className } = Astro.props;
+---
+
+<article class:list={["tcard", className]} data-animate style={`height:${height}px`}>
+  <header class="tcard__head" style={`top:${headTop}px`}>
+    <span class="tcard__chip"><Icon name={icon} size={24} /></span>
+    <h3 class="tcard__title">{title}</h3>
+  </header>
+  <slot />
+</article>
+
+<style>
+  .tcard {
+    position: relative;
+    width: 100%;
+    background: var(--c-surface);
+    border-radius: 10px;
+    /* Every card's animation runs wider or taller than the card on purpose
+       and relies on this to crop it. */
+    overflow: hidden;
+    box-shadow: var(--sh-tech-card);
+  }
+
+  .tcard__head {
+    position: absolute;
+    z-index: 2;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tcard__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--c-surface);
+    border-radius: 10px;
+    filter: var(--sh-tech-chip);
+  }
+
+  .tcard__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    letter-spacing: -0.4px;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+</style>

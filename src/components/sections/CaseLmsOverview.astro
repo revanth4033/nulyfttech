@@ -1,0 +1,316 @@
+---
+import { Image } from "astro:assets";
+import { overview, challenge } from "../../data/caseLms";
+
+/**
+ * Overview and Challenge — Figma 505:4357 and 505:4399.
+ *
+ * The two read as one pair: both are a copy column beside media, and both run
+ * their intro under the title rather than in the right-hand column the later
+ * sections use. Kept in one file for that reason.
+ *
+ * Overview's media is a single flattened export of the tilted screen stack;
+ * rebuilding two rotated, overlapping screenshots in DOM would buy nothing.
+ * The Challenge's three photos are a plain grid, so they stay separate images.
+ */
+---
+
+<section class="cover" data-section>
+  <div class="container cover__inner">
+    <div class="cover__copy">
+      <p class="cover__eyebrow" data-animate>{overview.eyebrow}</p>
+      <h2 class="cover__title" data-animate>{overview.title}</h2>
+      <p class="cover__body" data-animate>{overview.body}</p>
+
+      <ul class="cover__modules" data-animate>
+        {
+          overview.modules.map((m) => (
+            <li>
+              <span class="cover__diamond" aria-hidden="true" />
+              {m}
+            </li>
+          ))
+        }
+      </ul>
+
+      <dl class="cover__facts" data-animate>
+        {
+          overview.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="cover__media" data-animate>
+      <span class="cover__glow" aria-hidden="true"></span>
+      <Image
+        src={overview.media.src}
+        alt={overview.media.alt}
+        width={1268}
+        widths={[634, 1268]}
+        sizes="634px"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="chal" data-section>
+  <div class="container chal__inner">
+    <div class="chal__copy">
+      <p class="cover__eyebrow" data-animate>{challenge.eyebrow}</p>
+      <h2 class="chal__title" data-animate>{challenge.title}</h2>
+      <p class="cover__body" data-animate>{challenge.body}</p>
+
+      <ul class="chal__points">
+        {
+          challenge.points.map((p) => (
+            <li data-animate>
+              <span class="chal__x" aria-hidden="true">
+                &#10005;
+              </span>
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="chal__photos" data-animate>
+      {
+        challenge.photos.map((p, i) => (
+          <figure class:list={["chal__shot", { "chal__shot--wide": i === 2 }]}>
+            <Image
+              src={p.src}
+              alt={p.alt}
+              width={i === 2 ? 1302 : 635}
+              widths={i === 2 ? [651, 1302] : [318, 635]}
+              sizes={i === 2 ? "651px" : "318px"}
+            />
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .cover,
+  .chal {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .cover__inner,
+  .chal__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    padding-block: 100px;
+  }
+
+  .cover__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 16px;
+    width: 606px;
+    max-width: 100%;
+  }
+
+  .cover__eyebrow {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .cover__title,
+  .chal__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: 1.3;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-heading);
+    text-wrap: wrap;
+  }
+
+  .cover__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* Figma sets these two-up, not flowed — the pairing is the point. */
+  .cover__modules {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 20px 56px;
+    margin-top: 8px;
+  }
+
+  .cover__modules li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* A rotated square, which is how Figma draws the bullet. */
+  .cover__diamond {
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+    background: var(--c-accent);
+  }
+
+  /* All four sit on one row in the frame; they only stack once the column
+     can no longer hold them. */
+  .cover__facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 16px;
+    margin-top: 16px;
+  }
+
+  .cover__facts dt {
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .cover__facts dd {
+    margin-top: 8px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    letter-spacing: var(--tr-eyebrow-sm);
+    color: var(--c-accent);
+  }
+
+  .cover__media {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cover__media :global(img) {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The soft lavender disc Figma floats behind the stack. */
+  .cover__glow {
+    position: absolute;
+    top: -25px;
+    right: 0;
+    width: 400px;
+    height: 400px;
+    max-width: 100%;
+    border-radius: 50%;
+    background: var(--c-accent-glow);
+    filter: blur(90px);
+    opacity: 0.5;
+  }
+
+  /* --- challenge ----------------------------------------------------------- */
+
+  .chal__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 16px;
+    width: 541px;
+    max-width: 100%;
+  }
+
+  .chal__points {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+
+  .chal__points li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--c-card-border);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-danger);
+  }
+
+  .chal__x {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .chal__photos {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .chal__shot {
+    overflow: hidden;
+    border-radius: var(--r-card);
+  }
+
+  .chal__shot--wide {
+    grid-column: 1 / -1;
+  }
+
+  .chal__shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 560px) {
+    .cover__modules {
+      grid-template-columns: max-content;
+    }
+
+    .cover__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .cover__inner,
+    .chal__inner {
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .cover__copy,
+    .chal__copy {
+      width: auto;
+      max-width: 640px;
+    }
+
+    .cover__media,
+    .chal__photos {
+      width: 100%;
+    }
+  }
+</style>

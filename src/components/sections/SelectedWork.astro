@@ -1,0 +1,60 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import GridLines from "../ui/GridLines.astro";
+import CaseStudyRow from "../work/CaseStudyRow.astro";
+import { caseStudies } from "../../data/work";
+---
+
+<section class="work" id="work" data-section="selected-work">
+  <GridLines />
+
+  <div class="work__inner">
+    <SectionHeader
+      eyebrow="Featured case studies"
+      title="Products we've taken from idea to production"
+      body="A small set of engagements, chosen because the outcomes are real and provable."
+      class="work__head"
+    />
+
+    <div class="work__cases">
+      {caseStudies.map((study) => <CaseStudyRow study={study} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .work {
+    position: relative;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .work__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    /* Header block -> cases block is 64px in the Figma frame. */
+    gap: 64px;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  .work__cases {
+    display: flex;
+    flex-direction: column;
+    gap: 200px;
+  }
+
+  @media (max-width: 980px) {
+    .work__inner {
+      gap: 48px;
+      padding-block: 72px;
+    }
+
+    .work__cases {
+      gap: 96px;
+    }
+  }
+</style>

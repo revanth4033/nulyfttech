@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Astro dev server
+.astro-dev/
+
+# Vercel
+.vercel/
+
+# Design reference material — not source. Keeps a 34MB screen recording out of
+# git history, where it would live forever even if deleted later.
+references/

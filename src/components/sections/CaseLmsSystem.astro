@@ -1,0 +1,247 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import CaseHeader from "../case/CaseHeader.astro";
+import { typography, palette } from "../../data/caseLms";
+
+/**
+ * Typography and Colorography — Figma 505:4571 and 505:4700.
+ *
+ * Both are a shared header over one annotated figure, so they live together.
+ *
+ * **The typography body is a placed layout, not a flex row.** Figma positions
+ * every piece inside a 1240x543 box — specimen at (0, 157.25), table card at
+ * (632, 111), and three leader callouts at their own coordinates. Laying it
+ * out with flex put the specimen and table on one centre line and threw every
+ * gap out, so the box is reproduced literally.
+ *
+ * The table export carries 40px of shadow bleed on every side, so it is placed
+ * at the card's coordinate minus that bleed and sized to the export, which
+ * lands the *card* on Figma's (632, 111) at 588x320.5.
+ *
+ * Neither figure is rebuilt in markup. The type specimen would need five
+ * weights of Open Sans — a face this site does not otherwise load — for one
+ * decorative block, and the palette figure is a drawing with four leader lines
+ * whose geometry only works at its drawn size. Both ship as SVG exports, with
+ * the meaning carried in `alt`.
+ */
+
+/** The frame draws the leaders in #A1A1AA at 2.15px, dashed 4.29. */
+const DASH = { stroke: "#A1A1AA", width: 2.147, dash: "4.29 4.29" };
+---
+
+<section class="typo" data-section>
+  <div class="container typo__inner">
+    <CaseHeader eyebrow={typography.eyebrow} title={typography.title} body={typography.body} />
+
+    <div class="typo__body">
+      <Icon
+        name={typography.specimen.name}
+        width={503}
+        class="typo__specimen"
+        role="img"
+        aria-label={typography.specimen.alt}
+        data-animate
+      />
+
+      <figure class="typo__table" data-animate>
+        <Image
+          src={typography.media.src}
+          alt={typography.media.alt}
+          width={1336}
+          widths={[668, 1336]}
+          sizes="668px"
+        />
+      </figure>
+
+      <p class="note note--body" aria-hidden="true">
+        <svg class="note__line" width="2.15" height="62" viewBox="0 0 2.15 62" fill="none">
+          <path
+            d="M1.07 62V0"
+            stroke={DASH.stroke}
+            stroke-width={DASH.width}
+            stroke-dasharray={DASH.dash}></path>
+        </svg>
+        <span><strong>Body Text</strong> - Regular</span>
+      </p>
+    </div>
+
+    <p class="note note--heading" aria-hidden="true">
+      <span><strong>Heading</strong> - Semi bold</span>
+      <svg class="note__elbow" width="59.07" height="73.07" viewBox="0 0 59.07 73.07" fill="none">
+        <path
+          d="M0 1.07H32.23C46.46 1.07 58 12.61 58 26.84V73.07"
+          stroke={DASH.stroke}
+          stroke-width={DASH.width}
+          stroke-dasharray={DASH.dash}></path>
+      </svg>
+    </p>
+
+    <p class="note note--button" aria-hidden="true">
+      <span><strong>Button label</strong> - Regular</span>
+      <svg class="note__line" width="2.15" height="63" viewBox="0 0 2.15 63" fill="none">
+        <path
+          d="M1.07 63V0"
+          stroke={DASH.stroke}
+          stroke-width={DASH.width}
+          stroke-dasharray={DASH.dash}></path>
+      </svg>
+    </p>
+  </div>
+</section>
+
+<section class="pal" data-section>
+  <div class="container pal__inner">
+    <CaseHeader eyebrow={palette.eyebrow} title={palette.title} body={palette.body} />
+
+    <Icon
+      name={palette.art.name}
+      width={998}
+      class="pal__art"
+      role="img"
+      aria-label={palette.art.alt}
+      data-animate
+    />
+  </div>
+</section>
+
+<style>
+  .typo,
+  .pal {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .typo__inner,
+  .pal__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  /* Figma 505:4581 — a placed box, 1240 x 543. */
+  .typo__body {
+    position: relative;
+    width: 100%;
+    height: 543px;
+  }
+
+  .typo :global(.typo__specimen) {
+    position: absolute;
+    left: 0;
+    top: 157.25px;
+    width: 503px;
+  }
+
+  .typo :global(.typo__specimen svg),
+  .pal :global(.pal__art svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Card at (632, 111) 588x320.5; the export adds 40px of shadow all round. */
+  .typo__table {
+    position: absolute;
+    left: 592px;
+    top: 71px;
+    width: 668px;
+  }
+
+  .typo__table :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- leader callouts ------------------------------------------------------ */
+
+  .note {
+    position: absolute;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  .note strong {
+    font-weight: 600;
+  }
+
+  .note__elbow,
+  .note__line {
+    display: block;
+    overflow: visible;
+  }
+
+  /* `.container` carries the gutter as padding and an absolute child resolves
+     against the padding box, so these are Figma's offsets inside the 1240
+     column plus the gutter, and its y plus the 100px top padding. */
+  .note--heading {
+    left: calc(var(--gutter) + 480px);
+    top: 284px;
+    width: 226px;
+  }
+
+  .note--heading .note__elbow {
+    position: absolute;
+    left: 164px;
+    top: 16px;
+  }
+
+  .note--button {
+    left: calc(var(--gutter) + 1074px);
+    top: 248px;
+    width: 166px;
+  }
+
+  .note--button .note__line {
+    position: absolute;
+    left: 78px;
+    top: 63px;
+  }
+
+  /* This one lives inside the figure box, so its coordinates are the frame's
+     own. Leader above, label below — Figma gets that by rotating the group. */
+  .note--body {
+    left: 717px;
+    top: 420px;
+    display: flex;
+    width: 230px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .pal :global(.pal__art) {
+    align-self: center;
+    max-width: 100%;
+  }
+
+  /* --- responsive ------------------------------------------------------------ */
+
+  @media (max-width: 1240px) {
+    /* The figure is a placed layout at one size; below that, stack it and drop
+       the leaders rather than let them point at nothing. */
+    .typo__body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 48px;
+      height: auto;
+    }
+
+    .typo :global(.typo__specimen),
+    .typo__table {
+      position: static;
+      width: 100%;
+      max-width: 588px;
+    }
+
+    .note {
+      display: none;
+    }
+  }
+</style>

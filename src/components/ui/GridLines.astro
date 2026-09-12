@@ -1,0 +1,46 @@
+---
+/**
+ * Evenly-pitched vertical rules used as a section background.
+ *
+ * Distinct from the hero's pattern, which adds horizontal rules and hatched
+ * squares on an irregular pitch. Here it is six lines at a 240px pitch,
+ * full-bleed vertically. Anchored to a centred 1440px box so the spacing
+ * matches the Figma frame rather than stretching with the viewport.
+ */
+interface Props {
+  /** Figma frame x positions. */
+  columns?: number[];
+  class?: string;
+}
+
+const { columns = [120, 360, 600, 840, 1080, 1320], class: className } = Astro.props;
+---
+
+<div class:list={["lines", className]} aria-hidden="true">
+  <svg preserveAspectRatio="none" viewBox="0 0 1440 100" fill="none">
+    {
+      columns.map((x) => (
+        <line x1={x + 0.5} y1="0" x2={x + 0.5} y2="100" stroke="var(--c-rule)" vector-effect="non-scaling-stroke" />
+      ))
+    }
+  </svg>
+</div>
+
+<style>
+  .lines {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .lines svg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: var(--frame-w);
+    height: 100%;
+  }
+</style>

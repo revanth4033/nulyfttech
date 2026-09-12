@@ -1,0 +1,120 @@
+---
+import Icon from "../ui/Icon.astro";
+
+/**
+ * The dark PDF-viewer toolbar above a deck page — Figma 493:3116.
+ *
+ * The counterpart to `BrowserChrome` for deck screenshots. Purely decorative
+ * chrome, so it is inert to assistive tech.
+ *
+ * Figma sets this in Open Sans at 9px. It renders in the site's Inter instead
+ * rather than pulling a third webfont in for ~40 glyphs of mock UI.
+ */
+interface Props {
+  /** Filename shown at the left — the deck's name, not the project title. */
+  file: string;
+  pages?: number;
+}
+
+const { file, pages = 2 } = Astro.props;
+---
+
+<div class="deck" aria-hidden="true">
+  <div class="deck__title">
+    <Icon name="icons/deck/menu" size={16} />
+    <span class="deck__file">{file}</span>
+  </div>
+
+  <div class="deck__scope">
+    <div class="deck__pages">
+      <span class="deck__chip">1</span>
+      <span>/ {pages}</span>
+    </div>
+
+    <span class="deck__divider"></span>
+
+    <div class="deck__zoom">
+      <Icon name="icons/deck/zoom-out" size={12} />
+      <span class="deck__chip">100%</span>
+      <Icon name="icons/deck/zoom-in" size={12} />
+    </div>
+
+    <span class="deck__divider"></span>
+
+    <Icon name="icons/deck/fit-page" size={12} />
+    <Icon name="icons/deck/rotate" size={12} />
+  </div>
+
+  <div class="deck__actions">
+    <Icon name="icons/deck/download" size={12} />
+    <Icon name="icons/deck/print" size={12} />
+    <Icon name="icons/deck/more" size={12} />
+  </div>
+</div>
+
+<style>
+  .deck {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 43px;
+    padding: 12px 24px;
+    background: var(--c-deck-bar);
+    filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.24));
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 9px;
+    line-height: normal;
+    color: #fff;
+  }
+
+  .deck__title {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* Class, not `.deck__title span` — that also matches the icon's own
+     wrapper span, and `flex: 1` on both splits the row down the middle. */
+  .deck__file {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .deck__scope,
+  .deck__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .deck__pages {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .deck__zoom {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .deck__chip {
+    padding-inline: 7px;
+    background: var(--c-deck-chip);
+    border-radius: 1px;
+  }
+
+  .deck__divider {
+    width: 1px;
+    height: 8px;
+    background: var(--c-deck-divider);
+  }
+</style>

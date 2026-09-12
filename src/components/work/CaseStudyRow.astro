@@ -1,0 +1,282 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import type { CaseStudy } from "../../data/work";
+
+/**
+ * One case study: copy + outcomes beside a media panel.
+ *
+ * Figma geometry: copy 601 wide, media 577.58 (browser) or 575.16 (devices),
+ * 64px apart. Copy is vertically centred against the row; the browser card
+ * sits 12px lower than centre, which is deliberate in the design.
+ */
+interface Props {
+  study: CaseStudy;
+}
+
+const { study } = Astro.props;
+const { media } = study;
+---
+
+<article class:list={["case", { "case--reverse": study.reverse }]} data-case-row>
+  <div class="case__copy" data-animate>
+    <div class="case__intro">
+      <p class="case__category">{study.category}</p>
+      <h3 class="case__title">{study.title}</h3>
+      <p class="case__body">{study.body}</p>
+    </div>
+
+    <ul class="case__outcomes">
+      {
+        study.outcomes.map((item) => (
+          <li>
+            <Icon name="icons/work/circle-check" size={24} />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <PillButton href={study.href} variant="outline" arrow={20} class="case__cta">
+      Full Case Study
+    </PillButton>
+  </div>
+
+  <div class="case__media" data-animate>
+    {
+      media.kind === "browser" && (
+        <div class="case__browser" data-tilt>
+          <BrowserChrome size="lg" />
+          <Image src={media.src} alt={media.alt} widths={[578, 1156]} sizes="578px" class="case__shot" />
+        </div>
+      )
+    }
+
+    {
+      media.kind === "device" && (
+        <div class="case__device" role="img" aria-label={media.alt} data-phone-stage>
+          <span class="case__glow" aria-hidden="true" data-phone-glow />
+          {media.pieces.map((piece) => (
+            <Image
+              src={piece.src}
+              alt=""
+              widths={[Math.round(piece.width), Math.round(piece.width * 2)]}
+              sizes={`${Math.round(piece.width)}px`}
+              class="case__phone"
+              data-phone
+              style={`left:${piece.left}px;top:${piece.top}px;width:${piece.width}px`}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .case {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+  }
+
+  .case--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .case__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 601px;
+    flex: none;
+  }
+
+  .case__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .case__category {
+    font-weight: 600;
+    font-size: var(--fs-xxs);
+    line-height: normal;
+    letter-spacing: 0.6px;
+    color: var(--c-accent);
+  }
+
+  .case__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: normal;
+    color: var(--c-accent);
+  }
+
+  .case__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .case__outcomes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .case__outcomes li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-card);
+    letter-spacing: var(--tr-label);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .case :global(.case__cta) {
+    align-self: flex-start;
+  }
+
+  /* --- media -------------------------------------------------------------- */
+
+  .case__media {
+    flex: none;
+    /* Scaled from the What We Do panels (1200px at 450px wide) so a card
+       half again as large tilts with the same apparent depth. */
+    perspective: 1500px;
+  }
+
+  /* Safari renders jagged corners on 3D-transformed containers that clip
+     with a border-radius; promoting the layer avoids it. */
+  .case__media :global([data-tilt]) {
+    backface-visibility: hidden;
+  }
+
+  .case__browser {
+    display: flex;
+    flex-direction: column;
+    width: 577.58px;
+    height: 406.75px;
+    overflow: hidden;
+    background: var(--c-surface);
+    border: 1px solid var(--c-card-border);
+    border-radius: 12px;
+    box-shadow: var(--sh-browser);
+    /* The card sits 12px below the row centre in the Figma frame. Done with
+       `top` rather than a transform so GSAP owns `transform` outright for the
+       hover tilt — otherwise the two overwrite each other. */
+    position: relative;
+    top: 12px;
+  }
+
+  .case__browser :global(.case__shot) {
+    display: block;
+    width: 100%;
+    flex: 1;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .case__device {
+    position: relative;
+    width: 575.16px;
+    height: 317.48px;
+  }
+
+  .case__glow {
+    position: absolute;
+    top: 50%;
+    left: 88px;
+    width: 400px;
+    height: 325px;
+    translate: 0 -50%;
+    border-radius: var(--r-pill);
+    background: var(--c-accent-glow);
+    filter: blur(120px);
+    opacity: 0.75;
+  }
+
+  /* Each phone is placed in the Figma group's coordinate space so the glow
+     stays visible in the gaps between them. Shadows overflow a few px at the
+     bottom, which is why nothing here clips. */
+  .case__device :global(.case__phone) {
+    position: absolute;
+    display: block;
+    height: auto;
+  }
+
+  /* --- responsive --------------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .case {
+      gap: 40px;
+    }
+
+    .case__copy {
+      width: auto;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .case__browser {
+      width: 480px;
+      height: auto;
+    }
+
+    /* Scale the whole phone composition rather than reflowing it. */
+    .case__device {
+      width: 480px;
+      height: 264.8px;
+      scale: 0.8345;
+      transform-origin: top left;
+      margin-right: -95px;
+    }
+
+    .case__browser {
+      aspect-ratio: 577.58 / 406.75;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .case,
+    .case--reverse {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 32px;
+    }
+
+    .case__browser,
+    .case__device {
+      width: 100%;
+      max-width: 577.58px;
+    }
+
+    .case__browser {
+      top: 0;
+    }
+
+    .case__outcomes {
+      gap: 12px 24px;
+    }
+
+    .case__outcomes li {
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .case__title {
+      font-size: 26px;
+    }
+  }
+</style>

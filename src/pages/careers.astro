@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import PageHero from "../components/PageHero.astro";
+import CareersPerks from "../components/sections/CareersPerks.astro";
+import CareersJobs from "../components/sections/CareersJobs.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+---
+
+<BaseLayout
+  title="Careers — nuLyft"
+  description="Shape your future with nuLyft. Join a team that values product thinking, real-world impact, and continuous growth."
+>
+  <Nav slot="overlay" />
+
+  <PageHero
+    eyebrow="Join Our Journey"
+    title="Shape Your Future with"
+    emphasis="nuLyft"
+    emphasisTone="ink"
+    body="Join a team that values product thinking, real-world impact, and continuous growth."
+    height={605}
+  />
+  <CareersPerks />
+  <CareersJobs />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+</script>

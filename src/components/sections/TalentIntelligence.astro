@@ -1,0 +1,441 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import Scorecard from "../talent/Scorecard.astro";
+import { intro, process, collage } from "../../data/talent";
+
+/**
+ * Studio → Talent Intelligence — Figma 501:3477.
+ *
+ * Two split sections. The first pairs the pitch with a photo and a scorecard
+ * that straddles them; the second pairs a four-step rail with a photo collage.
+ *
+ * The rail is a two-column grid rather than the frame's absolute offsets.
+ * Figma spaces the numbered discs 135.25px apart while the copy steps sit
+ * 137px apart, so by step four its own artwork is 5px out of line — laying the
+ * disc and its copy in the same grid row keeps them locked together, and the
+ * connector is then just a line from one disc to the next.
+ */
+---
+
+<section class="talent">
+  <!-- Interviews that produce decisions -->
+  <div class="talent__intro container" data-section>
+    <div class="tintro__copy">
+      <div class="tintro__text">
+        <h2 class="talent__title" data-animate>{intro.title}</h2>
+        <p class="talent__body" data-animate>{intro.body}</p>
+
+        <ul class="tintro__points" data-animate>
+          {
+            intro.points.map((p) => (
+              <li>
+                <Icon name="icons/work/circle-check" size={24} />
+                <span>{p}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <PillButton href={intro.cta.href} arrow={20} class="tintro__cta" data-animate>
+        {intro.cta.label}
+      </PillButton>
+    </div>
+
+    <div class="tintro__media">
+      <div class="tintro__photo" data-animate>
+        <Image
+          src={intro.photo.src}
+          alt={intro.photo.alt}
+          width={1200}
+          widths={[600, 1200]}
+          sizes="600px"
+        />
+      </div>
+
+      <div class="tintro__card" data-animate>
+        <Scorecard />
+      </div>
+    </div>
+  </div>
+
+  <!-- From open role to hire signal -->
+  <div class="talent__process container" data-section>
+    <div class="tproc__copy">
+      <div class="tproc__text">
+        <h2 class="talent__title" data-animate>{process.title}</h2>
+        <p class="talent__body" data-animate>{process.body}</p>
+      </div>
+
+      <ol class="steps">
+        {
+          process.steps.map((s, i) => (
+            <li class="steps__item" data-animate>
+              <span class="steps__num">{String(i + 1).padStart(2, "0")}</span>
+              <div class="steps__text">
+                <h3 class="steps__label">{s.label}</h3>
+                <p class="steps__body">{s.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="collage" data-animate data-collage>
+      {
+        [collage.left, collage.right].map((column, col) => (
+          <div class="collage__col">
+            {/* The set is rendered twice so the strip can translate exactly one
+                lap and reset onto an identical frame. The copy is decorative
+                and hidden from assistive tech. */}
+            <div class="collage__strip" data-collage-strip data-dir={col === 0 ? -1 : 1}>
+              {[0, 1].map((pass) =>
+                column.map((shot) => (
+                  <div
+                    class="collage__cell"
+                    style={`height:${shot.h}px`}
+                    aria-hidden={pass === 1 ? "true" : undefined}
+                  >
+                    <Image
+                      src={shot.src}
+                      alt={pass === 1 ? "" : shot.alt}
+                      width={584}
+                      widths={[292, 584]}
+                      sizes="292px"
+                    />
+                  </div>
+                )),
+              )}
+            </div>
+          </div>
+        ))
+      }
+
+      <span class="collage__veil collage__veil--top" aria-hidden="true"></span>
+      <span class="collage__veil collage__veil--bottom" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .talent {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .talent__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-heading);
+    text-wrap: wrap;
+  }
+
+  .talent__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- intro -------------------------------------------------------------- */
+
+  .talent__intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 39px; /* 1240 - 601 - 600 */
+    padding-block: 100px;
+  }
+
+  .tintro__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    width: 601px;
+  }
+
+  .tintro__text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .tintro__points {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .tintro__points li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-card);
+    letter-spacing: var(--tr-label);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .talent :global(.tintro__cta) {
+    align-self: flex-start;
+  }
+
+  /* The card hangs off the photo's left edge and over the copy column, so the
+     media side is a positioning context rather than a plain block. */
+  .tintro__media {
+    position: relative;
+    flex: none;
+    width: 600px;
+    height: 500px;
+    /* The scorecard hangs ~40px below the photo. Figma reserves that by making
+       the row 550 tall against a 500 photo; the card is absolute, so the space
+       has to be claimed here or the next section rides up into it. */
+    margin-bottom: 50px;
+  }
+
+  .tintro__photo {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    box-shadow: -1px 0 48px rgba(22, 19, 32, 0.16);
+  }
+
+  .tintro__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tintro__card {
+    position: absolute;
+    top: 254px;
+    /* Figma x=473 inside the 1240 row; the media box starts at 640. */
+    left: -167px;
+    width: 335px;
+  }
+
+  /* --- process ------------------------------------------------------------ */
+
+  .talent__process {
+    display: flex;
+    align-items: center;
+    gap: 39px;
+    padding-block: 100px;
+  }
+
+  .tproc__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 40px;
+    width: 601px;
+  }
+
+  .tproc__text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  .steps__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  /* Connector: from under this disc to the top of the next one. The 64px row
+     gap plus the copy below the disc is what it has to span, so it is drawn
+     from the item box rather than given a fixed height. */
+  .steps__item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 38px;
+    left: 18.5px;
+    width: 1px;
+    height: calc(100% - 38px + 64px);
+    background: var(--c-accent);
+  }
+
+  .steps__num {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: var(--c-step-bg);
+    border: 1px solid var(--c-accent);
+    border-radius: var(--r-pill);
+    font-size: 18px;
+    line-height: normal;
+    color: var(--c-accent);
+  }
+
+  /* No optical nudge here: Figma sets the label's box flush with the disc's,
+     and a 2px pad costs 8px across the four steps, which drifts the collage
+     beside it off centre. */
+  .steps__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .steps__label {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-ink);
+  }
+
+  .steps__body {
+    max-width: 519px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* --- collage ------------------------------------------------------------ */
+
+  .collage {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 16px;
+    width: 600px;
+    height: 630px;
+  }
+
+  /* The window. The strip inside it is twice as tall and drifts. */
+  .collage__col {
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .collage__strip {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    will-change: transform;
+  }
+
+  /* With JS off the strip never moves, so the window shows the first two
+     cells — which is the pair Figma draws. */
+  .collage__cell {
+    overflow: hidden;
+    flex: none;
+    border-radius: var(--r-card);
+  }
+
+  .collage__cell :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The veils are what make the wrap invisible: a cell is already faded to the
+     page ground by the time it reaches either edge. */
+  .collage__veil {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    pointer-events: none;
+  }
+
+  .collage__veil--top {
+    top: 0;
+    background: linear-gradient(to top, rgba(245, 243, 255, 0) 0%, var(--c-bg-light) 65%);
+  }
+
+  .collage__veil--bottom {
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(245, 243, 255, 0) 0%, var(--c-bg-light) 65%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collage__strip {
+      will-change: auto;
+    }
+  }
+
+  /* --- responsive --------------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .talent__intro,
+    .talent__process {
+      gap: 32px;
+    }
+
+    .tintro__copy,
+    .tproc__copy {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
+
+    .tintro__media,
+    .collage {
+      width: 46%;
+      max-width: 600px;
+    }
+
+    .tintro__media {
+      height: auto;
+      aspect-ratio: 600 / 500;
+    }
+
+    .tintro__card {
+      left: -80px;
+      top: auto;
+      bottom: -40px;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .talent__intro,
+    .talent__process {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 56px;
+    }
+
+    .tintro__media,
+    .collage {
+      width: 100%;
+    }
+
+    .tintro__card {
+      left: 0;
+      bottom: -24px;
+      max-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import "../../scripts/talent-collage";
+</script>

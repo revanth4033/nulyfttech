@@ -1,0 +1,80 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  /**
+   * `hero`    translucent purple fill + nu avatar (light band, hero only)
+   * `section` solid tint pill, purple label (light bands)
+   * `dark`    same shell as `hero` but a light label — used on dark bands,
+   *           where the solid tint pill would glare against the background
+   * `studio`  the `hero` shell at the Studio page's larger, wider-tracked
+   *           label (14px / 2.4px against the home hero's 13px / 1.04px)
+   */
+  variant?: "hero" | "section" | "dark" | "studio";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { variant = "section", class: className, ...rest } = Astro.props;
+---
+
+<span class:list={["eyebrow", `eyebrow--${variant}`, className]} {...rest}>
+  {
+    (variant === "hero" || variant === "studio") && (
+      <Icon name="brand/badge-avatar" size={24} class="eyebrow__avatar" />
+    )
+  }
+  <span class="eyebrow__label"><slot /></span>
+</span>
+
+<style>
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: normal;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .eyebrow--hero {
+    background: var(--c-eyebrow-bg-hero);
+    border: 0.8px solid var(--c-eyebrow-border-hero);
+    border-radius: var(--r-eyebrow);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--tr-eyebrow);
+  }
+
+  .eyebrow--section {
+    background: var(--c-eyebrow-bg);
+    border: 0.8px solid var(--c-eyebrow-border);
+    border-radius: var(--r-eyebrow-sm);
+    font-size: var(--fs-xxs);
+    letter-spacing: var(--tr-eyebrow-sm);
+  }
+
+  .eyebrow--studio {
+    background: var(--c-eyebrow-bg-hero);
+    border: 0.8px solid var(--c-eyebrow-border-studio);
+    border-radius: var(--r-eyebrow);
+    font-size: var(--fs-sm);
+    letter-spacing: var(--tr-eyebrow-lg);
+  }
+
+  .eyebrow--dark {
+    background: var(--c-eyebrow-bg-hero);
+    border: 0.8px solid var(--c-eyebrow-border-hero);
+    border-radius: var(--r-eyebrow);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  .eyebrow :global(.eyebrow__avatar) {
+    flex: none;
+    border-radius: 50%;
+  }
+</style>

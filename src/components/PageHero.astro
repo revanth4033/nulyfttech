@@ -1,0 +1,129 @@
+---
+import EyebrowBadge from "./ui/EyebrowBadge.astro";
+import PageHeroPattern from "./PageHeroPattern.astro";
+
+/**
+ * The inner pages' hero — Studio (493:2802) and Careers (503:3820).
+ *
+ * The home hero stripped back to its copy column and centred: no stage, no
+ * cards, no scripted loop. The copy block is 618 wide, centred in the 1440
+ * frame, with its top at y=326.48 measured from the hero top — which includes
+ * the 83px nav, so the offset inside `.phero__frame` is 243.48.
+ *
+ * **Only the height varies, and only downwards.** The copy's position is
+ * pinned by the mask behind it, and the mask is pinned to the grid: the
+ * hatched square at (91, 163) fills exactly one 126px cell and the mask's top
+ * edge at 289 lands on that square's bottom. Raising the copy drags the mask
+ * up over the square, and raising the square puts it off the rules — so
+ * everything above the copy is locked and the empty band below is the only
+ * slack there is. Figma cuts Careers at 605, exactly the mask's lowest edge.
+ */
+interface Props {
+  eyebrow: string;
+  /** Roman part of the headline. */
+  title: string;
+  /** Italic tail, set on the same line. */
+  emphasis?: string;
+  /** Figma paints Studio's tail purple and Careers' in the body ink. */
+  emphasisTone?: "accent" | "ink";
+  body: string;
+  /** Hero height in px, nav included. */
+  height: number;
+}
+
+const { eyebrow, title, emphasis, emphasisTone = "accent", body, height } = Astro.props;
+---
+
+<section class="phero" data-section style={`--phero-h:${height}px`}>
+  <PageHeroPattern />
+
+  <div class="phero__frame">
+    <div class="phero__content">
+      <div class="phero__intro">
+        <EyebrowBadge variant="studio" class="phero__eyebrow" data-animate>{eyebrow}</EyebrowBadge>
+
+        <h1 class:list={["phero__title", `phero__title--${emphasisTone}`]} data-animate>
+          {title}{emphasis && <> <em>{emphasis}</em></>}
+        </h1>
+      </div>
+
+      <p class="phero__body" data-animate>{body}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero {
+    position: relative;
+    min-height: var(--phero-h);
+    padding-top: var(--nav-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .phero__frame {
+    position: relative;
+    width: 100%;
+    max-width: var(--frame-w);
+    height: calc(var(--phero-h) - var(--nav-h));
+    margin-inline: auto;
+  }
+
+  .phero__content {
+    position: absolute;
+    top: 243.48px; /* Figma y=326.48 minus the 83px nav */
+    left: 50%;
+    translate: -50% 0;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 618px;
+    max-width: calc(100% - var(--gutter) * 2);
+    text-align: center;
+  }
+
+  .phero__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .phero__title {
+    /* `global.css` balances heading lines, which moves Studio's break a word
+       early. `wrap` resets the style half of the shorthand back to `auto` —
+       `normal` is not a value it accepts, and is silently dropped. */
+    text-wrap: wrap;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: normal;
+    letter-spacing: var(--tr-hero-studio);
+    color: var(--c-ink);
+  }
+
+  .phero__title em {
+    font-style: italic;
+  }
+
+  .phero__title--accent em {
+    color: var(--c-accent);
+  }
+
+  /* Careers sets its tail in the same ink, a weight lighter. */
+  .phero__title--ink em {
+    font-weight: 500;
+  }
+
+  .phero__body {
+    width: 603px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+</style>

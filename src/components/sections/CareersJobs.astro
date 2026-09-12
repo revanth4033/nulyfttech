@@ -1,0 +1,291 @@
+---
+import Icon from "../ui/Icon.astro";
+import { jobs, jobsHeader, jobsEmpty } from "../../data/careers";
+
+/**
+ * Currently Open Positions — Figma 503:3939.
+ *
+ * Two columns of role cards, 551 wide with a 98px gutter and 80px rows. Each
+ * card is a heading row over a hairline, then the summary and its meta.
+ *
+ * The whole card is the link, not just the arrow: a 40px target beside a
+ * three-line card is a small thing to ask someone to hit, and the arrow stays
+ * as the affordance. Until there is an application URL the card renders as a
+ * plain article instead of a dead anchor.
+ *
+ * With nothing open, the listing and its heading give way to an empty state —
+ * the heading is "Currently Open Positions", which would be a lie over an
+ * empty grid. Fill `jobs` in `data/careers.ts` and the listing comes back.
+ */
+const hasRoles = jobs.length > 0;
+---
+
+<section class="jobs" id="open-roles" data-section>
+  <div class:list={["container", "jobs__inner", { "jobs__inner--empty": !hasRoles }]}>
+    {hasRoles && <h2 class="jobs__title" data-animate>{jobsHeader.title}</h2>}
+
+    {
+      !hasRoles && (
+        <div class="empty">
+          <Icon name={jobsEmpty.illustration} width={200} height={180} class="empty__art" />
+          <h2 class="empty__title" data-animate>
+            {jobsEmpty.title}
+          </h2>
+          <p class="empty__body" data-animate>
+            {jobsEmpty.body}
+          </p>
+        </div>
+      )
+    }
+
+    <ul class="jobs__grid" hidden={!hasRoles}>
+      {
+        jobs.map((job) => (
+          <li class="job" data-animate>
+            <article class="job__card">
+              <div class="job__head">
+                <div class="job__id">
+                  {job.href ? (
+                    <h3 class="job__role">
+                      <a href={job.href}>{job.title}</a>
+                    </h3>
+                  ) : (
+                    <h3 class="job__role">{job.title}</h3>
+                  )}
+                  <p class="job__type">{job.type}</p>
+                </div>
+
+                <span class="job__go" aria-hidden="true">
+                  <Icon name="icons/careers/arrow-up-right" size={20} />
+                </span>
+              </div>
+
+              <hr class="job__rule" />
+
+              <div class="job__detail">
+                <p class="job__body">{job.body}</p>
+
+                <ul class="job__meta">
+                  <li>
+                    <Icon name="icons/careers/map-pin" size={24} />
+                    <span>{job.location}</span>
+                  </li>
+                  <li>
+                    <Icon name="icons/careers/rupee" size={24} />
+                    <span>{job.salary}</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .jobs {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .jobs__inner {
+    display: flex;
+    flex-direction: column;
+    /* Figma: 100 top + 42 heading + 64 + 784 grid + 100 bottom = 1090 */
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  /* Nothing open: the band shrinks to the empty state and centres it. */
+  .jobs__inner--empty {
+    align-items: center;
+    padding-block: 120px;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 520px;
+    text-align: center;
+  }
+
+  .empty :global(.empty__art) {
+    margin-bottom: 16px;
+  }
+
+  .empty__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: 1.3;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-heading);
+  }
+
+  .empty__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .jobs__grid[hidden] {
+    display: none;
+  }
+
+  .jobs__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: 1.3;
+    letter-spacing: var(--tr-h2);
+    text-align: center;
+    text-transform: capitalize;
+    color: var(--c-heading);
+  }
+
+  /* Two 551 columns with a 98px gutter — which comes to 1200 inside a 1240
+     content column, so the grid sits 40px short of the right edge. That is
+     what the frame draws; `minmax` lets it shrink rather than overflow once
+     the viewport can no longer hold 551. */
+  .jobs__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 551px));
+    gap: 80px 98px;
+  }
+
+  /* --- card ---------------------------------------------------------------- */
+
+  .job__card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+  }
+
+  .job__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .job__id {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .job__role,
+  .job__type {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 36px;
+    letter-spacing: -0.24px;
+    color: var(--c-ink);
+  }
+
+  .job__role {
+    font-size: var(--fs-lg);
+  }
+
+  .job__type {
+    font-size: var(--fs-body);
+  }
+
+  .job__role a {
+    color: inherit;
+  }
+
+  /* The anchor covers the card, so the arrow reads as the affordance without
+     being the only target. */
+  .job__role a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .job {
+    position: relative;
+  }
+
+  .job__go {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    background: var(--c-accent);
+    border-radius: 20px;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .job:has(a):hover .job__go {
+    transform: translate(2px, -2px);
+  }
+
+  .job__rule {
+    height: 0.8px;
+    border: 0;
+    background: var(--c-job-rule);
+  }
+
+  .job__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .job__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .job__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .job__meta li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: normal;
+    text-transform: capitalize;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* --- responsive ---------------------------------------------------------- */
+
+  @media (max-width: 1080px) {
+    .jobs__grid {
+      gap: 64px 48px;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .jobs__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 56px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .job:has(a):hover .job__go {
+      transform: none;
+    }
+  }
+</style>

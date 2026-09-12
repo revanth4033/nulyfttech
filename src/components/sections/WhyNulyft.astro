@@ -1,0 +1,182 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import PillButton from "../ui/PillButton.astro";
+import Icon from "../ui/Icon.astro";
+import { whyItems } from "../../data/whyNulyft";
+---
+
+<section class="why" data-section="why-nulyft">
+  <div class="why__inner">
+    <SectionHeader
+      eyebrow="Why nuLyft"
+      title="AI that earns its place in the product"
+      body="We don't add AI for the sake of it. We apply intelligence where it removes friction, improves decisions, and creates real value."
+      tone="dark"
+    />
+
+    <div class="why__stage" data-why-stage>
+      <Icon name="brand/why-arc" class="why__arc" />
+
+      <div class="why__items">
+        {
+          whyItems.map((item, i) => (
+            <div class="why__item" data-why-item data-index={i}>
+              <span class="why__chip"><Icon name={item.icon} size={64} /></span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="why__captions">
+        {
+          whyItems.map((item) => (
+            <div class="why__caption" data-why-caption>
+              <p class="why__title">{item.title}</p>
+              <p class="why__body">{item.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <PillButton href="#work" arrow={20} class="why__cta">Explore Our Work</PillButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* A pinned section must be at least viewport-tall. The Figma frame is
+       882px; on a taller viewport that left a strip of page background
+       showing under it, and — because this is currently the last section —
+       the pin ran out of scroll before finishing (it needed 150px more than
+       the document had, so the last step was unreachable). */
+    min-height: 100svh;
+    background: var(--c-bg-dark);
+    overflow: hidden;
+  }
+
+  .why__inner {
+    width: 100%;
+  }
+
+  .why__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+    padding: 100px var(--gutter);
+  }
+
+  /* The Figma stage: 1240 x 462, everything inside is placed against it. */
+  .why__stage {
+    position: relative;
+    width: 100%;
+    max-width: var(--content-w);
+    height: 462px;
+    margin-inline: auto;
+  }
+
+  .why :global(.why__arc) {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    translate: -50% 0;
+    width: 1250px;
+    height: 625px;
+    pointer-events: none;
+  }
+
+  .why__items {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Positioned entirely from script: translate to the ellipse point, then
+     rotate about its own centre. Width/height carry the active <-> side
+     shape change, so the -50% keeps it centred as the box resizes. */
+  .why__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 96.8px;
+    height: 96.8px;
+    border: 0.8px solid transparent;
+    border-radius: var(--r-pill);
+    background: #21163b;
+    overflow: hidden;
+    will-change: transform, width, height;
+  }
+
+  .why__chip {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex: none;
+  }
+
+  .why__captions {
+    position: absolute;
+    top: 274px;
+    left: 50%;
+    width: 560px;
+    translate: -50% -50%;
+    text-align: center;
+  }
+
+  .why__caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .why__caption:first-child {
+    position: relative;
+  }
+
+  .why__title {
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    letter-spacing: -0.4px;
+    color: #fff;
+  }
+
+  .why__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  .why :global(.why__cta) {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  /* --- responsive --------------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .why__stage {
+      scale: calc(100vw / 1440);
+      transform-origin: top center;
+      margin-bottom: calc((100vw / 1440 - 1) * 462px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .why__inner {
+      gap: 48px;
+      padding-block: 72px;
+    }
+  }
+</style>
