@@ -1,0 +1,319 @@
+---
+import { Image } from "astro:assets";
+import { overview, challenge } from "../../data/caseAuto";
+
+/**
+ * Overview and Challenge — Figma 510:5776 and 510:5815.
+ *
+ * Both are a copy column beside media inside a 1240 container inset 100 from
+ * the frame, so they share a file the way the LMS pair does.
+ *
+ * One difference worth not "fixing": Overview's eyebrow is bare text (a 17px
+ * box) while the Challenge's sits in a 33px pill. That is what the frames
+ * draw — the pill is the `Frame 2147240500` wrapper, and Overview's eyebrow
+ * has no such wrapper.
+ */
+/**
+ * Figma insets the 1240 container 100 from the frame on every side, and that
+ * inset is the frame's padding here — so absolutely positioned children, whose
+ * containing block is the frame's *border* box, have to add it back. Without
+ * this every piece of media sits 100px high.
+ */
+const INSET = 100;
+
+const ov = overview;
+const ch = challenge;
+---
+
+<section class="aov" data-section>
+  <div class="aov__frame">
+    <span class="aglow" style="left:749px;top:148px;width:400px;height:400px" aria-hidden="true"></span>
+
+    <div class="aov__copy">
+      <p class="aov__eyebrow" data-animate>{ov.eyebrow}</p>
+      <h2 class="aov__title" data-animate>{ov.title}</h2>
+      <p class="aov__body" data-animate>{ov.body}</p>
+
+      <ul class="aov__modules" data-animate>
+        {
+          ov.modules.map((m) => (
+            <li>
+              <span class="aov__diamond" aria-hidden="true" />
+              {m}
+            </li>
+          ))
+        }
+      </ul>
+
+      <dl class="aov__facts" data-animate>
+        {
+          ov.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <Image
+      src={ov.phone.src}
+      alt="Marketplace listings screen on a phone"
+      width={ov.phone.w * 2}
+      widths={[ov.phone.w, ov.phone.w * 2]}
+      sizes={`${ov.phone.w}px`}
+      class="aov__phone"
+      style={`left:${ov.phone.x}px;top:${ov.phone.y + INSET}px;width:${ov.phone.w}px`}
+      data-animate
+    />
+  </div>
+</section>
+
+<section class="ach" data-section>
+  <div class="ach__frame">
+    <span class="aglow" style="left:771px;top:185px;width:400px;height:400px" aria-hidden="true"></span>
+
+    <div class="ach__copy">
+      <p class="ach__eyebrow" data-animate>{ch.eyebrow}</p>
+      <h2 class="aov__title" data-animate>{ch.title}</h2>
+      <p class="aov__body" data-animate>{ch.body}</p>
+
+      <ul class="ach__points">
+        {
+          ch.points.map((p) => (
+            <li data-animate>
+              <span class="ach__x" aria-hidden="true">
+                &#10005;
+              </span>
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <Image
+      src={ch.photos.src}
+      alt="Dealers struggling with paperwork, scattered social tools, and phone enquiries"
+      width={ch.photos.w * 2}
+      widths={[ch.photos.w, ch.photos.w * 2]}
+      sizes={`${ch.photos.w}px`}
+      class="ach__photos"
+      style={`left:${ch.photos.x}px;top:${ch.photos.y + INSET}px;width:${ch.photos.w}px`}
+      data-animate
+    />
+  </div>
+</section>
+
+<style>
+  .aov,
+  .ach {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  /* Figma insets a 1240 container by 100 on every side. */
+  .aov__frame,
+  .ach__frame {
+    position: relative;
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-block: 100px;
+  }
+
+  .aov__frame {
+    height: 698px;
+  }
+
+  .ach__frame {
+    height: 677px;
+  }
+
+  .aov__copy,
+  .ach__copy {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .aov__copy {
+    width: 606px;
+  }
+
+  .ach__copy {
+    width: 541px;
+  }
+
+  /* Bare text in Overview — no pill wrapper in the frame. */
+  .aov__eyebrow,
+  .ach__eyebrow {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  /* The Challenge's does have one: a 33px pill against the eyebrow's 17. */
+  .ach__eyebrow {
+    padding-block: 8px;
+    background: var(--c-case-eyebrow-bg);
+    border-radius: 88px;
+  }
+
+  .aov__title {
+    margin-top: 8px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 32px;
+    color: var(--c-ink);
+  }
+
+  .aov__body {
+    margin-top: 24px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* 541 wide with a 16px gap, items sized to content — which is what makes
+     the second row break after "Dashboard Analytics" the way Figma draws it. */
+  .aov__modules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 541px;
+    max-width: 100%;
+    margin-top: 24px;
+  }
+
+  .aov__modules li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .aov__diamond {
+    width: 16px;
+    height: 16px;
+    rotate: 45deg;
+    background: var(--c-accent);
+  }
+
+  /* Three facts, content-sized, 32px apart. */
+  .aov__facts {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+  }
+
+  .aov__facts dt {
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-md);
+    text-transform: uppercase;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  .aov__facts dd {
+    margin-top: 8px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    letter-spacing: var(--tr-eyebrow-sm);
+    color: var(--c-accent);
+    white-space: nowrap;
+  }
+
+  .aov__phone,
+  .ach__photos {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+  }
+
+  /* --- challenge ----------------------------------------------------------- */
+
+  .ach__points {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .ach__points li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-block: 24px;
+    border-bottom: 1px solid var(--c-card-border);
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-danger);
+  }
+
+  /* Figma gives the first row no top padding — it sits straight under the
+     paragraph and only the rule below it separates the four. */
+  .ach__points li:first-child {
+    padding-top: 0;
+  }
+
+  .ach__x {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* The soft lavender disc behind the media. Faint on purpose: measured on
+     the frame it bottoms out 5-6 levels under the ground. */
+  .aglow {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    background: var(--c-accent-glow);
+    filter: blur(90px);
+    opacity: 0.16;
+  }
+
+  @media (max-width: 1280px) {
+    .aov__frame,
+    .ach__frame {
+      height: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .aov__copy,
+    .ach__copy {
+      position: static;
+      width: 100%;
+      max-width: 606px;
+    }
+
+    .aov__phone,
+    .ach__photos {
+      position: static;
+      width: 100% !important;
+      max-width: 651px;
+      margin-top: 48px;
+    }
+
+    .aglow {
+      display: none;
+    }
+  }
+</style>

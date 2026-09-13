@@ -1,0 +1,151 @@
+---
+import { Image } from "astro:assets";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import AutoHeroPattern from "../case/AutoHeroPattern.astro";
+import { hero } from "../../data/caseAuto";
+
+/**
+ * Automotive Marketplace case-study hero — Figma 510:5690, a 1440x1130 frame.
+ *
+ * Centred, not split like the LMS hero: badge over a two-line headline over a
+ * three-line paragraph, with three phones fanned below.
+ *
+ * Figma's y values are used raw here rather than the LMS hero's "minus 83".
+ * That frame insets its stage below the nav and then subtracts the nav height
+ * from every coordinate; this one just makes the frame the full 1130 and lets
+ * the fixed nav overlay the top of it, which it can because nothing starts
+ * above y=185.
+ *
+ * Copy block and phone row share a centre line at x=719.5, so both are
+ * anchored at 50% and the composition stays centred as the viewport narrows.
+ */
+
+const { phones } = hero;
+---
+
+<section class="ahero" data-section>
+  <AutoHeroPattern />
+
+  <div class="ahero__frame">
+    <div class="ahero__copy">
+      <EyebrowBadge variant="studio" class="ahero__eyebrow" data-animate>
+        {hero.eyebrow}
+      </EyebrowBadge>
+
+      <h1 class="ahero__title" data-animate>
+        {hero.title}<em>{hero.titleTail}</em>
+      </h1>
+
+      <p class="ahero__body" data-animate>{hero.body}</p>
+    </div>
+
+    <Image
+      src={phones.src}
+      alt="Three screens of the marketplace app: brand picker, listings feed, and stock and reels"
+      width={phones.w * 2}
+      widths={[phones.w, phones.w * 2]}
+      sizes={`${phones.w}px`}
+      class="ahero__phones"
+      data-animate
+    />
+  </div>
+</section>
+
+<style>
+  .ahero {
+    position: relative;
+    height: 1130px;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .ahero__frame {
+    position: relative;
+    z-index: var(--z-content);
+    width: 100%;
+    max-width: var(--frame-w);
+    height: 1130px;
+    margin-inline: auto;
+  }
+
+  /* Figma: block at y=183.03, badge 2px into it, then 8px to the headline and
+     16px to the paragraph. */
+  .ahero__copy {
+    position: absolute;
+    top: 185.03px;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 618px;
+    max-width: calc(100% - var(--gutter) * 2);
+    translate: -50% 0;
+    text-align: center;
+  }
+
+  .ahero__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    /* 124px over two lines. */
+    line-height: 62px;
+    /* -3px, not the -2 the other heroes use. Measured: at -2 our ink is 511.2
+       against Figma's 488 on line one; at -3 it is 487.2, and line two lands
+       at 255.6 against 256. A narrower face would explain line one too, but it
+       predicts 254.5 for line two, so this is tracking and not the font. */
+    letter-spacing: var(--tr-h2-tight);
+    color: var(--c-heading);
+    text-wrap: wrap;
+  }
+
+  /* Figma sets the tail on its own line; a block em is how it gets there
+     without a <br> in the copy. */
+  .ahero__title em {
+    display: block;
+    font-style: italic;
+    color: var(--c-accent);
+  }
+
+  .ahero__body {
+    width: 603px;
+    max-width: 100%;
+    margin-top: 8px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* The export's own box, placed at the Figma container's origin. Its centre
+     (719.5) is the frame's, so it stays centred rather than pinned left. */
+  .ahero__phones {
+    position: absolute;
+    top: 352.63px;
+    left: 50%;
+    display: block;
+    width: 1123px;
+    max-width: 100%;
+    height: auto;
+    translate: -50% 0;
+  }
+
+  @media (max-width: 1180px) {
+    .ahero,
+    .ahero__frame {
+      height: auto;
+    }
+
+    .ahero__copy {
+      position: static;
+      translate: none;
+      margin-inline: auto;
+      padding-top: 185px;
+    }
+
+    .ahero__phones {
+      position: static;
+      translate: none;
+      margin: 48px auto 0;
+    }
+  }
+</style>

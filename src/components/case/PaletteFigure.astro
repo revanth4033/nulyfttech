@@ -1,0 +1,93 @@
+---
+import Icon from "../ui/Icon.astro";
+
+/**
+ * The Colorography figure, shared by all three case studies.
+ *
+ * Inlined SVG rather than a flattened export, because the leaders and labels
+ * have to be addressable for the draw-in and the hover. `scripts/tag-palette.py`
+ * adds the hooks on the way in; `scripts/palette-figure.ts` owns the entry and
+ * derives everything from the geometry, so four colours or six both work.
+ *
+ * The hover lives here as CSS, not in the script, so it survives
+ * `prefers-reduced-motion` — dimming and recolouring are not motion.
+ */
+interface Props {
+  /** Path under `src/assets`, e.g. `illustrations/lms-palette`. */
+  name: string;
+  /** The figure's width in the Figma frame. */
+  width: number;
+  /** Its inset from the container's left edge. */
+  x?: number;
+  alt: string;
+}
+
+const { name, width, x = 0, alt } = Astro.props;
+---
+
+<Icon
+  name={name}
+  width={width}
+  class="palfig"
+  style={`width:${width}px;margin-left:${x}px`}
+  role="img"
+  aria-label={alt}
+/>
+
+<style>
+  /* `<Icon>` renders a block span, and the svg inside stretches to fill it —
+     in a 1240 column that scaled an 858 figure to 1049 and pushed its section
+     91px past the frame. Pin the width on both. */
+  :global(.palfig) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  :global(.palfig > svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- hover / focus -------------------------------------------------------
+     Wrapped in `:global()` whole, never per-part: Astro does not process a
+     `:global()` sitting inside `:has()`, so it ships literally, the selector is
+     invalid, and the browser drops the entire rule. The classes come from the
+     inlined SVG and carry no scope attribute anyway. */
+  :global(.palfig .pal__group) {
+    cursor: pointer;
+    outline: none;
+    transition: opacity 0.2s ease;
+  }
+
+  :global(.palfig .pal__leader line) {
+    transition: stroke 0.2s ease;
+  }
+
+  :global(.palfig:has(.pal__group:hover) .pal__group:not(:hover)),
+  :global(.palfig:has(.pal__group:focus-visible) .pal__group:not(:focus-visible)) {
+    opacity: 0.4;
+  }
+
+  /* Each group carries its own `--pal-line`. A near-white swatch would be
+     invisible on this ground, so the tagger substitutes a readable grey for
+     those — the label still shows the true hex. */
+  :global(.palfig .pal__group:hover .pal__leader line),
+  :global(.palfig .pal__group:focus-visible .pal__leader line) {
+    stroke: var(--pal-line);
+  }
+
+  :global(.palfig .pal__group:focus-visible .pal__label) {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 1080px) {
+    :global(.palfig) {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
+  }
+</style>

@@ -1,8 +1,8 @@
 import type { ImageMetadata } from "astro";
 
 import heroCard1 from "../assets/images/case-lms/hero-card-1.png";
-import heroCard2 from "../assets/images/case-lms/hero-card-2.png";
-import overviewStack from "../assets/images/case-lms/overview-stack.png";
+import screenBooking from "../assets/images/case-lms/overview-screen-booking.png";
+import screenLeads from "../assets/images/case-lms/overview-screen-leads.png";
 import problem1 from "../assets/images/case-lms/problem-1.jpg";
 import problem2 from "../assets/images/case-lms/problem-2.jpg";
 import problem3 from "../assets/images/case-lms/problem-3.jpg";
@@ -34,21 +34,14 @@ export const hero = {
   title: " - Redefining the Learning Experience",
   body: "Skill Wagon is a scalable SaaS-based learning platform that brings courses, learners, assessments, and insights together in one seamless experience making learning management simpler, smarter, and more connected.",
   /**
-   * Two carousel slides, not one card with another peeking behind it — Figma
-   * parks them overlapping because that is how you show a carousel in a static
-   * mock. They are different products: the second is an Aster Data recruitment
-   * site, which is very likely a placeholder on a Skill Wagon case study.
+   * One card, not a carousel. Figma parks two overlapping slides here, but the
+   * second is an Aster Data recruitment site — a placeholder on a Skill Wagon
+   * case study — so the user had it removed along with the indicator dots.
    *
-   * `w` is the display width that puts each export's *card* at the same size.
-   * The two exports carry different shadow bleed — 6.5px on the first against
-   * 62px on the second — so sizing both to their export width would leave the
-   * cards a different size and the crossfade would jump. Sizing by the card
-   * and centring both makes them land on top of each other exactly.
+   * `w` is the display width that puts the export's *card* at its Figma size;
+   * the export itself carries 6.5px of shadow bleed on top of that.
    */
-  slides: [
-    { src: heroCard1, w: 569, alt: "Skill Wagon course curriculum builder in a browser" },
-    { src: heroCard2, w: 693, alt: "The Aster Data recruitment site home page" },
-  ],
+  media: { src: heroCard1, w: 569, alt: "Skill Wagon course curriculum builder in a browser" },
 };
 
 export const overview = {
@@ -62,7 +55,30 @@ export const overview = {
     { label: "Scope", value: "Web & Mobile" },
     { label: "Business Type", value: "B2B" },
   ],
-  media: { src: overviewStack, alt: "Skill Wagon admin screens stacked on an angle" },
+  /**
+   * The two screens of the About The Project stack, and the two slots they
+   * trade places between — Figma 505:4396, a 634x523 box.
+   *
+   * Figma ships this as one flattened export with both screens baked in. That
+   * is fine for a static figure and useless for a moving one, so the screens
+   * are separate here and the composition is rebuilt in DOM.
+   *
+   * Both cards are the same 500x307. The metadata only gives axis-aligned
+   * bounding boxes — 533.69x365.65 for the back one — but 500·cos7 + 307·sin7
+   * = 533.69 and 500·sin7 + 307·cos7 = 365.66, and the render's long edges
+   * measure -7.000 degrees, so the back card is that same box turned 7deg.
+   * Slots are stored as the *centre* for that reason: the rotated card's
+   * top-left is not what Figma reports.
+   */
+  screens: [
+    { src: screenBooking, alt: "Skill Wagon booking and wagon pricing screen" },
+    { src: screenLeads, alt: "Skill Wagon lead detail screen with status history" },
+  ],
+  stage: { w: 634, h: 523, card: { w: 500, h: 307 } },
+  slots: [
+    { cx: 311.8435, cy: 243.7577, rotate: -7 },
+    { cx: 383.859375, cy: 369.8232421875, rotate: 0 },
+  ],
 };
 
 export const challenge = {

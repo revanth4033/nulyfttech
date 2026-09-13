@@ -1,0 +1,214 @@
+---
+import { Image } from "astro:assets";
+import CaseHeader from "../case/CaseHeader.astro";
+import { approach } from "../../data/caseRec";
+
+/**
+ * Our Approach — Figma 505:4436.
+ *
+ * Three phases. The first is a full-width row of three items; the next two
+ * pair the same item list with a screenshot, alternating which side it sits
+ * on. That difference is data (`mediaSide`), not three separate layouts.
+ */
+const [discover, ...paired] = approach.phases;
+---
+
+<section class="appr" data-section>
+  <div class="container appr__inner">
+    <CaseHeader eyebrow={approach.eyebrow} title={approach.title} body={approach.body} />
+
+    <div class="appr__phases">
+      <div class="phase phase--wide">
+        <h3 class="phase__title" data-animate>{discover.title}</h3>
+        <ul class="phase__items phase__items--row">
+          {
+            discover.items.map((item) => (
+              <li data-animate>
+                <h4>{item.title}</h4>
+                <p>{item.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      {
+        paired.map((phase) => (
+          <div class:list={["phase", "phase--split", `phase--media-${phase.mediaSide}`]}>
+            <div class="phase__media" data-animate>
+              {phase.media && (
+                <Image
+                  src={phase.media.src}
+                  alt={phase.media.alt}
+                  width={1382}
+                  widths={[691, 1382]}
+                  sizes="691px"
+                />
+              )}
+            </div>
+
+            <div class="phase__copy">
+              <h3 class="phase__title" data-animate>
+                {phase.title}
+              </h3>
+              <ul class="phase__items">
+                {phase.items.map((item) => (
+                  <li data-animate>
+                    <h4>{item.title}</h4>
+                    <p>{item.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .appr {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .appr__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  .appr__phases {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .phase__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 1.3;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-accent);
+  }
+
+  .phase--wide {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .phase__items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phase__items--row {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .phase__items li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--c-card-border);
+  }
+
+  .phase__items--row li {
+    flex: 1;
+    min-width: 0;
+    padding-right: 40px;
+  }
+
+  .phase__items:not(.phase__items--row) li + li {
+    padding-top: 24px;
+  }
+
+  .phase__items h4 {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-ink);
+  }
+
+  .phase__items p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- split phases --------------------------------------------------------- */
+
+  .phase--split {
+    display: flex;
+    align-items: center;
+    gap: 58px;
+  }
+
+  .phase--media-right {
+    flex-direction: row-reverse;
+  }
+
+  /* The node's box, not the export's. The export is 690.5x527.5 for a
+     568.4x406.6 card — 61.05/60.45 of baked shadow per side — so it is sized
+     up to 121.48% and pulled back by that bleed, overflowing rather than
+     making the phase 29px taller than the frame. */
+  .phase__media {
+    position: relative;
+    flex: none;
+    width: 568.4px;
+    max-width: 100%;
+    aspect-ratio: 568.4 / 406.6;
+  }
+
+  .phase__media :global(img) {
+    position: absolute;
+    left: -10.741%;
+    top: -14.867%;
+    display: block;
+    width: 121.482%;
+    height: auto;
+    max-width: none;
+  }
+
+  .phase__copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 28px;
+    min-width: 0;
+  }
+
+  @media (max-width: 1080px) {
+    .phase__items--row {
+      flex-direction: column;
+    }
+
+    .phase__items--row li {
+      padding-right: 0;
+      padding-top: 24px;
+    }
+
+    .phase__items--row li:first-child {
+      padding-top: 0;
+    }
+
+    .phase--split,
+    .phase--media-right {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 32px;
+    }
+
+    .phase__media {
+      width: 100%;
+    }
+  }
+</style>

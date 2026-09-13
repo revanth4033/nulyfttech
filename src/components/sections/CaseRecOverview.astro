@@ -1,0 +1,375 @@
+---
+import { Image } from "astro:assets";
+import { overview, challenge } from "../../data/caseRec";
+
+const { stage, slots, screens } = overview;
+
+/** Figma px -> percent of the stage, so the whole composition scales as one. */
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
+
+/**
+ * Overview and Challenge — Figma 505:4357 and 505:4399.
+ *
+ * The two read as one pair: both are a copy column beside media, and both run
+ * their intro under the title rather than in the right-hand column the later
+ * sections use. Kept in one file for that reason.
+ *
+ * Overview's media used to be a single flattened export of the tilted screen
+ * stack, on the reasoning that rebuilding it in DOM would buy nothing. It buys
+ * motion: the two screens now trade places, which a baked-in picture cannot do.
+ * So the screens are separate assets and the stack is real DOM — see
+ * `scripts/overview-stack.ts`. The Challenge's three photos are a plain grid,
+ * so they stay separate images.
+ */
+---
+
+<section class="cover" data-section>
+  <div class="container cover__inner">
+    <div class="cover__copy">
+      <p class="cover__eyebrow" data-animate>{overview.eyebrow}</p>
+      <h2 class="cover__title" data-animate>{overview.title}</h2>
+      <p class="cover__body" data-animate>{overview.body}</p>
+
+      <ul class="cover__modules" data-animate>
+        {
+          overview.modules.map((m) => (
+            <li>
+              <span class="cover__diamond" aria-hidden="true" />
+              {m}
+            </li>
+          ))
+        }
+      </ul>
+
+      <dl class="cover__facts" data-animate>
+        {
+          overview.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="cover__media" data-animate>
+      <span class="cover__glow" aria-hidden="true"></span>
+      {
+        screens.map((screen, i) => (
+          <Image
+            src={screen.src}
+            alt={screen.alt}
+            width={stage.card.w * 2}
+            widths={[stage.card.w, stage.card.w * 2]}
+            sizes={`${stage.card.w}px`}
+            class="cover__screen"
+            style={`left:${pct(slots[i].cx, stage.w)};top:${pct(slots[i].cy, stage.h)};--sr:${slots[i].rotate}deg;z-index:${i + 1}`}
+            data-screen
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="chal" data-section>
+  <div class="container chal__inner">
+    <div class="chal__copy">
+      <p class="cover__eyebrow" data-animate>{challenge.eyebrow}</p>
+      <h2 class="chal__title" data-animate>{challenge.title}</h2>
+      <p class="cover__body" data-animate>{challenge.body}</p>
+
+      <ul class="chal__points">
+        {
+          challenge.points.map((p) => (
+            <li data-animate>
+              <span class="chal__x" aria-hidden="true">
+                &#10005;
+              </span>
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <figure class="chal__photos" data-animate>
+      <Image
+        src={challenge.photos.src}
+        alt={challenge.photos.alt}
+        width={1302}
+        widths={[651, 1302]}
+        sizes="651px"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .cover,
+  .chal {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .cover__inner,
+  .chal__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    padding-block: 100px;
+  }
+
+  .cover__inner {
+    gap: 0;
+  }
+
+  .cover__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 16px;
+    width: 606px;
+    max-width: 100%;
+  }
+
+  .cover__eyebrow {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .cover__title,
+  .chal__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: 1.3;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-heading);
+    text-wrap: wrap;
+  }
+
+  .cover__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* Figma sets these two-up, not flowed — the pairing is the point. */
+  .cover__modules {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 20px 56px;
+    margin-top: 8px;
+  }
+
+  .cover__modules li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* A rotated square, which is how Figma draws the bullet. */
+  .cover__diamond {
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+    background: var(--c-accent);
+  }
+
+  /* All four sit on one row in the frame; they only stack once the column
+     can no longer hold them. */
+  .cover__facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 16px;
+    margin-top: 16px;
+  }
+
+  /* Tracked at 1.8px, not the 2.4px the eyebrow above uses — Figma really
+     does set these two differently, and at 2.4 "Business Type" measures
+     140.55px against its 139.5px column and wraps onto a second line, which
+     knocks its value out of line with the other three. Measured off the
+     frame: Figma's label ink is 131px here and 113px for "Technology",
+     against 138.15 and 121.2 at 2.4. The size is right; only the tracking
+     was borrowed from the wrong place. */
+  .cover__facts dt {
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-md);
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .cover__facts dd {
+    margin-top: 8px;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    letter-spacing: var(--tr-eyebrow-sm);
+    color: var(--c-accent);
+  }
+
+  /* Figma runs the copy 0-606 and this box 606-1240, edge to edge with no
+     gutter between them — the breathing room is the cards' own inset inside
+     the box. Hence the gap override below. */
+  .cover__media {
+    position: relative;
+    flex: 0 1 634px;
+    min-width: 0;
+    aspect-ratio: 634 / 523;
+  }
+
+  /* Placed by centre, because the back card is rotated and its top-left is
+     not where Figma reports it. Everything is a percentage of the stage so
+     the composition scales as one piece; `--sx`/`--sy` are percentages of the
+     card's own box, which is what `translate()` resolves against, and are the
+     only things the swap touches. */
+  .cover__media :global(.cover__screen) {
+    position: absolute;
+    display: block;
+    width: 78.8644%;
+    height: auto;
+    transform: translate(-50%, -50%) translate(var(--sx, 0), var(--sy, 0))
+      rotate(var(--sr, 0deg));
+    transform-origin: 50% 50%;
+  }
+
+  /* The soft lavender disc Figma floats behind the stack.
+     Two things about it, both learned from a bug the user caught:
+     the export used to bake this section's ground in as an opaque plate, so
+     the disc was masked everywhere inside the image's box and showed only as
+     a halo bleeding out around it — a hard-edged rectangle that read as a
+     white panel. `scripts/strip-plate.py` keyed that plate out, so the disc
+     now reads through as designed. And it has to be this faint: measured on
+     the frame, Figma's wash bottoms out 5-6 levels under the ground, where
+     0.5 opacity here was ~19. Check any change to it against the frame's
+     background, not against how it looks alone. */
+  .cover__glow {
+    position: absolute;
+    z-index: 0;
+    top: -25px;
+    right: 0;
+    width: 400px;
+    height: 400px;
+    max-width: 100%;
+    border-radius: 50%;
+    background: var(--c-accent-glow);
+    filter: blur(90px);
+    opacity: 0.16;
+  }
+
+  /* --- challenge ----------------------------------------------------------- */
+
+  .chal__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 16px;
+    width: 541px;
+    max-width: 100%;
+  }
+
+  .chal__points {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+
+  .chal__points li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--c-card-border);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--c-danger);
+  }
+
+  .chal__x {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  /* One 651x461 export here, not the LMS's three separate photos — the frame
+     groups all three into a single node with no bleed. */
+  .chal__photos {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--r-card);
+  }
+
+  .chal__photos :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .chal__shot {
+    overflow: hidden;
+    border-radius: var(--r-card);
+  }
+
+  .chal__shot--wide {
+    grid-column: 1 / -1;
+  }
+
+  .chal__shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 560px) {
+    .cover__modules {
+      grid-template-columns: max-content;
+    }
+
+    .cover__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .cover__inner,
+    .chal__inner {
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .cover__copy,
+    .chal__copy {
+      width: auto;
+      max-width: 640px;
+    }
+
+    .cover__media,
+    .chal__photos {
+      width: 100%;
+    }
+
+    /* The row's flex-basis would become a height once this stacks, and it
+       would fight the aspect ratio that gives the stage its height. */
+    .cover__media {
+      flex: none;
+    }
+  }
+</style>
+
+<script>
+  import "../../scripts/overview-stack";
+</script>

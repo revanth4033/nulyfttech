@@ -1,0 +1,102 @@
+---
+import { Image } from "astro:assets";
+import CaseHeader from "../case/CaseHeader.astro";
+import PaletteFigure from "../case/PaletteFigure.astro";
+import { typography, colorography } from "../../data/caseAuto";
+
+/**
+ * Typography and Colorography — Figma 510:5914 and 510:5964.
+ *
+ * Both bodies ship as one flattened export each rather than rebuilt DOM. The
+ * type specimen is set in DM Sans, a face this site does not load and would
+ * need five weights of for one decorative block; the palette figure is a
+ * drawing whose six leader lines only line up at their drawn size. Same call
+ * the LMS page made for its two figures — the meaning lives in `alt`.
+*
+ * The 100 is the container inset: it is the frame's padding, and an absolute
+ * child resolves `top` against the border box, so it has to be added back.
+ */
+const INSET = 100;
+---
+
+<section class="asys" data-section>
+  <div class="asys__frame">
+    <CaseHeader eyebrow={typography.eyebrow} title={typography.title} body={typography.intro} />
+
+    <Image
+      src={typography.figure.src}
+      alt="DM Sans specimen in Light, Regular, Medium, Semibold and Bold, beside a Ready To Go Live dialog labelling its heading, body text and button label styles"
+      width={typography.figure.w * 2}
+      widths={[typography.figure.w, typography.figure.w * 2]}
+      sizes={`${typography.figure.w}px`}
+      class="asys__figure"
+      style={`left:${typography.figure.x}px;top:${typography.figure.y + INSET}px;width:${typography.figure.w}px`}
+      data-animate
+    />
+  </div>
+</section>
+
+<section class="acol" data-section>
+  <div class="acol__frame">
+    <CaseHeader
+      eyebrow={colorography.eyebrow}
+      title={colorography.title}
+      body={colorography.intro}
+    />
+
+    <PaletteFigure
+      name={colorography.figure.name}
+      width={colorography.figure.w}
+      x={colorography.figure.x}
+      alt={colorography.figure.alt}
+    />
+  </div>
+</section>
+
+<style>
+  .asys,
+  .acol {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .asys__frame,
+  .acol__frame {
+    position: relative;
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-block: 100px;
+  }
+
+  .asys__frame {
+    height: 795px;
+  }
+
+  .acol__frame {
+    height: 758px;
+  }
+
+  /* Placed at the frame's own coordinates — these are drawn compositions, so
+     they are positioned, not flowed. */
+  .asys__figure {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+  }
+
+  @media (max-width: 1280px) {
+    .asys__frame,
+    .acol__frame {
+      height: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .asys__figure {
+      position: static;
+      width: 100% !important;
+      margin-top: 48px;
+    }
+  }
+</style>

@@ -78,11 +78,13 @@
 
   --tr-tight: -0.03em;
   --tr-h2: -2px;
+  --tr-h2-tight: -3px;        /* Automotive case-study hero headline */
   --tr-body: -0.16px;
   --tr-card: -0.28px;
   --tr-label: -0.32px;
   --tr-eyebrow: 1.04px;
   --tr-eyebrow-sm: 0.6px;
+  --tr-eyebrow-md: 1.8px;     /* case-study fact labels */
   --tr-eyebrow-lg: 2.4px;     /* Studio hero badge */
   --tr-hero-studio: -3px;     /* Studio hero headline */
   --tr-meta: 2px;             /* Studio project meta line */

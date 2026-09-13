@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Nav from "../../components/Nav.astro";
+import CaseRecHero from "../../components/sections/CaseRecHero.astro";
+import CaseRecOverview from "../../components/sections/CaseRecOverview.astro";
+import CaseRecApproach from "../../components/sections/CaseRecApproach.astro";
+import CaseRecSystem from "../../components/sections/CaseRecSystem.astro";
+import CaseRecScreens from "../../components/sections/CaseRecScreens.astro";
+import CtaFooter from "../../components/sections/CtaFooter.astro";
+---
+
+<BaseLayout
+  title="AI Powered Recruitment Platform — nuLyft"
+  description="One hiring engine that moves every client requirement, candidate and decision through a single intelligent system."
+>
+  <Nav slot="overlay" />
+
+  <CaseRecHero />
+  <CaseRecOverview />
+  <CaseRecApproach />
+  <CaseRecSystem />
+  <CaseRecScreens />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../../scripts/reveal.ts";
+  import "../../scripts/anchors.ts";
+  import "../../scripts/cta-fan.ts";
+  import "../../scripts/overview-stack.ts";
+  import "../../scripts/palette-figure.ts";
+</script>

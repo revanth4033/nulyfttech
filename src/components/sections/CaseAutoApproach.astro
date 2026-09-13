@@ -1,0 +1,230 @@
+---
+import { Image } from "astro:assets";
+import CaseHeader from "../case/CaseHeader.astro";
+import { approach } from "../../data/caseAuto";
+
+/**
+ * Our Approach — Figma 510:5850, three phases inside a 1240 container.
+ *
+ * Phase 01 is three items across a 1240 row; phases 02 and 03 are a 541 column
+ * of the same items beside a phone, mirrored left to right. The item shape is
+ * identical in all three — a 17px uppercase label with 24px of air above it
+ * and its paragraph 49px down — so it is one `.aph__item` everywhere and only
+ * the container changes.
+ *
+ * The eyebrow reads "our approch" because that is what the frame says. Left as
+ * drawn, like "SKillwagon" on the LMS page.
+ */
+const { phase1, phase2, phase3 } = approach;
+---
+
+<section class="aph" data-section>
+  <div class="aph__frame">
+    <CaseHeader eyebrow={approach.eyebrow} title={approach.title} body={approach.intro} />
+
+    <div class="aph__body">
+      <div class="aph__phase">
+        <h3 class="aph__title" data-animate>{phase1.title}</h3>
+        <div class="aph__row">
+          {
+            phase1.items.map((it) => (
+              <div class="aph__item" data-animate>
+                <p class="aph__label">{it.title}</p>
+                <p class="aph__text">{it.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="aph__block">
+        <span class="aglow" style="left:91px;top:47.94px;width:400px;height:400px" aria-hidden="true"
+        ></span>
+        <Image
+          src={phase2.phone.src}
+          alt="Model picker screen on a phone"
+          width={phase2.phone.w * 2}
+          widths={[phase2.phone.w, phase2.phone.w * 2]}
+          sizes={`${phase2.phone.w}px`}
+          class="aph__phone"
+          style={`left:${phase2.phone.x}px;top:${phase2.phone.y}px;width:${phase2.phone.w}px`}
+          data-animate
+        />
+        <div class="aph__col" style="left:699px;top:54.72px">
+          <h3 class="aph__title" data-animate>{phase2.title}</h3>
+          <div class="aph__stack">
+            {
+              phase2.items.map((it) => (
+                <div class="aph__item aph__item--ruled" data-animate>
+                  <p class="aph__label">{it.title}</p>
+                  <p class="aph__text">{it.body}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="aph__block">
+        <span class="aglow" style="left:778px;top:83.56px;width:340px;height:340px" aria-hidden="true"
+        ></span>
+        <div class="aph__col" style="left:0;top:42.72px">
+          <h3 class="aph__title" data-animate>{phase3.title}</h3>
+          <div class="aph__stack">
+            {
+              phase3.items.map((it) => (
+                <div class="aph__item aph__item--ruled" data-animate>
+                  <p class="aph__label">{it.title}</p>
+                  <p class="aph__text">{it.body}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <Image
+          src={phase3.phone.src}
+          alt="Marketplace bike detail screen on a phone"
+          width={phase3.phone.w * 2}
+          widths={[phase3.phone.w, phase3.phone.w * 2]}
+          sizes={`${phase3.phone.w}px`}
+          class="aph__phone"
+          style={`left:${phase3.phone.x}px;top:${phase3.phone.y}px;width:${phase3.phone.w}px`}
+          data-animate
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .aph {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .aph__frame {
+    position: relative;
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-block: 100px;
+  }
+
+  .aph__body {
+    margin-top: 64px;
+  }
+
+  .aph__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 32px;
+    color: var(--c-accent);
+  }
+
+  /* Figma: title 0-32, items 48-169. So 16px of air, not the 48 that the gap
+     to the section body uses — getting these two confused made the section
+     33px tall against the frame's 1638. */
+  .aph__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 16px;
+  }
+
+  .aph__stack {
+    margin-top: 16px;
+  }
+
+  /* Each item is a 121 box: 24 above the label, the paragraph 49 from the
+     item's top, and 24 under it before the rule. */
+  .aph__item {
+    padding-block: 24px;
+  }
+
+  .aph__item--ruled {
+    border-bottom: 1px solid var(--c-card-border);
+  }
+
+  .aph__label {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-md);
+    text-transform: uppercase;
+    color: var(--c-ink);
+  }
+
+  .aph__text {
+    margin-top: 8px;
+    max-width: 519px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* Phase 01's three columns share one rule under the whole row; the 24px
+     above it is the items' own bottom padding. */
+  .aph__phase {
+    border-bottom: 1px solid var(--c-card-border);
+  }
+
+  .aph__block {
+    position: relative;
+    height: 496.44px;
+    margin-top: 64px;
+  }
+
+  .aph__col {
+    position: absolute;
+    width: 541px;
+  }
+
+  .aph__phone {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+  }
+
+  .aglow {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    background: var(--c-accent-glow);
+    filter: blur(90px);
+    opacity: 0.16;
+  }
+
+  @media (max-width: 1280px) {
+    .aph__frame {
+      padding-inline: var(--gutter);
+    }
+
+    .aph__row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .aph__block {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      height: auto;
+    }
+
+    .aph__col,
+    .aph__phone {
+      position: static;
+      width: 100% !important;
+      max-width: 541px;
+    }
+
+    .aph__phone {
+      max-width: 240px;
+    }
+
+    .aglow {
+      display: none;
+    }
+  }
+</style>

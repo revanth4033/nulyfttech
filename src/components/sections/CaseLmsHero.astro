@@ -11,9 +11,10 @@ import { hero } from "../../data/caseLms";
  * product card right, both inside a 1224-wide band inset 116 from the frame.
  * So it does not use `PageHero`; only the pattern behind it is shared.
  *
- * The five dots under the card are Figma's carousel indicator. Only the first
- * slide is designed, so they render as a static state — the interaction is
- * still to come.
+ * Figma draws this as a carousel — two overlapping slides over a row of
+ * indicator dots — and it was built that way. The second slide was a
+ * placeholder for another product, so the user had it removed; with one card
+ * there is nothing to indicate, and the dots went with it. Static now.
  */
 ---
 
@@ -35,30 +36,15 @@ import { hero } from "../../data/caseLms";
       </div>
 
       <div class="chero__media" data-animate>
-        {
-          hero.slides.map((slide, i) => (
-            <Image
-              src={slide.src}
-              alt={i === 0 ? slide.alt : ""}
-              width={slide.w * 2}
-              widths={[slide.w, slide.w * 2]}
-              sizes={`${slide.w}px`}
-              class:list={["chero__slide", { "chero__slide--on": i === 0 }]}
-              style={`width:${slide.w}px`}
-              data-slide
-              aria-hidden={i === 0 ? undefined : "true"}
-            />
-          ))
-        }
+        <Image
+          src={hero.media.src}
+          alt={hero.media.alt}
+          width={hero.media.w * 2}
+          widths={[hero.media.w, hero.media.w * 2]}
+          sizes={`${hero.media.w}px`}
+          class="chero__card"
+        />
       </div>
-    </div>
-
-    <div class="chero__dots" role="presentation" data-animate>
-      {
-        hero.slides.map((_, i) => (
-          <span class:list={["chero__dot", { "chero__dot--on": i === 0 }]} data-dot />
-        ))
-      }
     </div>
   </div>
 </section>
@@ -123,51 +109,17 @@ import { hero } from "../../data/caseLms";
     color: var(--c-muted);
   }
 
-  /* The slides stack on one another and cross-fade. The box is the first
-     slide's export size; each slide is centred on it so their *cards* align
-     even though their shadow bleed differs. Shadows are baked into the
-     exports, so this must not clip. */
+  /* The card's shadow is baked into the export, so this must not clip. */
   .chero__media {
-    position: relative;
     flex: none;
     width: 569px;
     max-width: 100%;
-    aspect-ratio: 569 / 407;
   }
 
-  .chero__media :global(.chero__slide) {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+  .chero__media :global(.chero__card) {
     display: block;
+    width: 100%;
     height: auto;
-    max-width: none;
-    translate: -50% -50%;
-    opacity: 0;
-  }
-
-  .chero__media :global(.chero__slide--on) {
-    opacity: 1;
-  }
-
-  .chero__dots {
-    position: absolute;
-    top: 625px; /* Figma y=708 minus the nav */
-    left: 986px;
-    display: flex;
-    gap: 8px;
-  }
-
-  .chero__dot {
-    width: 20px;
-    height: 6px;
-    border-radius: var(--r-pill);
-    background: var(--c-tab-rule);
-  }
-
-  .chero__dot--on {
-    width: 36px;
-    background: var(--c-accent);
   }
 
   @media (max-width: 1240px) {
@@ -181,11 +133,6 @@ import { hero } from "../../data/caseLms";
       flex: 1;
       width: auto;
       min-width: 0;
-    }
-
-    .chero__dots {
-      left: auto;
-      right: var(--gutter);
     }
   }
 
@@ -205,14 +152,5 @@ import { hero } from "../../data/caseLms";
       align-items: stretch;
       padding-top: 64px;
     }
-
-    .chero__dots {
-      position: static;
-      margin: 24px var(--gutter) 0;
-    }
   }
 </style>
-
-<script>
-  import "../../scripts/case-hero";
-</script>
