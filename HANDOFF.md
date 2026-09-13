@@ -8,6 +8,13 @@ read it and trust it.
 
 Read this file once at the start of the session, then work from `AGENTS.md`.
 
+**Where things stand right now:** the home page and three inner pages are
+built and pushed to GitHub. The user is about to deploy to Vercel. The live
+thread of work is the LMS case study — its hero carousel is done and the
+remaining sections are static, awaiting the user's micro-interaction notes
+section by section. Two things to raise unprompted: the layout audit at the
+top of section 7, and the mobile frames the user still owes (section 6).
+
 ---
 
 ## 1. What the project is
@@ -156,8 +163,15 @@ it has its own component and shares only the pattern.
 Figma 505:4185, eight sections over ~9,800px: hero, overview, challenge,
 approach (three phases), typography, colorography, UI screens, CTA. Copy and
 assets in `src/data/caseLms.ts`; reached from the Studio grid's first card.
-Built **static** — the user will describe the per-section micro-interactions
-next.
+
+Built static except the **hero carousel**, which is done: two slides
+cross-fading in place, one second each (the user's call, made after being told
+it is fast), dots derived from the slide count. `scripts/case-hero.ts`.
+
+**Typography was rebuilt after the user flagged it.** It had been laid out
+with flex; Figma places every piece at its own coordinate inside a 1240x543
+box. See the warning at the top of "Not done yet" — the same mistake may be
+sitting in the other sections.
 
 ---
 
@@ -178,9 +192,22 @@ The user expects claims to be backed by measurement, not by eyeballing.
 - Settle reveal animations by completing the real tween
   (`gsap.getTweensOf(targets).forEach(t => t.progress(1))`), not by
   force-setting visibility — force-setting once masked a genuine bug.
-- The dev server sometimes serves **stale CSS**; `touch` the component, or
-  check `dist/` after `npm run build`. An iframe will also hold its own cached
-  copy — reload it with a cache-busting query, not `location.reload()`.
+- **A section that screenshots blank is almost always still painting.** This
+  happened perhaps five times in one session — every time, the elements
+  measured correct size, position and `opacity: 1`. Before believing a
+  screenshot, measure. Force-decode with
+  `await Promise.all([...imgs].map(i => i.decode()))` and wait ~1s.
+- The dev server serves **stale CSS often enough to plan for it** — it bit
+  three times in one session, once returning a whole set of old measurements
+  that nearly got acted on. `touch` the component first; if the rule is in the
+  file and in `dist/` but not in the page, restart clean:
+  `npx astro dev stop && rm -rf node_modules/.vite && npm run dev`. An iframe
+  also holds its own cached copy — reload it with a cache-busting query, not
+  `location.reload()`.
+- **`download_assets` can return the same image for different nodes.** Three
+  sibling image rects each gave a byte-identical `rawImages[0]`. Use the
+  per-node `export` for anything in a shared frame, and `md5` the results —
+  identical file sizes are the tell.
 - **To check a 1440px viewport**, the OS will not shrink the window below the
   screen width, so load the page in a **1440px iframe**. Put the harness in
   `public/` (a plain HTML file with no HMR client) rather than rewriting the
@@ -242,6 +269,13 @@ token, but nothing beyond that has been designed or verified.
 
 ## 7. Not done yet
 
+- **Audit the other case-study sections against their frame coordinates.**
+  Typography was built with flex and had to be rebuilt once the user saw it —
+  Figma places its children absolutely inside a fixed box. Overview, Challenge,
+  Approach and UI Screens were built the same flex/grid way and have *not* been
+  checked against the frame the same way. Offer this before the user finds it.
+  The method: read `get_design_context` on the section, then measure each piece
+  in the browser as `x - gutter, y - 100` and compare with the frame.
 - Everything above under mobile responsiveness, including the Studio page.
 - **Micro-interactions for the LMS case study.** The hero carousel is built —
   two slides cross-fading in place, one second each, dots derived from the
@@ -277,7 +311,29 @@ token, but nothing beyond that has been designed or verified.
 
 ---
 
-## 8. One standing content note
+## 8. Git and deployment
+
+Pushed to **github.com/revanth4033/nulyfttech** (private), `main`, tracking
+`origin/main`. One commit on top of the original Astro scaffold.
+
+`references/` is **gitignored on purpose** — it holds a 34MB screen recording,
+and git history is permanent. The file is still on the user's disk. `.vercel/`
+is ignored too.
+
+The repo is 62MB, almost all `src/assets/images`. Those are needed: Astro
+generates the WebP variants from them at build time.
+
+**Vercel is not set up yet** — no project linked, nothing deployed. Two things
+will matter when it is:
+- **Node 22.** `package.json` pins `>=22.12.0`; Vercel's default may be older
+  and the build will fail the engine check.
+- **First build is slow** — WebP at two densities for ~40 source images.
+  Astro's image cache is not committed, so every cold CI build redoes it.
+  Cache `node_modules/.astro` between builds if it becomes annoying.
+
+---
+
+## 9. One standing content note
 
 Every section heading uses `text-transform: capitalize`, which Figma also
 does. It renders the brand as **"NuLyft"** rather than "nuLyft" in the Clients

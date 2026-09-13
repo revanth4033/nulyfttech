@@ -4,10 +4,25 @@ Static marketing site built section-by-section from a Figma design.
 Every section must match the Figma frame exactly, including its animation.
 
 > **New to this project? Read `HANDOFF.md` first.** It carries the history,
-> how the user works, what is built, and what is parked (mobile responsiveness
-> — audited, not started; the user is designing the four hard sections in
-> Figma and will hand them over). This file is the technical reference; that
-> one is the context.
+> how the user works, what is built, what is parked, and where the live thread
+> of work is. This file is the technical reference; that one is the context.
+> Neither is optional — most of the expensive mistakes in this build were
+> things one of them already warned about.
+
+## Reading a Figma frame
+
+Three rules, each learned the hard way and each documented again per section
+below:
+
+1. **Reproduce the box, do not infer a layout.** If a frame's children are
+   absolutely positioned, place them at those coordinates. Building the
+   typography section with flex looked plausible and was wrong in every gap.
+2. **Check what a node actually contains before exporting it.** The case-study
+   hero's "card" frame is the whole row, copy included; exporting it put the
+   headline on the page twice.
+3. **Subtract shadow bleed.** Exports are routinely larger than their node —
+   6.5px, 40px and 62px all appear in this build. Compare export size against
+   node size before positioning anything by its frame coordinate.
 
 ## Stack
 
