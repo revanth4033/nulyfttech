@@ -1,0 +1,100 @@
+---
+/**
+ * Background for the Automotive Marketplace case-study hero — Figma 510:5691.
+ *
+ * Same ingredients as `PageHeroPattern` (ruled grid, hatched squares, a solid
+ * shape that clears the grid from behind the copy) but none of the same
+ * numbers, so it is its own component rather than a pile of props on that one.
+ *
+ * **Everything inside Figma's `Pattern` frame is offset by -55.** The frame
+ * sits at y=-55 in the hero, and the metadata reports its children relative to
+ * it — so the horizontal rules Figma lists at 35.5/161.5/... actually land at
+ * -19.5/106.5/..., and the Union it lists at y=154 really starts at y=99.
+ * Verified against the render: the Union's left shoulder is predicted at 227
+ * and measured at 229, its right at 203 against 206, its foot at 1011 against
+ * 1011. Taking the metadata at face value puts the whole thing 55px low.
+ *
+ * The Union is not a glow and not a rectangle: it is a stepped #F5F3FF plate,
+ * narrow at the top where the headline sits and full width below, painted over
+ * the grid. The hatched squares are drawn under it, which is why two of the
+ * four never appear — (1099, 864) is entirely behind it.
+ */
+
+/** Uniform 126px pitch across the 1440 frame. */
+const verticals = [90, 216, 342, 468, 594, 720, 846, 972, 1098, 1224, 1350];
+
+/** 125x124 each, already in hero coordinates (Figma value minus 55). */
+const hatches = [
+  { x: 91, y: 108 },
+  { x: 1352, y: 234 },
+  { x: -35, y: 863 },
+  { x: 1099, y: 864 },
+];
+
+/** The Union, in its own 1240x912 box at (100, 99). */
+const UNION = "M999 107.11H1240V912H0V131.028H242V0H999V107.11Z";
+---
+
+<div class="apattern" aria-hidden="true">
+  <div class="apattern__rows"></div>
+
+  <svg class="apattern__art" viewBox="0 0 1440 1130" width="1440" height="1130" fill="none">
+    <defs>
+      <pattern
+        id="auto-hatch"
+        width="4"
+        height="4"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(-45)"
+      >
+        <line x1="0" y1="0" x2="0" y2="4" stroke="var(--c-hatch)" stroke-width="1"></line>
+      </pattern>
+    </defs>
+
+    {
+      verticals.map((x) => (
+        <line x1={x + 0.5} y1="0" x2={x + 0.5} y2="1130" stroke="var(--c-rule)" stroke-width="1" />
+      ))
+    }
+
+    {
+      hatches.map((h) => (
+        <rect x={h.x} y={h.y} width="125" height="124" fill="url(#auto-hatch)" />
+      ))
+    }
+
+    <path d={UNION} transform="translate(100 99)" fill="var(--c-bg-light)"></path>
+  </svg>
+</div>
+
+<style>
+  .apattern {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-pattern);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* 1px rule every 126px. The first inside the frame covers the pixel row at
+     y=106, which is -19.5 + 126 once the Pattern frame's -55 is applied. */
+  .apattern__rows {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 106px,
+      var(--c-rule) 106px 107px,
+      transparent 107px 126px
+    );
+  }
+
+  .apattern__art {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: var(--frame-w);
+    height: 1130px;
+  }
+</style>

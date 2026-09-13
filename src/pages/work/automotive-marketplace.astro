@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Nav from "../../components/Nav.astro";
+import CaseAutoHero from "../../components/sections/CaseAutoHero.astro";
+import CaseAutoOverview from "../../components/sections/CaseAutoOverview.astro";
+import CaseAutoApproach from "../../components/sections/CaseAutoApproach.astro";
+import CaseAutoSystem from "../../components/sections/CaseAutoSystem.astro";
+import CaseAutoScreens from "../../components/sections/CaseAutoScreens.astro";
+import CtaFooter from "../../components/sections/CtaFooter.astro";
+---
+
+<BaseLayout
+  title="Automotive Marketplace — nuLyft"
+  description="A mobile marketplace that helps bike dealers manage stock, create AI-powered listings, and connect directly with buyers."
+>
+  <Nav slot="overlay" />
+
+  <CaseAutoHero />
+  <CaseAutoOverview />
+  <CaseAutoApproach />
+  <CaseAutoSystem />
+  <CaseAutoScreens />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../../scripts/reveal.ts";
+  import "../../scripts/anchors.ts";
+  import "../../scripts/cta-fan.ts";
+  import "../../scripts/palette-figure.ts";
+</script>

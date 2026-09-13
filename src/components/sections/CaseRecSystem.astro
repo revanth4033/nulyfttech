@@ -1,0 +1,89 @@
+---
+import { Image } from "astro:assets";
+import PaletteFigure from "../case/PaletteFigure.astro";
+import CaseHeader from "../case/CaseHeader.astro";
+import { typography, palette } from "../../data/caseRec";
+
+/**
+ * Typography and Colorography — Figma 514:7009 and 514:7072.
+ *
+ * Both are a shared header over one annotated figure, so they live together,
+ * the same way the LMS pair does.
+ *
+ * **Unlike the LMS page, the figures ship whole rather than rebuilt.** That
+ * page places its specimen, card and three leader callouts individually and
+ * draws the dashed leaders as inline SVG at hand-measured coordinates. None
+ * of those numbers transfer — this frame puts its card at (656, 129) against
+ * the LMS's (632, 111), and the callouts elsewhere again — so every path
+ * would have to be re-derived by hand for no gain. Exporting each figure
+ * whole keeps the geometry exact and the meaning lives in `alt`.
+ *
+ * The typography figure is a crop of the *container* export, not the body:
+ * the "Heading - Medium" callout is a sibling of the body node, so a body
+ * export silently drops it.
+ *
+ * **Colorography is the exception** — it ships as an inlined SVG, because its
+ * leaders and labels have to be addressable for the draw-in and the hover.
+ * Flattened, none of that is reachable. `scripts/palette-figure.ts` owns the
+ * entry; the hover lives in the styles below, which is why it still works
+ * under reduced motion (it is a colour change, not motion).
+ */
+---
+
+<section class="rtypo" data-section>
+  <div class="container rtypo__inner">
+    <CaseHeader eyebrow={typography.eyebrow} title={typography.title} body={typography.body} />
+
+    <Image
+      src={typography.figure.src}
+      alt={typography.figure.alt}
+      width={typography.figure.w * 2}
+      widths={[typography.figure.w, typography.figure.w * 2]}
+      sizes={`${typography.figure.w}px`}
+      class="rtypo__figure"
+      data-animate
+    />
+  </div>
+</section>
+
+<section class="rpal" data-section>
+  <div class="container rtypo__inner">
+    <CaseHeader eyebrow={palette.eyebrow} title={palette.title} body={palette.body} />
+
+    <PaletteFigure
+      name={palette.art.name}
+      width={palette.art.w}
+      x={palette.art.x}
+      alt={palette.art.alt}
+    />
+  </div>
+</section>
+
+<style>
+  .rtypo,
+  .rpal {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .rtypo__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding-block: 100px;
+  }
+
+  /* The body is the full 1240 column, 543 tall, exactly as the frame cuts it. */
+  .rtypo__figure {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 1080px) {
+    .rtypo__frame,
+    .rpal__frame {
+      padding-inline: var(--gutter);
+    }
+  }
+</style>

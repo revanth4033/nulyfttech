@@ -1,0 +1,202 @@
+---
+import { Image } from "astro:assets";
+import CaseHeader from "../case/CaseHeader.astro";
+import { screens } from "../../data/caseAuto";
+
+/**
+ * UI Screens — Figma 510:6173, the page's tallest section at 3546.
+ *
+ * A row of three phones, then two feature blocks that mirror each other
+ * (phone left / copy right, then copy left / phone right), then another row
+ * of three. The two feature blocks overlap by design: the second starts at
+ * y=465 inside the first's 651, which is what tucks the copy of one beside
+ * the phone of the other.
+ *
+ * Headings read "Invidiual" in the frame. Left as drawn.
+ */
+const { rowA, rowC, features } = screens;
+---
+
+<section class="ascr" data-section>
+  <div class="ascr__frame">
+    <CaseHeader eyebrow={screens.eyebrow} title={screens.title} body={screens.intro} />
+
+    <div class="ascr__body">
+      <Image
+        src={rowA.src}
+        alt="Marketplace feed, upload images with background music, and stock and reels screens"
+        width={rowA.w * 2}
+        widths={[rowA.w, rowA.w * 2]}
+        sizes={`${rowA.w}px`}
+        class="ascr__shot"
+        style={`left:${rowA.x}px;top:${rowA.y}px;width:${rowA.w}px`}
+        data-animate
+      />
+
+      <div class="ascr__features">
+        {
+          features.map((f) => (
+            <div class="ascr__feature">
+              <span
+                class="aglow"
+                style={`left:${f.glowX}px;top:126px;width:400px;height:400px`}
+                aria-hidden="true"
+              />
+              <Image
+                src={f.phone.src}
+                alt={f.title}
+                width={f.phone.w * 2}
+                widths={[f.phone.w, f.phone.w * 2]}
+                sizes={`${f.phone.w}px`}
+                class="ascr__shot"
+                style={`left:${f.phone.x}px;top:${f.phone.y}px;width:${f.phone.w}px`}
+                data-animate
+              />
+              <div class="ascr__copy" style={`left:${f.copyX}px;top:${f.copyY}px`}>
+                <h3 class="ascr__title" data-animate>
+                  {f.title}
+                </h3>
+                <p class="ascr__text" data-animate>
+                  {f.body}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <Image
+        src={rowC.src}
+        alt="Choose template, pricing details, and pick a brand screens"
+        width={rowC.w * 2}
+        widths={[rowC.w, rowC.w * 2]}
+        sizes={`${rowC.w}px`}
+        class="ascr__shot"
+        style={`left:${rowC.x}px;top:${rowC.y}px;width:${rowC.w}px`}
+        data-animate
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ascr {
+    position: relative;
+    background: var(--c-bg-light);
+  }
+
+  .ascr__frame {
+    position: relative;
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-block: 100px;
+  }
+
+  /* The body is a placed box: 3198 tall, everything inside it positioned. */
+  .ascr__body {
+    position: relative;
+    height: 3198px;
+    margin-top: 64px;
+  }
+
+  .ascr__shot {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+  }
+
+  /* The two feature blocks start at y=1271 and overlap by 186. */
+  .ascr__features {
+    position: absolute;
+    top: 1271px;
+    left: 0;
+    width: 100%;
+    height: 1116px;
+  }
+
+  .ascr__feature {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 651px;
+  }
+
+  .ascr__feature:nth-child(2) {
+    top: 465px;
+  }
+
+  .ascr__copy {
+    position: absolute;
+    width: 653px;
+  }
+
+  .ascr__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 32px;
+    color: var(--c-accent);
+  }
+
+  .ascr__text {
+    margin-top: 16px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .aglow {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    background: var(--c-accent-glow);
+    filter: blur(90px);
+    opacity: 0.16;
+  }
+
+  @media (max-width: 1280px) {
+    .ascr__frame {
+      padding-inline: var(--gutter);
+    }
+
+    .ascr__body {
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+      height: auto;
+    }
+
+    .ascr__shot {
+      position: static;
+      width: 100% !important;
+    }
+
+    .ascr__features {
+      position: static;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+      height: auto;
+    }
+
+    .ascr__feature,
+    .ascr__feature:nth-child(2) {
+      position: static;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      height: auto;
+    }
+
+    .ascr__copy {
+      position: static;
+      width: 100%;
+    }
+
+    .aglow {
+      display: none;
+    }
+  }
+</style>

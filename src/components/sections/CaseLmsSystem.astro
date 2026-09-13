@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Icon from "../ui/Icon.astro";
+import PaletteFigure from "../case/PaletteFigure.astro";
 import CaseHeader from "../case/CaseHeader.astro";
 import { typography, palette } from "../../data/caseLms";
 
@@ -94,14 +95,7 @@ const DASH = { stroke: "#A1A1AA", width: 2.147, dash: "4.29 4.29" };
   <div class="container pal__inner">
     <CaseHeader eyebrow={palette.eyebrow} title={palette.title} body={palette.body} />
 
-    <Icon
-      name={palette.art.name}
-      width={998}
-      class="pal__art"
-      role="img"
-      aria-label={palette.art.alt}
-      data-animate
-    />
+    <PaletteFigure name={palette.art.name} width={998} alt={palette.art.alt} />
   </div>
 </section>
 
@@ -135,8 +129,7 @@ const DASH = { stroke: "#A1A1AA", width: 2.147, dash: "4.29 4.29" };
     width: 503px;
   }
 
-  .typo :global(.typo__specimen svg),
-  .pal :global(.pal__art svg) {
+  .typo :global(.typo__specimen svg) {
     width: 100%;
     height: auto;
   }
@@ -215,9 +208,12 @@ const DASH = { stroke: "#A1A1AA", width: 2.147, dash: "4.29 4.29" };
     text-align: center;
   }
 
-  .pal :global(.pal__art) {
+  /* The figure centres itself in the column. Its own sizing lives in
+     `case/PaletteFigure.astro` — the old `.pal__art` wrapper class had to go,
+     because the tagged SVG uses that exact name for the illustration group
+     inside it and the two rules collided. */
+  .pal :global(.palfig) {
     align-self: center;
-    max-width: 100%;
   }
 
   /* --- responsive ------------------------------------------------------------ */

@@ -105,6 +105,7 @@ export const projects: Project[] = [
     tab: "product-design",
     title: "AI Powered Recruitment Platform",
     meta: "Product Design & Engineering · HR Recruitment · 2025",
+    href: "/work/ai-recruitment-platform",
     span: "half",
     media: {
       kind: "browser",
@@ -117,6 +118,7 @@ export const projects: Project[] = [
     tab: "product-design",
     title: "Automotive Marketplace",
     meta: "Product Design & Engineering · E - Commerce · 2025",
+    href: "/work/automotive-marketplace",
     span: "full",
     media: {
       kind: "phones",

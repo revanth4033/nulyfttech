@@ -715,11 +715,31 @@ placed at the card's coordinate *minus* 40 and sized to the export. Check the
 export size against the node size before positioning anything by its frame
 coordinate.
 
-**Product screenshots ship as flattened exports, not rebuilt DOM.** They are
-fixed compositions — tilted stacks, browser frames with baked shadows, a phone
-overlaid on a desktop — carrying no interaction and none of our text, so
-re-deriving them in markup adds weight and nothing else. Text that *is* ours
-(captions, phase lists, callouts) stays in the DOM.
+**Product screenshots ship as flattened exports, not rebuilt DOM** — until one
+has to move. They are fixed compositions — tilted stacks, browser frames with
+baked shadows, a phone overlaid on a desktop — carrying no interaction and
+none of our text, so re-deriving them in markup adds weight and nothing else.
+Text that *is* ours (captions, phase lists, callouts) stays in the DOM. The
+one exception is the Overview stack, whose two screens now swap places; a
+baked-in picture cannot do that, so it is real DOM (see below).
+
+**Figma bakes the section ground into node exports, and it is not harmless.**
+Every export here arrives fully opaque with a flat plate of the parent
+section's background painted behind the art — the raster cousin of the
+`<rect fill="#1E1E1E">` trap above. It hides for as long as nothing sits
+behind the image. Put anything there — the Overview's lavender glow — and the
+plate masks it everywhere inside the image's box while it still shows in the
+halo bleeding outside, drawing a hard-edged rectangle exactly the size of the
+image that reads as a white panel. The user caught this one.
+
+`scripts/strip-plate.py` keys the plate out. It floods inward from the border
+across pixels that are no lighter than the plate **and** still carry its blue
+cast (`b/g = 255/243`); the hue test is the part that matters, because a
+neutral `#f2f2f2` card border passes "no lighter than the plate" but is
+artwork — without it 2.6% of pixels came out ~11 levels wrong, with it the
+worst is 3.7 and the mean 0.001. Run it on any new export that will have
+something behind it, and check the reported round-trip error rather than
+trusting the eye.
 
 **`rawImages` returned the same photo for three different nodes.** The
 Challenge section's three sibling image rects each gave a byte-identical
@@ -733,23 +753,78 @@ row — copy *and* card. Exporting it and rendering the copy in DOM as well put
 the headline on the page twice. Check what a frame actually contains before
 exporting it as "the image".
 
-**The hero's two cards are carousel slides, not one card behind another.**
-They overlap in the frame because that is how a carousel gets parked in a
-static mock, and the two screenshots are of different products — the second is
-an Aster Data recruitment site, almost certainly a placeholder. Read what the
-second image *is* before dismissing it as a duplicate edge; that mistake cost
-a round trip here.
+**The hero carousel is gone; the hero is one static card.** Figma draws two
+overlapping slides over a row of indicator dots — a carousel parked in a
+static mock — and it was built that way, cross-fading at one second per
+slide. The second slide was a *different product*, an Aster Data recruitment
+site standing in on a Skill Wagon case study, so the user had it removed. The
+dots went with it: with one card there is nothing to indicate. `hero.media`
+in `caseLms.ts` replaced `hero.slides`, and `scripts/case-hero.ts` and
+`hero-card-2.png` are deleted — recover them from git if a second Skill Wagon
+screen ever turns up.
 
-**Size stacked slides by their card, not their export.** The two hero exports
-carry different shadow bleed — 6.5px against 62px — so matching their export
-widths would leave the cards visibly different sizes and the cross-fade would
-jump. `slides[].w` in `caseLms.ts` is the width that puts each export's *card*
-at the same size; both are then centred on one box, which lands them exactly
-on top of each other (verified: both centres at the same point to 0.1px).
+**Size the card by its card, not its export.** `hero.media.w` is 569, the
+width that puts the export's *card* at its Figma size; the export carries
+6.5px of shadow bleed on top of that, baked in, so the media box must not
+clip. (The removed second export carried 62px — sizing stacked slides by
+their export widths would have left the two cards visibly different sizes.)
 
-**The carousel runs at one second per slide.** That is fast for a hero and the
-user was told so; they confirmed it. `HOLD` and `FADE` in
-`scripts/case-hero.ts` are the two knobs.
+**The fact labels and the eyebrow above them are tracked differently, and
+the difference is load-bearing.** Both are 14px uppercase, so the eyebrow's
+`--tr-eyebrow-lg` (2.4px) looks like the obvious choice for the labels too —
+but at 2.4 "Business Type" measures 140.55px against its 139.5px column,
+wraps, and drops its value a line below the other three. Figma sets the
+labels at 1.8px (`--tr-eyebrow-md`): measured off the frame, its label ink is
+131px for "Business Type" and 113px for "Technology", against 138.15 and
+121.2 at 2.4. The eyebrow really is 2.4 — ours is 190.8 wide against Figma's
+188 node, which is the trailing letter-space CSS adds and nothing more. Check
+the tracking before reaching for the font size; the size was never wrong.
+
+### The Overview stack — two screens that trade places
+
+`src/scripts/overview-stack.ts`, geometry in `overview` in `data/caseLms.ts`.
+Every two seconds the back screen hops into the front slot and the front one
+drops back. Figma 505:4396, a 634x523 box.
+
+**Both cards are the same 500x307.** Metadata reports only axis-aligned
+bounding boxes — 533.69x365.65 for the back one — which looks like two
+differently sized cards. It is one size at two rotations:
+`500·cos7 + 307·sin7 = 533.69` and `500·sin7 + 307·cos7 = 365.66`, both
+matching to 0.01, and the render's long edges measure -7.000 degrees. Same
+trap as the AI & Automation orbs, where three "different" orb sizes were one
+60px disc at three angles.
+
+**Slots are stored as centres, not top-lefts.** The back card is rotated, so
+the `x`/`y` Figma reports for it is the corner of its bounding box and not the
+corner of the card. Centre plus rotation is the only description that survives
+the transform.
+
+**Figma runs the copy and this box edge to edge — 0-606 and 606-1240, no
+gutter.** The breathing room between them is the cards' own inset inside the
+box. The section shipped with a 48px flex gap, which squeezed the stage to 586
+and scaled the whole composition down 7.6%; `.cover__inner` now sets `gap: 0`.
+
+**Mirror the two arcs or the cards vanish into each other.** Both travel the
+same line between the two slots, in opposite directions, so an identical arc
+puts them at precisely the same place at the halfway point — measured, both
+landed on (88.9, 112.3, -3.5deg) and the upper one hid the other completely.
+The riser now arcs over the top and the retiring card dips under it, which
+also reads as a shuffle rather than two things sliding through each other.
+
+**The cards are placed by CSS, and the script only ever writes the offset from
+home.** `left`/`top`/`--sr` come from the data as percentages baked into the
+markup, so the resting composition is correct with JS off and under reduced
+motion; `--sx`/`--sy` default to 0 and are percentages of the *card's* own box,
+which is what `translate()` resolves against. Everything else is a percentage
+of the stage, so the composition scales as one piece — verified at 1100, 900
+and 390 with no horizontal overflow and the 634/523 ratio held.
+
+**`flex: 0 1 634px` has to become `flex: none` once the row stacks**, or the
+basis is read as a height and fights the `aspect-ratio` that gives the stage
+its size.
+
+Verify it with `overviewStackSeek(p)` (phase 0-2) and `overviewStackTimeline`,
+both exposed in DEV. Swaps complete at t=2.0 and t=4.0 of a 4s lap.
 
 **Two figures are SVG exports on purpose.** The type specimen would otherwise
 need five weights of Open Sans, a face this site does not load, for one
@@ -761,6 +836,165 @@ typography callouts are placed at Figma's offsets *plus* `var(--gutter)`,
 because `.container` carries the gutter as padding rather than as a margin.
 Without it every callout sits 100px left of where the frame puts it.
 
+
+### The Colorography figure — draws itself, then answers the pointer
+
+**Shared by all three case studies.** `components/case/PaletteFigure.astro`
+renders it, `scripts/tag-palette.py` prepares the SVG, `scripts/palette-figure.ts`
+drives the entry, and the hover lives in the component's styles. Nothing is
+page-specific: LMS and Recruitment have four colours, Automotive six, and both
+the reading order and the drift direction fall out of the geometry.
+
+`src/scripts/palette-figure.ts` + the styles in `CaseRecSystem.astro`. Two
+interactions the user chose: on scroll-in the illustration fades up and each
+leader draws outward to its label, the label arriving as its line lands
+(reading order, ~1.31s, once); and hovering or focusing a group dims the other
+three and lights that group's leader in its own hex.
+
+**These are the only figures that are NOT flattened exports.** They are inlined
+SVG via `<Icon>`, because a flat PNG has nothing to address. `tag-palette.py`
+adds `pal__group` / `pal__leader` / `pal__label`, `data-hex` and a `--pal-line`
+per group. `npm run optimize:svg` strips unreferenced *ids* — which is exactly
+why every hook is a class or data attribute; verified to survive, but re-check
+the counts after running it.
+
+**Find the wrappers structurally, not by id.** Figma reuses `Frame 2147240601`
+for both a leader wrapper and the figure's own root, so matching on the name
+tags the entire figure as one colour group. A wrapper is any element that
+directly contains both a `…595` (leader) and a `…596` (label) frame.
+
+**The illustration is the largest group containing no colour group.** Taking
+"the first group that is not a wrapper" lands on the export's outermost page
+group — which wraps the leaders and labels too, so the entry would fade the
+whole diagram as though it were the art.
+
+**Figma dedupes a repeated layer name with `_2`.** The LMS palette uses
+`#4A4A59` twice, so the second arrives as `#4A4A59_2`; an exact-length id check
+missed it and that leader fell back to grey, unable to light.
+
+**A near-white swatch cannot light in its own hex** — `#F7F7F7`, `#E5F2E9`,
+`#FAEFF5` and `#F4F4F4` are invisible against the lavender ground. The tagger
+substitutes a readable `#8A8A93` for the *line* only; the label still shows the
+true hex.
+
+**`:global()` inside `:has()` is emitted literally and kills the rule.** Astro
+does not process it there, so `.x:has(:global(.y:hover))` ships as invalid CSS
+and the browser drops the whole rule. Wrap the *entire* selector instead:
+`:global(.x:has(.y:hover) .z)`. The classes come from the inlined SVG and carry
+no scope attribute anyway.
+
+**`<Icon>` renders a block `<span>`, and the svg stretches to fill it.** In a
+1240 column that scaled an 858-wide figure to 1049 and made the section 849
+tall against the frame's 758. Pin the width on the span *and* on `> svg`.
+
+**A transitioned property cannot be verified in a backgrounded tab.**
+`getComputedStyle(line).stroke` returns the *pre-transition* value if read
+synchronously, and waiting does not help either when Chrome has backgrounded
+the tab and suspended rAF — the transition never advances, so the reading stays
+at the start value forever. Five separate "the CSS is broken" diagnoses here
+were this. Verify by injecting `transition: none !important` first, then read.
+
+**Hit areas are built outside `registerSection`**, which bails before its
+callback under `prefers-reduced-motion`. The hover is colour, not motion, and
+should survive — otherwise reduced-motion visitors hover glyph outlines and
+fall through the gaps between letters.
+
+## Case study — AI Powered Recruitment Platform
+
+`src/pages/work/ai-recruitment-platform.astro` — Figma 514:6633, ~9,650px.
+Copy and geometry in `src/data/caseRec.ts`. Reached from the Studio grid's
+AI Powered Recruitment Platform card. Static apart from the Overview stack,
+which reuses `overview-stack.ts`.
+
+**It is the LMS template.** The two frames are section-for-section identical
+and seven of the eight sections are the same height to the pixel — only UI
+Screens differs (3475 against 3632). So the components are the LMS ones
+duplicated and re-pointed at this data. Check that before assuming a new case
+study needs new components; compare the top-level section list first.
+
+**Size media by its card, not its export — the LMS page gets this wrong.**
+Every screenshot export here carries 53-61px of baked shadow per side. The LMS
+components size the figure to the export, which pushes each block taller than
+its frame: measured on `/work/lms-education-saas`, its Approach runs +48 and
+its UI Screens +293 against Figma. The recruitment components reserve the
+node's box with `aspect-ratio` and let the export overflow it, centred, which
+lands all five screen blocks exactly (700/394/394/765/394) and the phases at
+407 against 406.6. **The same fix is still owed to the LMS page.**
+
+**The emphasis runs the other way from the LMS hero.** There the *lead* is
+italic in the accent purple; here the *tail* is italic and stays in the
+heading ink. Reproduced as drawn rather than normalised.
+
+**Typography ships as one flattened figure here, unlike the LMS page**, which
+places its specimen, card and callouts individually and draws the dashed
+leaders as inline SVG. None of those coordinates transfer — this frame puts
+its card at (656, 129) against the LMS's (632, 111). Exported from the
+container (514:7010), not the body, because the "Heading - Medium" callout is
+a sibling of the body node; the header band is cropped back off.
+
+**Two copy blocks are stray pastes and are left as drawn**: the Challenge
+title still reads "Learning was happening everywhere - except in one connected
+place", and the approach eyebrow is spelled "our approch". Flagged, not fixed.
+
+## Case study — Automotive Marketplace
+
+`src/pages/work/automotive-marketplace.astro` — Figma 510:5689, ~10,100px over
+eight sections. Copy and geometry in `src/data/caseAuto.ts`. Reached from the
+Studio grid's Automotive Marketplace card. Static; `reveal.ts` only.
+
+**The Figma frame is named "AI Powered Recruitment Platform" and that name is
+wrong.** Every word inside it is the bike-dealer marketplace — the hero says
+"AI Reel Creator", the fact row says "Automotive Marketplace", the screens are
+a vehicle stock app. A stray name from duplicating a frame, like the Careers
+frame carrying the Talent Intelligence CTA. Confirmed with the user, who had
+it wired to the Automotive Marketplace card. There is no separate recruitment
+frame in the file, and no separate automotive one.
+
+**Everything inside the hero's `Pattern` frame is offset by -55.** The frame
+sits at y=-55 and metadata reports its children relative to it, so the rules
+Figma lists at 35.5/161.5 land at -19.5/106.5, and the Union it puts at y=154
+really starts at 99. Verified four edges against the render: left shoulder
+predicted 227 / measured 229, right 203 / 206, foot 1011 / 1011. `AutoHeroPattern`
+carries the corrected numbers.
+
+**The hero headline tracks at -3px, not the -2 every other hero uses.** At -2
+our ink is 511.2 against Figma's 488 on line one; at -3 it is 487.2 and line
+two lands at 255.6 against 256. A narrower face would explain line one but
+predicts 254.5 for line two, so it is tracking, not the font. `--tr-h2-tight`.
+
+**`strip-plate.py --exact` exists because the tolerant flood eats faded
+artwork.** The Phase-02 phone's own screen is `(243,241,252)` — three levels
+off the plate — so the default test flooded 99.8% of that export and destroyed
+it. Strict mode keys only pixels within 1 level of the plate. Use it for any
+export whose artwork has large near-plate areas; the tolerant mode is for
+exports with real soft shadows to recover.
+
+**An absolute child of these section frames must add the 100px container
+inset back.** The 1240 container is the frame's *padding*, and an absolutely
+positioned child resolves `top` against the border box — so every piece of
+media sat 100px high until an explicit `INSET` was added. The flowed sections
+(Approach, UI Screens) are unaffected because their bodies are in normal flow.
+
+**An inline `top` beats the class rule.** Row C of UI Screens is positioned
+from data like every other shot, and a `.ascr__shot--c { top: 2541.25px }`
+rule was silently overridden by the element's own inline `top`, parking the
+row at the top of the section. Its offset lives in `caseAuto.ts` now.
+
+**Export the container, not the body, for the typography figure.** Only the
+"Body Text" leader is a child of the body node (510:5924); "Heading - Semi
+bold" and "Button label - Regular" are siblings of it, so a body export
+silently drops two of the three labels. It is exported from 510:5915 with the
+header band cropped back off.
+
+**Phase spacing: 16px between a phase title and its items, not 48.** Figma
+runs the title 0-32 and the items 48-169; confusing that gap with the 64 that
+separates section blocks made the section 33px tall against the frame's 1638.
+Each item is a 121 box — 24 above the label, paragraph 49 from the top, 24
+below before the rule.
+
+**Copy is reproduced as drawn, typos included** — "OUR APPROCH", "Invidiual",
+and a UI Screens intro that still says "learning experience". Flagged, not
+silently corrected.
 
 ## Assets from Figma
 

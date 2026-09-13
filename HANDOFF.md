@@ -8,12 +8,14 @@ read it and trust it.
 
 Read this file once at the start of the session, then work from `AGENTS.md`.
 
-**Where things stand right now:** the home page and three inner pages are
-built and pushed to GitHub. The user is about to deploy to Vercel. The live
-thread of work is the LMS case study — its hero carousel is done and the
-remaining sections are static, awaiting the user's micro-interaction notes
-section by section. Two things to raise unprompted: the layout audit at the
-top of section 7, and the mobile frames the user still owes (section 6).
+**Where things stand right now:** the home page, three inner pages and **all
+three case studies** are built and pushed. Every Studio card that has a design
+now routes to a real page. The live thread is micro-interactions: three are
+built (the Overview stack swap, and the Colorography draw-in + hover on all
+three case studies) and the rest of the case-study sections are still static,
+awaiting the user's notes section by section. Two things to raise unprompted:
+the media-sizing bug still open on the LMS page (section 7) and the mobile
+frames the user still owes (section 6).
 
 ---
 
@@ -164,9 +166,24 @@ Figma 505:4185, eight sections over ~9,800px: hero, overview, challenge,
 approach (three phases), typography, colorography, UI screens, CTA. Copy and
 assets in `src/data/caseLms.ts`; reached from the Studio grid's first card.
 
-Built static except the **hero carousel**, which is done: two slides
-cross-fading in place, one second each (the user's call, made after being told
-it is fast), dots derived from the slide count. `scripts/case-hero.ts`.
+The hero **was** a carousel — two slides cross-fading in place at one second
+each, with indicator dots — but the user had the second slide removed (it was
+an Aster Data recruitment site, a placeholder on a Skill Wagon case study) and
+the dots with it. The hero is now one static card; `scripts/case-hero.ts` and
+`hero-card-2.png` are deleted, recoverable from git.
+
+**Overview ("About The Project") is the one section with motion.** Its two
+screens trade places every two seconds — `scripts/overview-stack.ts`. That
+meant rebuilding the stack as real DOM: Figma ships it as one flattened export
+with both screens baked in, which cannot move. The screens are now separate
+assets and the composition is reproduced from the frame's own coordinates
+(verified to 0.01px). Everything below it is still static.
+
+**Every Figma node export here has an opaque plate of the section background
+baked into it**, and it is invisible until something sits behind the image —
+at which point it masks it in a hard-edged rectangle. That is what the user
+saw as "a white bg behind the images". `scripts/strip-plate.py` keys it out;
+run it on any new export and read the round-trip error it reports.
 
 **Typography was rebuilt after the user flagged it.** It had been laid out
 with flex; Figma places every piece at its own coordinate inside a 1240x543
@@ -269,22 +286,62 @@ token, but nothing beyond that has been designed or verified.
 
 ## 7. Not done yet
 
-- **Audit the other case-study sections against their frame coordinates.**
+- **Audit the LMS case study's sections against their frame coordinates.**
   Typography was built with flex and had to be rebuilt once the user saw it —
-  Figma places its children absolutely inside a fixed box. Overview, Challenge,
-  Approach and UI Screens were built the same flex/grid way and have *not* been
-  checked against the frame the same way. Offer this before the user finds it.
-  The method: read `get_design_context` on the section, then measure each piece
-  in the browser as `x - gutter, y - 100` and compare with the frame.
+  Figma places its children absolutely inside a fixed box. Its Overview,
+  Challenge, Approach and UI Screens were built the same flex/grid way and have
+  never been checked. Measured section heights against the frame today:
+  Challenge -23, Approach +48, UI Screens +293. The Automotive and Recruitment
+  pages were built against measured coordinates and match to the pixel.
 - Everything above under mobile responsiveness, including the Studio page.
-- **Micro-interactions for the LMS case study.** The hero carousel is built —
-  two slides cross-fading in place, one second each, dots derived from the
-  slide count. The remaining sections are still static; the user will describe
-  each one's motion.
-- **The hero's second slide is a different product** — an Aster Data
-  recruitment site, not Skill Wagon. Flagged as a likely placeholder; swap it
-  in `caseLms.ts` if a second Skill Wagon screen turns up.
-- **Case study pages.** The card button renders on the remaining six Studio cards
+- **Micro-interactions.** Built so far: the Overview stack swap (LMS and
+  Recruitment) and the Colorography draw-in + hover (all three). Every other
+  case-study section is static; the user describes each one's motion, and the
+  rule is *explain first, build second*.
+- **The LMS page still sizes its media by the export, not the node.** Its
+  screenshots carry 53-61px of baked shadow, so its Approach renders +48 and
+  its UI Screens +293 against its own frame. The Automotive and Recruitment
+  components reserve the node's box and let the shadow overflow; porting that
+  back is a contained fix and is the single biggest fidelity gap left.
+- **The three new case studies add ~16MB of PNG source** to a repo that was
+  already 62MB of images. They are real sources — Astro makes the WebP from
+  them — but they are photographic *with alpha*, so they cannot become JPEG.
+  Re-sourcing them as lossless WebP would roughly halve it; worth doing before
+  the repo grows further, since history is permanent.
+**All three case studies now share the Colorography interaction** — the figure
+draws itself in on scroll and answers hover/focus by dimming the other colours
+and lighting one leader in its own hex. `case/PaletteFigure.astro` +
+`scripts/palette-figure.ts` + `scripts/tag-palette.py`. Four colours on LMS and
+Recruitment, six on Automotive; the script derives everything from geometry.
+
+### The AI Powered Recruitment Platform case study — `/work/ai-recruitment-platform`
+Figma 514:6633, ~9,650px. **Built on the LMS template** — the two frames are
+section-for-section identical and seven of eight sections match to the pixel,
+so the components are the LMS ones duplicated and re-pointed at
+`src/data/caseRec.ts`. Static apart from the Overview stack, which reuses the
+swap animation.
+
+**The LMS page still has a media-sizing bug this page fixed.** Its exports
+carry 53-61px of baked shadow and its components size the figure to the export
+rather than the node, so its Approach renders +48 and its UI Screens +293
+against its own frame. The recruitment components reserve the node box and let
+the shadow overflow. Worth porting back.
+
+### The Automotive Marketplace case study — `/work/automotive-marketplace`
+Figma 510:5689, eight sections over ~10,100px: hero, overview, challenge,
+approach (three phases), typography, colorography, UI screens, CTA. Copy and
+geometry in `src/data/caseAuto.ts`; reached from the Studio grid's Automotive
+Marketplace card. Static throughout — no micro-interactions yet.
+
+**The frame is named "AI Powered Recruitment Platform" and the name is wrong** —
+its content is entirely the bike marketplace. The user confirmed it belongs to
+the Automotive Marketplace card. `AI Powered Recruitment Platform` still has no
+destination.
+
+Every section height matches the frame exactly (1130 / 698 / 677 / 1639 / 795 /
+758 / 3546) and no width from 1440 down to 390 scrolls horizontally.
+
+- **Case study pages.** The card button renders on the remaining five Studio cards
   ("View Pitch Deck" on Narrative's decks, "Full Case Study" elsewhere) but has
   no destination — `href` is omitted in `src/data/studio.ts` and the
   button renders `disabled`. The user has the designs and will hand them over.

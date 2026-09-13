@@ -2,6 +2,11 @@
 import { Image } from "astro:assets";
 import { overview, challenge } from "../../data/caseLms";
 
+const { stage, slots, screens } = overview;
+
+/** Figma px -> percent of the stage, so the whole composition scales as one. */
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
+
 /**
  * Overview and Challenge — Figma 505:4357 and 505:4399.
  *
@@ -9,9 +14,12 @@ import { overview, challenge } from "../../data/caseLms";
  * their intro under the title rather than in the right-hand column the later
  * sections use. Kept in one file for that reason.
  *
- * Overview's media is a single flattened export of the tilted screen stack;
- * rebuilding two rotated, overlapping screenshots in DOM would buy nothing.
- * The Challenge's three photos are a plain grid, so they stay separate images.
+ * Overview's media used to be a single flattened export of the tilted screen
+ * stack, on the reasoning that rebuilding it in DOM would buy nothing. It buys
+ * motion: the two screens now trade places, which a baked-in picture cannot do.
+ * So the screens are separate assets and the stack is real DOM — see
+ * `scripts/overview-stack.ts`. The Challenge's three photos are a plain grid,
+ * so they stay separate images.
  */
 ---
 
@@ -47,13 +55,20 @@ import { overview, challenge } from "../../data/caseLms";
 
     <div class="cover__media" data-animate>
       <span class="cover__glow" aria-hidden="true"></span>
-      <Image
-        src={overview.media.src}
-        alt={overview.media.alt}
-        width={1268}
-        widths={[634, 1268]}
-        sizes="634px"
-      />
+      {
+        screens.map((screen, i) => (
+          <Image
+            src={screen.src}
+            alt={screen.alt}
+            width={stage.card.w * 2}
+            widths={[stage.card.w, stage.card.w * 2]}
+            sizes={`${stage.card.w}px`}
+            class="cover__screen"
+            style={`left:${pct(slots[i].cx, stage.w)};top:${pct(slots[i].cy, stage.h)};--sr:${slots[i].rotate}deg;z-index:${i + 1}`}
+            data-screen
+          />
+        ))
+      }
     </div>
   </div>
 </section>
@@ -110,6 +125,10 @@ import { overview, challenge } from "../../data/caseLms";
     align-items: flex-start;
     gap: 48px;
     padding-block: 100px;
+  }
+
+  .cover__inner {
+    gap: 0;
   }
 
   .cover__copy {
@@ -183,10 +202,17 @@ import { overview, challenge } from "../../data/caseLms";
     margin-top: 16px;
   }
 
+  /* Tracked at 1.8px, not the 2.4px the eyebrow above uses — Figma really
+     does set these two differently, and at 2.4 "Business Type" measures
+     140.55px against its 139.5px column and wraps onto a second line, which
+     knocks its value out of line with the other three. Measured off the
+     frame: Figma's label ink is 131px here and 113px for "Technology",
+     against 138.15 and 121.2 at 2.4. The size is right; only the tracking
+     was borrowed from the wrong place. */
   .cover__facts dt {
     font-size: var(--fs-sm);
     line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
+    letter-spacing: var(--tr-eyebrow-md);
     text-transform: uppercase;
     color: var(--c-muted);
   }
@@ -199,22 +225,44 @@ import { overview, challenge } from "../../data/caseLms";
     color: var(--c-accent);
   }
 
+  /* Figma runs the copy 0-606 and this box 606-1240, edge to edge with no
+     gutter between them — the breathing room is the cards' own inset inside
+     the box. Hence the gap override below. */
   .cover__media {
     position: relative;
-    flex: 1;
+    flex: 0 1 634px;
     min-width: 0;
+    aspect-ratio: 634 / 523;
   }
 
-  .cover__media :global(img) {
-    position: relative;
+  /* Placed by centre, because the back card is rotated and its top-left is
+     not where Figma reports it. Everything is a percentage of the stage so
+     the composition scales as one piece; `--sx`/`--sy` are percentages of the
+     card's own box, which is what `translate()` resolves against, and are the
+     only things the swap touches. */
+  .cover__media :global(.cover__screen) {
+    position: absolute;
     display: block;
-    width: 100%;
+    width: 78.8644%;
     height: auto;
+    transform: translate(-50%, -50%) translate(var(--sx, 0), var(--sy, 0))
+      rotate(var(--sr, 0deg));
+    transform-origin: 50% 50%;
   }
 
-  /* The soft lavender disc Figma floats behind the stack. */
+  /* The soft lavender disc Figma floats behind the stack.
+     Two things about it, both learned from a bug the user caught:
+     the export used to bake this section's ground in as an opaque plate, so
+     the disc was masked everywhere inside the image's box and showed only as
+     a halo bleeding out around it — a hard-edged rectangle that read as a
+     white panel. `scripts/strip-plate.py` keyed that plate out, so the disc
+     now reads through as designed. And it has to be this faint: measured on
+     the frame, Figma's wash bottoms out 5-6 levels under the ground, where
+     0.5 opacity here was ~19. Check any change to it against the frame's
+     background, not against how it looks alone. */
   .cover__glow {
     position: absolute;
+    z-index: 0;
     top: -25px;
     right: 0;
     width: 400px;
@@ -223,7 +271,7 @@ import { overview, challenge } from "../../data/caseLms";
     border-radius: 50%;
     background: var(--c-accent-glow);
     filter: blur(90px);
-    opacity: 0.5;
+    opacity: 0.16;
   }
 
   /* --- challenge ----------------------------------------------------------- */
@@ -312,5 +360,15 @@ import { overview, challenge } from "../../data/caseLms";
     .chal__photos {
       width: 100%;
     }
+
+    /* The row's flex-basis would become a height once this stacks, and it
+       would fight the aspect ratio that gives the stage its height. */
+    .cover__media {
+      flex: none;
+    }
   }
 </style>
+
+<script>
+  import "../../scripts/overview-stack";
+</script>

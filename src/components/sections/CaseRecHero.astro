@@ -1,0 +1,160 @@
+---
+import { Image } from "astro:assets";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import PageHeroPattern from "../PageHeroPattern.astro";
+import { hero } from "../../data/caseRec";
+
+/**
+ * Case-study hero — Figma 505:4186.
+ *
+ * Unlike the Studio and Careers heroes this one is a split: copy left, a
+ * product card right, both inside a 1224-wide band inset 116 from the frame.
+ * So it does not use `PageHero`; only the pattern behind it is shared.
+ *
+ * Figma draws this as a carousel here too — two overlapping cards over five
+ * indicator dots — and it ships as one static card with no dots, following
+ * the decision made on the LMS page.
+ *
+ * The emphasis runs the other way from that page: there the *lead* is italic
+ * and set in the accent purple, here the *tail* is italic and stays in the
+ * heading ink. Reproduced as drawn rather than normalised to a house rule.
+ */
+---
+
+<section class="chero" data-section>
+  <PageHeroPattern />
+
+  <div class="chero__frame">
+    <div class="chero__band">
+      <div class="chero__copy">
+        <EyebrowBadge variant="studio" class="chero__eyebrow" data-animate>
+          {hero.eyebrow}
+        </EyebrowBadge>
+
+        <h1 class="chero__title" data-animate>
+          {hero.title}<em>{hero.titleTail}</em>
+        </h1>
+
+        <p class="chero__body" data-animate>{hero.body}</p>
+      </div>
+
+      <div class="chero__media" data-animate>
+        <Image
+          src={hero.media.src}
+          alt={hero.media.alt}
+          width={hero.media.w * 2}
+          widths={[hero.media.w, hero.media.w * 2]}
+          sizes={`${hero.media.w}px`}
+          class="chero__card"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .chero {
+    position: relative;
+    min-height: 816px;
+    padding-top: var(--nav-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .chero__frame {
+    position: relative;
+    z-index: var(--z-content);
+    width: 100%;
+    max-width: var(--frame-w);
+    height: calc(816px - var(--nav-h));
+    margin-inline: auto;
+  }
+
+  /* Figma insets this band 116 from the frame, not the usual 100 gutter. */
+  .chero__band {
+    position: absolute;
+    top: 173px; /* Figma y=256 minus the 83px nav */
+    left: 116px;
+    right: 100px;
+    display: flex;
+    align-items: center;
+    gap: 56px;
+  }
+
+  .chero__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 604px;
+    max-width: 100%;
+  }
+
+  .chero__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: 1.28;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-heading);
+    text-wrap: wrap;
+  }
+
+  /* Italic, but in the heading ink — this frame does not tint its emphasis. */
+  .chero__title em {
+    font-style: italic;
+    color: inherit;
+  }
+
+  .chero__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* The card's shadow is baked into the export, so this must not clip. */
+  .chero__media {
+    flex: none;
+    width: 569px;
+    max-width: 100%;
+  }
+
+  .chero__media :global(.chero__card) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 1240px) {
+    .chero__band {
+      left: var(--gutter);
+      right: var(--gutter);
+      gap: 32px;
+    }
+
+    .chero__copy {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .chero {
+      min-height: 0;
+      padding-bottom: 80px;
+    }
+
+    .chero__frame {
+      height: auto;
+    }
+
+    .chero__band {
+      position: static;
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 64px;
+    }
+  }
+</style>
