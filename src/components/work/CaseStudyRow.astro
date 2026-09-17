@@ -18,6 +18,12 @@ interface Props {
 
 const { study } = Astro.props;
 const { media } = study;
+
+/** The device stage's drawn box. Piece coordinates are expressed against it
+ *  as percentages so the composition scales instead of overflowing when the
+ *  column narrows — at 375 the pieces used to run ~230px past the screen. */
+const DEVICE_W = 575.16;
+const DEVICE_H = 317.48;
 ---
 
 <article class:list={["case", { "case--reverse": study.reverse }]} data-case-row>
@@ -66,7 +72,7 @@ const { media } = study;
               sizes={`${Math.round(piece.width)}px`}
               class="case__phone"
               data-phone
-              style={`left:${piece.left}px;top:${piece.top}px;width:${piece.width}px`}
+              style={`left:${(piece.left / DEVICE_W) * 100}%;top:${(piece.top / DEVICE_H) * 100}%;width:${(piece.width / DEVICE_W) * 100}%`}
             />
           ))}
         </div>
@@ -190,7 +196,9 @@ const { media } = study;
   .case__device {
     position: relative;
     width: 575.16px;
-    height: 317.48px;
+    max-width: 100%;
+    aspect-ratio: 575.16 / 317.48;
+    height: auto;
   }
 
   .case__glow {
@@ -259,6 +267,14 @@ const { media } = study;
     .case__device {
       width: 100%;
       max-width: 577.58px;
+    }
+
+    /* The 0.8345 scale above is for the two-column layout; stacked, the stage
+       simply takes the column and its percentage children follow. */
+    .case__device {
+      scale: none;
+      margin-right: 0;
+      height: auto;
     }
 
     .case__browser {

@@ -9,7 +9,14 @@ import { screens } from "../../data/caseLms";
  * Five blocks. Two are captioned — screenshot on one side, title and copy on
  * the other, mirrored between them — and three run the full column width.
  * `layout` in the data decides which, so adding a screen is a data change.
+ *
+ * Each block reserves its Figma node's box and lets the export's baked shadow
+ * overflow it. The exports run 53-84px larger per side here, and sizing the
+ * blocks to them instead put this section 293px over the frame.
  */
+
+/** The frame's column for each layout: the full 1240, or one grid cell. */
+const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
 ---
 
 <section class="scr" data-section>
@@ -20,13 +27,17 @@ import { screens } from "../../data/caseLms";
       {
         screens.blocks.map((block) => (
           <div class:list={["shot", `shot--${block.layout}`]} data-animate>
-            <figure class="shot__media">
+            <figure
+              class="shot__media"
+              style={`width:${(block.node.w / cellOf(block.layout)) * 100}%;aspect-ratio:${block.node.w}/${block.node.h}`}
+            >
               <Image
                 src={block.src}
                 alt={block.alt}
-                width={block.layout === "full" ? 2480 : 1216}
-                widths={block.layout === "full" ? [1240, 2480] : [608, 1216]}
-                sizes={block.layout === "full" ? "1240px" : "608px"}
+                width={Math.round(block.exp.w * 2)}
+                widths={[Math.round(block.exp.w), Math.round(block.exp.w * 2)]}
+                sizes={`${Math.round(block.exp.w)}px`}
+                style={`width:${(block.exp.w / block.node.w) * 100}%;left:${(block.off.x / block.node.w) * 100}%;top:${(block.off.y / block.node.h) * 100}%`}
               />
             </figure>
 
@@ -62,10 +73,19 @@ import { screens } from "../../data/caseLms";
     gap: 120px;
   }
 
+  /* The figure reserves the Figma node's box; the export is larger by its
+     baked shadow and hangs outside it, placed from `off` in the data. The
+     shadow is not centred — it runs ~29px above the card and ~93 below — so
+     centring the export is no more correct than sizing the figure to it. */
+  .shot__media {
+    position: relative;
+  }
+
   .shot__media :global(img) {
+    position: absolute;
     display: block;
-    width: 100%;
     height: auto;
+    max-width: none;
   }
 
   /* --- captioned blocks ------------------------------------------------------ */

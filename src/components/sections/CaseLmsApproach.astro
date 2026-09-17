@@ -40,9 +40,10 @@ const [discover, ...paired] = approach.phases;
                 <Image
                   src={phase.media.src}
                   alt={phase.media.alt}
-                  width={1382}
-                  widths={[691, 1382]}
+                  width={1381}
+                  widths={[691, 1381]}
                   sizes="691px"
+                  style={`width:${(phase.media.exp.w / phase.media.node.w) * 100}%;left:${(phase.media.off.x / phase.media.node.w) * 100}%;top:${(phase.media.off.y / phase.media.node.h) * 100}%`}
                 />
               )}
             </div>
@@ -156,16 +157,24 @@ const [discover, ...paired] = approach.phases;
     flex-direction: row-reverse;
   }
 
+  /* The node's box, not the export's. The export is 690.5x527.5 for a
+     568.42x406.56 card, and its shadow is *not* centred — it hangs 29px above
+     the card and 93 below. So the figure reserves the node and the export
+     overflows it, placed from `off` in the data; sizing the figure to the
+     export instead made each phase 30px taller than the frame. */
   .phase__media {
+    position: relative;
     flex: none;
-    width: 571px;
+    width: 568.42px;
     max-width: 100%;
+    aspect-ratio: 568.42 / 406.56;
   }
 
   .phase__media :global(img) {
+    position: absolute;
     display: block;
-    width: 100%;
     height: auto;
+    max-width: none;
   }
 
   .phase__copy {

@@ -95,10 +95,20 @@ const { eyebrow, title, body, tone = "light", size = "lg", class: className } = 
     }
   }
 
+  /* Mobile — the size every 393 frame draws this header at (536:13471 and
+     its siblings): 20/-1 for the title over a 12/18 body. These were being
+     rendered at 26px and 16px, which alone put Our Process 113px over its
+     frame before anything else was measured. */
   @media (max-width: 560px) {
     .head__title {
-      font-size: 26px;
-      letter-spacing: -0.5px;
+      font-size: 20px;
+      letter-spacing: -1px;
+      line-height: normal;
+    }
+
+    .head__body {
+      font-size: 12px;
+      line-height: 18px;
     }
   }
 </style>

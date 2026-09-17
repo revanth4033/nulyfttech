@@ -11,6 +11,10 @@ import {
   CY,
   SPHERE,
   RING_A,
+  M_RING_A,
+  M_RING_B,
+  M_SPHERE,
+  M_PILL_H,
   RING_B,
   R_OUTER,
   PULSE_FROM,
@@ -40,10 +44,10 @@ const pulse = R_OUTER * 2;
 
     <div class="ind__stage" data-ind>
       <span class="ind__halo" aria-hidden="true">
-        <Icon name="brand/ind-rings-b" width={RING_B.size} height={RING_B.size} />
+        <Icon name="brand/ind-rings-b" width={RING_B.size} height={RING_B.size} class="ind__ringart" />
       </span>
       <span class="ind__rings" data-rings aria-hidden="true">
-        <Icon name="brand/ind-rings-a" width={RING_A.size} height={RING_A.size} />
+        <Icon name="brand/ind-rings-a" width={RING_A.size} height={RING_A.size} class="ind__ringart" />
       </span>
 
       <span class="ind__pulse" data-pulse aria-hidden="true"></span>
@@ -62,7 +66,11 @@ const pulse = R_OUTER * 2;
 
       {
         pills.map((p) => (
-          <div class="ind__pill" data-pill style={`left:${p.x}px;top:${p.y}px`}>
+          <div
+            class="ind__pill"
+            data-pill
+            style={`--px:${p.x}px;--py:${p.y}px;--mpx:${p.mx}px;--mpy:${p.my}px`}
+          >
             <span class="ind__tile"><Icon name={p.icon} size={18} /></span>
             <span class="ind__label">{p.label}</span>
           </div>
@@ -84,6 +92,13 @@ const pulse = R_OUTER * 2;
     pulseOff: `${CX - R_OUTER}px`,
     pulseFrom: PULSE_FROM,
     pillH: `${PILL_H}px`,
+    mRingA: `${M_RING_A.size}px`,
+    mRingAOff: `${M_RING_A.offset}px`,
+    mRingB: `${M_RING_B.size}px`,
+    mRingBOffX: `${M_RING_B.offsetX}px`,
+    mRingBOffY: `${M_RING_B.offsetY}px`,
+    mSphere: `${M_SPHERE}px`,
+    mPillH: `${M_PILL_H}px`,
   }}
 >
   .ind {
@@ -223,6 +238,8 @@ const pulse = R_OUTER * 2;
 
   .ind__pill {
     position: absolute;
+    left: var(--px);
+    top: var(--py);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -257,6 +274,114 @@ const pulse = R_OUTER * 2;
     font-size: var(--fs-body);
     line-height: 1.5;
     color: var(--c-ink);
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile — Figma 493:2737
+
+     The copy moves above the constellation and centres; the square itself
+     stays 396.25, so only the rings, the hub and the pills resize. Every one
+     of those is already a custom property, so this is mostly a token swap —
+     the pill coordinates had to leave their inline `left`/`top` first, since
+     an inline declaration beats a media query.
+     ------------------------------------------------------------------------ */
+  @media (max-width: 900px) {
+    .ind__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Figma insets the 396.25 square 22px inside a 418-tall wrapper, so the
+         gap from the header to the square's own top edge is 61, not 39. */
+      gap: 61px;
+      height: auto;
+      padding-block: 40px;
+    }
+
+    .ind__copy {
+      position: static;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      translate: none;
+      text-align: center;
+    }
+
+    .ind__title {
+      width: 100%;
+      font-size: 20px;
+      letter-spacing: -1px;
+    }
+
+    .ind__body {
+      width: 100%;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .ind__stage {
+      position: relative;
+      left: auto;
+      top: auto;
+    }
+
+    /* `define:vars` sets the desktop tokens on the elements themselves, so a
+       redefinition further up the tree cannot reach them — these write the
+       concrete properties rather than re-pointing the variables. */
+    .ind__rings {
+      left: var(--mRingAOff);
+      top: var(--mRingAOff);
+    }
+
+    /* The halo is the one piece Figma does not centre — it sits 21px low. */
+    .ind__halo {
+      left: var(--mRingBOffX);
+      top: var(--mRingBOffY);
+    }
+
+    .ind__hub {
+      left: calc(var(--cx) - var(--mSphere) / 2);
+      top: calc(var(--cy) - var(--mSphere) / 2);
+      width: var(--mSphere);
+      height: var(--mSphere);
+    }
+
+    .ind__rings :global(.ind__ringart) {
+      width: var(--mRingA);
+      height: var(--mRingA);
+    }
+
+    .ind__halo :global(.ind__ringart) {
+      width: var(--mRingB);
+      height: var(--mRingB);
+    }
+
+    .ind__hub :global(.icon) {
+      width: 54px;
+      height: 26px;
+    }
+
+    .ind__pill {
+      left: var(--mpx);
+      top: var(--mpy);
+      gap: 6px;
+      height: var(--mPillH);
+      padding: 6px 16px 6px 6px;
+      border-radius: 10px;
+    }
+
+    .ind__tile {
+      width: 22px;
+      height: 22px;
+    }
+
+    .ind__tile :global(.icon) {
+      width: 12px;
+      height: 12px;
+    }
+
+    .ind__label {
+      font-size: 12px;
+    }
   }
 
   @media (max-width: 1180px) {

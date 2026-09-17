@@ -103,8 +103,10 @@ ol {
   :root { --gutter: 32px; }
 }
 
+/* Every mobile frame in Figma is 393 wide with a 16px gutter, which is what
+   puts its content column at 361. */
 @media (max-width: 560px) {
-  :root { --gutter: 20px; }
+  :root { --gutter: 16px; }
 }
 
 /* ==========================================================================

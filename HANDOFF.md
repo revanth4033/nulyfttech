@@ -9,13 +9,15 @@ read it and trust it.
 Read this file once at the start of the session, then work from `AGENTS.md`.
 
 **Where things stand right now:** the home page, three inner pages and **all
-three case studies** are built and pushed. Every Studio card that has a design
-now routes to a real page. The live thread is micro-interactions: three are
-built (the Overview stack swap, and the Colorography draw-in + hover on all
-three case studies) and the rest of the case-study sections are still static,
-awaiting the user's notes section by section. Two things to raise unprompted:
-the media-sizing bug still open on the LMS page (section 7) and the mobile
-frames the user still owes (section 6).
+three case studies** are built and pushed, and the home page now has a **mobile
+version** built from the user's own Figma frames. The live thread is
+micro-interactions on the case studies: three are built (the Overview stack
+swap, and the Colorography draw-in + hover on all three) and the rest of those
+sections are still static, awaiting the user's notes section by section.
+
+Two things to raise unprompted: the **inner pages have no mobile pass at all**
+(Studio, Careers and the three case studies — section 6), and the remaining
+LMS spacing audit (section 7).
 
 ---
 
@@ -96,7 +98,7 @@ there; every section owns its geometry in `src/data/` and its motion in
 
 | # | Section | Component | Motion | Script |
 |---|---|---|---|---|
-| 1 | Hero | `sections/Hero.astro` | scripted loop: pill + cursor click → card scene 1 → scene 2 → summary, ~16.4s | `hero.ts` |
+| 1 | Hero | `sections/Hero.astro` | scripted loop: pill + cursor click → four card pairs, ~22.3s | `hero.ts` |
 | 2 | Key Highlights | `sections/KeyHighlights.astro` | scroll reveal | `reveal.ts` |
 | 3 | What We Do (light) | `sections/WhatWeDo.astro` + `wwd/CapabilityRow.astro` | 3D tilt on media | `tilt.ts` |
 | 4 | What We Do (dark) | `sections/WhatWeDoDark.astro` | same rows, dark tone | — |
@@ -129,7 +131,40 @@ swallowed** so they do not jump to the top. "About" was removed from the footer
 at the user's request, and the Studio page inherits that by reusing the same
 `CtaFooter` component.
 
-### The Studio page — `/studio` (most recent work)
+### The home page's mobile version (most recent work)
+Figma section `538:13647`. Five sections from the user's own frames — Why
+nuLyft, Technologies, Industries, Our Process, CTA + footer — and the rest
+adapted in code. Our Process becomes a serpentine vertical timeline instead of
+a pinned horizontal track; Why nuLyft drops to a single station on its arc,
+still scroll-driven; the CTA fan holds still. Section 6 has the state, the
+method and the correction history; `AGENTS.md` has the geometry.
+
+Three shared fixes landed with it and reach every page: the mobile gutter is
+**16px** (what makes the column 361), `SectionHeader` is 20/-1 over 12/18, and
+`EyebrowBadge` is 12/0.6 in a 6x12 box.
+
+### The hero's four card pairs
+Figma 528:9020, "Hero new frames" — four frames read in canvas order top to
+bottom. The user redesigned the cards and handed over the frames; the loop now
+runs `click → Experience Simulation / Product Design → Product Engineering /
+Scalable Infrastructure → AI & Intelligent Automation / Autonomous Operations →
+Knowledge Systems / Narrative Intelligence`, then repeats from the click.
+
+The old three-beat loop's closing dashboard is **gone** — the user asked for
+the third pair to take its slot — so `StatCard.astro` and `CapabilityCard.astro`
+are deleted (recoverable from git), along with the four `icons/card-*.svg` the
+old cards used. The flight-in, drift and flight-out per pair are untouched;
+there is simply one more pair, which is why the cycle grew from 16.4s to 22.3s.
+The user approved both the order and the longer cycle.
+
+Two card shapes now: `hero/PreviewCard.astro` (title / illustration / caption)
+and `hero/PipelineCard.astro` (title over three steps on a rail). The six
+illustration panels are flattened 3x PNG exports; the pipeline is real DOM,
+because its copy belongs in `data/hero.ts` like every other hero scene.
+Verified against the frames — all eight cards land within 0.02px of their node
+in position and size. `AGENTS.md` carries the per-card gotchas.
+
+### The Studio page — `/studio`
 Figma 493:2801. Three parts:
 
 | part | component | notes |
@@ -233,54 +268,58 @@ The user expects claims to be backed by measurement, not by eyeballing.
 
 ---
 
-## 6. Parked — mobile responsiveness
+## 6. Mobile — the home page is done, the inner pages are not
 
-The user asked for a responsiveness audit of the home page. **The audit is
-done; no responsive work has been started.** It is now **parked at the user's
-request** — designing four mobile frames in Figma was taking them too long, so
-they moved on to the Studio page and will hand over those frames later:
+The user designed **five** mobile frames in Figma (section `538:13647`, all 393
+wide) and they are built: Why nuLyft, Technologies, Industries, Our Process and
+CTA + footer. Everything else on the home page was adapted in code. `AGENTS.md`
+carries the per-section geometry and the traps; this is the state and the
+history.
 
-> "After some time, I will design all those four sections manually in Figma so
-> that I can give you all of those four sections, and you can replicate them in
-> the mobile version."
+### How it was tested
+A **375px iframe** (the OS will not shrink the window that far, and an iframe
+gets its own viewport so media queries fire). Two things matter:
 
-So the open question below is **answered**: they design the hard four. Resume
-when the frames arrive.
+- **Load wide, then resize.** That is what DevTools device mode does, and it is
+  how the biggest bug in this pass was found — four scripts read their
+  breakpoint once at load and kept the desktop behaviour at phone widths. They
+  use `gsap.matchMedia` now. Always test the resize path, not just a fresh
+  narrow load.
+- **Settle the reveals before believing a screenshot.** Same caveat as
+  section 5; several "broken" sections here were un-played tweens.
 
-Audit method: the site was loaded inside a **390px iframe** (the OS will not
-let the browser window shrink that far, and an iframe gets its own viewport
-so media queries fire correctly). Effective viewport 371px.
+### What the user corrected, in order
+Worth reading — each one was a real bug, and the diagnosis was usually not the
+first thing that looked wrong:
 
-### Already correct, needs nothing
-Nav (hamburger + drawer already built), Key Highlights, What We Do (dark),
-Our Clients. The global gutter already steps 100 → 32 (≤900) → 20 (≤560), and
-**no section causes horizontal page scroll** — they all clip rather than push.
+1. Hero eyebrow wrapping and filling the column; ~270px of dead air under the
+   hero; stat illustrations oversized; two capabilities per line; phone
+   mockups running off screen; Our Process numerals fading to near-white.
+2. Why nuLyft "not coming correctly" — the `matchMedia` bug above.
+3. Our Process "taking too much scroll / getting stuck" — it was the pinned
+   Why nuLyft above it, not Process itself.
+4. Technology "scaled down from the desktop version" — the four card interiors
+   were still desktop geometry.
+5. The Process curve "mirrored" — it needed a **180 degree rotation**, and a
+   horizontal mirror looked right at the chips while being half a period out.
+6. Engineering's fifth chip cut off; AI & Data not centred.
+7. Engineering panel off-centre; the AI & Data left veil short of the edge.
 
-### Can be fixed in code, no new design needed
-| section | problem |
-|---|---|
-| Hero | layout stacks correctly, but the headline is **sliced horizontally** — SplitText line masks are 39px with `overflow: clip` and never re-measure. `splitWhenReady()` in `gsap.ts` splits once, with no resize re-split |
-| What We Do (light), Selected Work | media panels / phone mockups overflow ~917px; copy already reflows |
-| Technology cards 2–4 | `.tech__row` is `repeat(3, 1fr)` with **no breakpoint at all** → three **100px-wide** cards, each ~494px tall, holding content built for 403px |
-| CTA | card still 1240px and centred, so it sits at x=−434: copy block entirely off-screen left, card fan entirely off-screen right |
-| Footer | link columns at x=291, width 598 — overflow 517px; only the brand column visible |
+The pattern: **measure the frame's own render and test which transform or
+value predicts every sample**, rather than fixing the one that looks wrong.
 
-### Needs a mobile design decision — scaling makes text illegible
-| section | why |
-|---|---|
-| **Our Process** | 2482px track in a pinned scroll; **13% visible** at 371px. Scaling to fit puts station labels at ~4px. Wants a different structure (vertical stepper) |
-| **Industries We Serve** | constellation spans ~642px (pills from −145 to 497); 0.52× makes 16px labels 8px |
-| **Technology → AI & Automation** | 553px orbit radius in a 1240px card; 0.27× makes labels ~6px |
-| **Why nuLyft** | arc conveyor built on a 1240-wide ellipse; 20 clipped elements |
+### State at 375
+No horizontal page scroll anywhere. One pinned section (Why nuLyft, 1333px of
+throw). Document 15,583px. The overflows that remain are deliberate and
+clipped: the in-flight hero card, the decorative grid-line SVGs, the CTA
+starfield, and the Industries halo.
 
-### Settled: the user is designing the hard four
-They will supply mobile Figma frames for the four sections above. Do not
-improvise those layouts. The code-only fixes in the previous table can be done
-at any time and need no new design.
-
-**The Studio page's own mobile behaviour is equally unfinished** — the grid
-collapses to one column at 900px and the gutter steps down with the global
-token, but nothing beyond that has been designed or verified.
+### Still open
+**The inner pages have never had a mobile pass** — `/studio`, `/careers` and
+the three case studies. The shared `CtaFooter`, `SectionHeader` and
+`EyebrowBadge` fixes reach them for free, so they are better than they were,
+but nothing has been designed or verified. The Studio grid collapses to one
+column at 900 and the gutter steps down; that is all.
 
 ---
 
@@ -290,19 +329,42 @@ token, but nothing beyond that has been designed or verified.
   Typography was built with flex and had to be rebuilt once the user saw it —
   Figma places its children absolutely inside a fixed box. Its Overview,
   Challenge, Approach and UI Screens were built the same flex/grid way and have
-  never been checked. Measured section heights against the frame today:
-  Challenge -23, Approach +48, UI Screens +293. The Automotive and Recruitment
-  pages were built against measured coordinates and match to the pixel.
+  never been checked. The Automotive and Recruitment pages were built against
+  measured coordinates and match to the pixel.
+
+  **The media-sizing half of this is now done** (see below): UI Screens lands
+  at 3632, exactly its frame, and Approach came from +48 to -11.8. Three
+  layout findings turned up while measuring and are *not* fixed, because they
+  move copy rather than media and the rule here is not to change layout the
+  user has not asked about:
+
+  | where | frame | ours |
+  | --- | --- | --- |
+  | Approach: gap between a phase title and its items | 16 | 28 |
+  | Approach: each item box in the phase-01 row | 121 (24 above the label, 24 below the rule) | 98, no space above the label |
+  | Approach: copy column beside the media | 541 wide, gap ~130, top-aligned | 613, gap 58, vertically centred |
+  | UI Screens: copy beside a captioned shot | bottom-aligned in the 394 row | centred, ~137px high |
+
+  The first two together are the whole -11.8 on Approach: phase 01 renders
+  157.2 against the frame's 169. None of the others change a height, so the
+  section totals stay right either way. Challenge was -23 and is unmeasured
+  since.
 - Everything above under mobile responsiveness, including the Studio page.
 - **Micro-interactions.** Built so far: the Overview stack swap (LMS and
   Recruitment) and the Colorography draw-in + hover (all three). Every other
   case-study section is static; the user describes each one's motion, and the
   rule is *explain first, build second*.
-- **The LMS page still sizes its media by the export, not the node.** Its
-  screenshots carry 53-61px of baked shadow, so its Approach renders +48 and
-  its UI Screens +293 against its own frame. The Automotive and Recruitment
-  components reserve the node's box and let the shadow overflow; porting that
-  back is a contained fix and is the single biggest fidelity gap left.
+- ~~**The LMS page still sizes its media by the export, not the node.**~~
+  **Done.** Every LMS figure now reserves its Figma node's box and lets the
+  export overflow; UI Screens measures 3632 against a 3632 frame and both split
+  phases measure 406.55 against 406.556. Measuring it turned up something the
+  other two pages get wrong as well: **these shadows are not centred on their
+  node** — `0 32px` with ~61px of spread, so an export hangs ~29 above its card
+  and ~93 below, and centring it drops the card ~32px. The LMS page uses
+  measured offsets; Recruitment and Automotive still centre. It costs them no
+  height, which is why they measure correct, but their cards sit low. Porting
+  the measured offsets over is the obvious next contained fix. `AGENTS.md`
+  carries the method.
 - **The three new case studies add ~16MB of PNG source** to a repo that was
   already 62MB of images. They are real sources — Astro makes the WebP from
   them — but they are photographic *with alpha*, so they cannot become JPEG.
@@ -321,11 +383,12 @@ so the components are the LMS ones duplicated and re-pointed at
 `src/data/caseRec.ts`. Static apart from the Overview stack, which reuses the
 swap animation.
 
-**The LMS page still has a media-sizing bug this page fixed.** Its exports
-carry 53-61px of baked shadow and its components size the figure to the export
-rather than the node, so its Approach renders +48 and its UI Screens +293
-against its own frame. The recruitment components reserve the node box and let
-the shadow overflow. Worth porting back.
+**The media-sizing bug this page fixed is now fixed on the LMS page too** —
+and the traffic runs back the other way now. This page *centres* each export on
+its node box, and these shadows are not centred: they hang ~29px above the card
+and ~93 below, so every card here sits ~32px low. It costs no height, so the
+section measurements still hold. The LMS page carries the measured offsets and
+`AGENTS.md` has the method; port them here.
 
 ### The Automotive Marketplace case study — `/work/automotive-marketplace`
 Figma 510:5689, eight sections over ~10,100px: hero, overview, challenge,

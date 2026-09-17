@@ -102,16 +102,63 @@ or px sizes in component styles.
 ## Hero animation
 
 `src/scripts/hero.ts` drives the whole hero loop. Beats:
-`pill + cursor click` -> `card scene 1` -> `card scene 2` -> `summary card`,
-then the whole thing repeats from the click. ~16.4s per cycle.
+`pill + cursor click` -> four card pairs, one per beat, then the whole thing
+repeats from the click. ~22.3s per cycle (2.25 for the click, 5.02 per pair).
 
 Every beat lives inside one `repeat: -1` timeline, so each cycle is identical.
 If you add a beat, make sure it hands the stage back in a neutral state — the
-summary card fades the glow back to the card-scene position and opacity 0 for
-exactly this reason, otherwise the glow snaps at the loop seam.
+*last* pair fades the glow to opacity 0 for exactly this reason, otherwise the
+glow is still lit at the loop seam and snaps. `cardSceneTl(scene, isLast)`
+carries that, so moving a pair to the end moves the hand-back with it.
 
 Scene copy lives in `src/data/hero.ts`, not in markup — add a scene there and
 `HeroStage.astro` renders it and the timeline picks it up.
+
+**The cards are Figma 528:9020 ("Hero new frames"), four frames read in canvas
+order top to bottom.** They replaced an earlier three-beat loop whose closing
+beat was a browser-framed summary dashboard; `CapabilityCard.astro` and
+`StatCard.astro` are deleted and recoverable from git. Two card shapes now
+share the stage — `PreviewCard` (title / illustration / caption) for pairs 1, 2
+and 4, and `PipelineCard` (title over three steps on a rail) for pair 3.
+
+**The diagonal runs lower-left to upper-right.** The old pair ran the other
+way. Both cards still fly in from the right, so only the slots changed.
+
+**Card slots are per scene, not per stage.** The automation pair is 271.5 wide
+and sits 31px further left than the three preview pairs, so `right`/`top`/`w`
+live beside the copy in `data/hero.ts` and reach the CSS as custom properties.
+One `.stage__card` rule reads them; there is no `--a`/`--b` geometry any more
+except in the stacked layout below 1080.
+
+**Figma strokes these card frames on the inside, so the 1.5px ring must not be
+a `border`.** As a border it lands outside the content box — the cards
+measured 276.5 against the frame's 273.5, +3 on all eight. It ships as
+`box-shadow: inset 0 0 0 1.5px`, the same trick the Engineering chips use. The
+cards carry no drop shadow at all; probing the frame's own render at a card
+edge gives background one pixel outside the ring.
+
+**The captions carry hard line breaks.** Figma emits `<br>` inside two of
+them, and natural wrapping at the 165.5px text column breaks a word later —
+"Interactive prototypes with real time / feedback" against the frame's
+"...with / real time feedback". They are `\n` in the data with
+`white-space: pre-line` on the element, so the captions that *do* wrap
+naturally still do.
+
+**The Experience Simulation export is wider than its node and that is drawn.**
+The art runs 11px past its 220px panel on the right, so the export is 231 wide.
+The media box stays at the node size and the image hangs out of it, anchored
+left — squeezing it back in would shrink the whole illustration.
+
+**The first pipeline step is not a muted state.** Its disc SVG is byte-
+identical to the other two — the grey comes from a 30px white veil over the top
+of the card body, with a second at the bottom. The veils are what make three
+steps read as a longer sequence running past the card, so they are load-bearing
+rather than decoration.
+
+**Figma sets the pipeline step titles in Sora.** The site does not load Sora
+and a third webfont for twelve short labels of decorative UI is not worth the
+bytes, so they ship in Inter SemiBold — same call as the deck viewer's Open
+Sans. The caption names really are IBM Plex Sans, which the site has.
 
 **Motion blur.** DOM has no real motion blur, and `filter: blur()` just looks
 out of focus. `createMotionBlur()` gives each moving group its own SVG
@@ -723,6 +770,43 @@ Text that *is* ours (captions, phase lists, callouts) stays in the DOM. The
 one exception is the Overview stack, whose two screens now swap places; a
 baked-in picture cannot do that, so it is real DOM (see below).
 
+**Media is sized by its node, never by its export — and the export is not
+centred on it.** Every screenshot here arrives larger than the node it came
+from, because the card's drop shadow is baked into the raster. Sizing a figure
+to its export inflated this page badly: Approach ran +48 and UI Screens +293
+against their own frames. Each figure now reserves `node` in flow with
+`aspect-ratio` and the export overflows it at `off`, both in `caseLms.ts`.
+
+The shadow runs `0 32px` with ~61px of spread, so an export hangs ~29px above
+its card and ~93px below. **Centring it drops every card ~32px** — which is why
+the Recruitment and Automotive pages, which do centre, match on height and
+still sit low. Measure `off` instead: locate the card's edge in an isolated
+node render (`get_screenshot` returns the export's exact bounds as
+`original_width`/`original_height`) and again in the full-section render, and
+take the difference. Cross-correlating the two renders' first-ink-per-row
+profiles gives the same answer and catches blocks with no card edge to find.
+
+Three traps inside that:
+
+- **Metadata's node positions are not reliable here, its sizes are.** It puts
+  the Approach media at phase-relative y=11.9 where the render says ~34, and
+  its x at 2.7 where the render says flush. Anchor `off` to a box you can see
+  in the render — the phase frame, the section column — not to a reported
+  coordinate. The block sizes it gives (1200x700, 608x394, 1240x922, 1240x394)
+  all check out against the render exactly.
+- **UI Screens block 1 is a 1200 node in the 1240 column**, with the phone
+  hanging off its right edge — the one asymmetric bleed here that is artwork
+  (57 left, 139 right) rather than shadow.
+- **That export carried a baked 1px dark column down its right edge.** Inside
+  the frame it lands on the 1440 canvas boundary and is invisible; on the page
+  it was a hairline 100px clear of the column. `showcase-hero.jpg` is trimmed
+  by it, so `exp.w` is 1396 and not the 1397 Figma reports. Check the last row
+  and column of any export you are about to hang outside its box.
+
+Section heights now: UI Screens 3632, exactly the frame. Approach is 1438.3
+against 1450.11 — the remaining -11.8 is all in phase 01, and is spacing, not
+media (see the audit note in `HANDOFF.md`).
+
 **Figma bakes the section ground into node exports, and it is not harmless.**
 Every export here arrives fully opaque with a flat plate of the parent
 section's background painted behind the art — the raster cousin of the
@@ -912,14 +996,19 @@ Screens differs (3475 against 3632). So the components are the LMS ones
 duplicated and re-pointed at this data. Check that before assuming a new case
 study needs new components; compare the top-level section list first.
 
-**Size media by its card, not its export — the LMS page gets this wrong.**
-Every screenshot export here carries 53-61px of baked shadow per side. The LMS
-components size the figure to the export, which pushes each block taller than
-its frame: measured on `/work/lms-education-saas`, its Approach runs +48 and
-its UI Screens +293 against Figma. The recruitment components reserve the
-node's box with `aspect-ratio` and let the export overflow it, centred, which
-lands all five screen blocks exactly (700/394/394/765/394) and the phases at
-407 against 406.6. **The same fix is still owed to the LMS page.**
+**Size media by its card, not its export.** Every screenshot export here
+carries 53-61px of baked shadow per side, and sizing the figure to the export
+pushes each block taller than its frame. These components reserve the node's
+box with `aspect-ratio` and let the export overflow it, centred, which lands
+all five screen blocks exactly (700/394/394/765/394) and the phases at 407
+against 406.6.
+
+**The centring is an approximation, and the LMS page measures the real
+offsets.** These shadows are not centred on their node — they run `0 32px`
+with ~61px of spread, so an export hangs ~29 above its card and ~93 below.
+Centring it therefore drops every card ~32px. It does not change any height,
+which is why this page still measures right; see the LMS note below for how
+the offsets were measured, and port them here when this page is next opened.
 
 **The emphasis runs the other way from the LMS hero.** There the *lead* is
 italic in the accent purple; here the *tail* is italic and stays in the
@@ -995,6 +1084,100 @@ below before the rule.
 **Copy is reproduced as drawn, typos included** — "OUR APPROCH", "Invidiual",
 and a UI Screens intro that still says "learning experience". Flagged, not
 silently corrected.
+
+## Mobile
+
+The five sections the user designed mobile frames for are built from Figma
+section **538:13647** ("mobile"), all 393 wide: Why nuLyft (493:2503),
+Technologies (493:2524), Industries (493:2737), Our Process (536:13470) and
+CTA + footer (539:705). Everything else on the page is adapted in code.
+
+**The breakpoint is 900 for layout and 560 for type.** Every mobile frame is
+393 with a 16px gutter, which is what puts its content column at 361 — the
+global gutter steps 100 -> 32 (<=900) -> 16 (<=560). Every mobile section runs
+40px of block padding.
+
+**Read the breakpoint through `gsap.matchMedia`, never once at load.** Four
+scripts (`why-orbit`, `process-scroll`, `industries`, `cta-fan`) checked
+`matchMedia(...).matches` a single time when the module ran. A page opened wide
+and then narrowed — which is exactly what device mode does, and what a rotation
+does — kept the desktop behaviour at phone widths: Why nuLyft's chips stayed
+out on the ellipse at (705, 48), and Our Process stayed pinned. `gsap.matchMedia`
+re-evaluates on resize and reverts each context on the way out. Anything those
+callbacks write as inline style has to be cleared by hand; GSAP only reverts
+what it created.
+
+**An inline `left`/`top` beats a media query.** Both Our Process and Industries
+emitted their desktop coordinates as inline styles, so the mobile layout could
+never take over however specific the rule was. Both coordinate sets now reach
+the CSS as custom properties and the media query re-points them.
+
+**`define:vars` sets its variables on the elements themselves.** Redefining
+one further up the tree therefore does not reach them — Industries' mobile ring
+offsets, hub size and pill height all had to be written as concrete properties
+rather than by re-pointing `--ringAOff` and friends on an ancestor.
+
+**Scale a card's art only after centring it.** The Technology cards' bodies are
+placed from a desktop left offset, so `transform-origin: top center` pivots
+about the element's own centre and leaves it where it was — Engineering came
+out 31px right of its card. `left: 50%` plus a negative half-width margin
+first, then `scale`.
+
+### Our Process — the mobile timeline
+
+A serpentine vertical timeline (536:13470), not the pinned horizontal track
+scaled down. No pin, no ball, no trail; `process-scroll.ts` only lights each
+step as it is reached, and `once: true` so a step you have read stays lit.
+
+**Figma turns the Timeline vector 180 degrees and the SVG export carries no
+transform.** Drawn as exported, every bend is on the wrong side *and* half a
+period out. A horizontal mirror alone fixes the left/right alternation — which
+makes the chips look right — and leaves the vertical phase wrong, so each bend
+peaks above its step instead of beside it. The test that settles it: measure
+the frame's own render for the curve's x at each title row (347-361 / 33-42 /
+347-362 / 31-46 / 349-360) and check which transform predicts all five. Only
+`rotate(180deg)` does.
+
+**Metadata reports a bounding box for that vector that is not its box** (it
+gives x=347, y=1512 for a 328x1512 node). The placement came off the render:
+ink at frame x 31..362, y 267..1724.
+
+### Technology — the mobile stack
+
+`repeat(3, 1fr)` had no breakpoint at all, so below ~900 it produced three
+100px columns holding content built for 403. The four cards now stack at the
+column width with the frame's 24px gap, each taking its own drawn height
+(291 / 404 / 440 / 413.71) via `mHeight` on `TechCard`.
+
+The interiors are fitted by scale rather than re-derived, because none of them
+is a clean ratio of its desktop self. What each scale is pinned to:
+
+| card | scale | why that number |
+| --- | --- | --- |
+| AI & Automation | 0.33 | puts the ring radius at 182 against the frame's 180.5 |
+| Engineering | 0.774 | the pipeline is 341 tall and the card leaves it 264 — below this the fifth chip falls off the bottom |
+| AI & Data | 0.8 | badges render 101 against the frame's 88 hub / 64 sides |
+| Cloud | 0.85 | tiles render 50 against the frame's 41.4 |
+
+**The AI & Data edge veils must reach the card's edge.** Figma insets the left
+one 6px, which is invisible on desktop where the orbit runs far wider than the
+card. Centred and scaled to a phone those 6px are a gap, and an item can slide
+past un-washed — the one thing the veils exist to prevent.
+
+### Sections adapted in code, no frame
+
+Hero (eyebrow hugs at 11/0.4 or it wraps and fills the column; the stage is
+sized to its composition, 300 at <=620, not the 520 that left 260px of dead
+air), Key Highlights (illustrations capped at 64 high), What We Do (one
+capability per line below 560 — wrapping two left a short label stranded
+beside a long one), Selected Work (the phone pieces were absolute px inside a
+fixed 575x317 stage and ran ~230px off screen; they are percentages of that
+box now, so the stage scales with its column).
+
+**A pinned section is expensive on a phone.** Why nuLyft is the only one left
+pinned, and its throw is 55% per step there against 90% on desktop — at 90% it
+was 2.7 screens of sticky scrolling for four items, which reads as the page
+having jammed.
 
 ## Assets from Figma
 
