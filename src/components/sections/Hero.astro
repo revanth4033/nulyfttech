@@ -149,6 +149,30 @@ import HeroStage from "../hero/HeroStage.astro";
     }
   }
 
+  @media (max-width: 560px) {
+    /* The badge was wrapping to two lines and filling the column instead of
+       hugging its text. Smaller type and tighter tracking keep it on one. */
+    .hero__intro :global(.hero__eyebrow) {
+      padding: 8px 14px;
+      font-size: 11px;
+      letter-spacing: 0.4px;
+    }
+
+    .hero__intro :global(.hero__eyebrow .icon) {
+      width: 20px;
+      height: 20px;
+    }
+
+    .hero__frame {
+      gap: 24px;
+      padding-top: 40px;
+    }
+
+    .hero {
+      padding-bottom: 40px;
+    }
+  }
+
   @media (max-width: 400px) {
     .hero__title {
       font-size: 30px;

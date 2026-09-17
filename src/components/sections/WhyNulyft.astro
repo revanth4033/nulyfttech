@@ -15,7 +15,9 @@ import { whyItems } from "../../data/whyNulyft";
     />
 
     <div class="why__stage" data-why-stage>
-      <Icon name="brand/why-arc" class="why__arc" />
+      <Icon name="brand/why-arc" class="why__arc why__arc--d" />
+      {/* A different arc, not the desktop one scaled: 361x181 (493:2513). */}
+      <Icon name="brand/why-arc-mobile" class="why__arc why__arc--m" />
 
       <div class="why__items">
         {
@@ -173,10 +175,93 @@ import { whyItems } from "../../data/whyNulyft";
     }
   }
 
+  /* `<Icon>` renders its own span, so these never carry this component's
+     scope — the existing `.why__arc` rule already has to reach it globally. */
+  .why :global(.why__arc--m) {
+    display: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile — Figma 493:2503
+
+     The conveyor becomes a single station. One chip sits at the crown of a
+     361x181 arc with its caption underneath, and the scroll still drives it —
+     the pin stays, but each step swaps the item rather than walking four of
+     them round an ellipse. `why-orbit.ts` branches on the same query.
+
+     The section keeps `min-height: 100svh` because it is still pinned; the
+     frame's 562 is the composition's height, not the scroll range, so the
+     stage is centred in whatever the viewport gives it.
+     ------------------------------------------------------------------------ */
   @media (max-width: 900px) {
     .why__inner {
-      gap: 48px;
-      padding-block: 72px;
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .why__stage {
+      width: 100%;
+      max-width: 361px;
+      height: 334.56px;   /* 181 arc + 70 caption + 33.78 gap + 49.78 button */
+      scale: none;
+      margin-bottom: 0;
+    }
+
+    .why :global(.why__arc--d) {
+      display: none;
+    }
+
+    .why :global(.why__arc--m) {
+      display: block;
+      top: -5px;          /* the art bleeds 2.76% above its 181 box */
+      width: 371px;
+      height: 186px;
+    }
+
+    .why__items {
+      inset: 0 0 auto;
+      height: 181px;
+    }
+
+    /* Every item shares the crown; only opacity separates them. */
+    .why__item {
+      top: 24px;
+      left: 50%;
+      width: 48px;
+      height: 64px;
+      padding: 16px 8px;
+      translate: -50% 0;
+      border-color: var(--c-accent);
+      border-radius: 999px;
+      box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.16);
+    }
+
+    .why__chip,
+    .why__chip :global(.icon) {
+      width: 32px;
+      height: 32px;
+    }
+
+    .why__captions {
+      top: 181px;
+      width: 100%;
+      height: 70px;
+      translate: -50% 0;
+    }
+
+    .why__caption {
+      justify-content: center;
+    }
+
+    .why__title {
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.32px;
+    }
+
+    .why__body {
+      font-size: 12px;
+      line-height: 20px;
     }
   }
 </style>

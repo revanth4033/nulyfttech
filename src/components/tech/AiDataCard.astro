@@ -53,7 +53,7 @@ const offsets = Array.from({ length: SLOT_REACH * 2 + 1 }, (_, i) => i - SLOT_RE
 const activeW = techs[REST].w;
 ---
 
-<TechCard icon="icons/aidata/card-aidata" title="AI & Data" height={CARD_H} headTop={26} class="aid">
+<TechCard icon="icons/aidata/card-aidata" title="AI & Data" height={CARD_H} mHeight={440} headTop={26} class="aid">
   <div class="aid__strip" data-strip>
     <span class="aid__rule"></span>
     {
@@ -319,5 +319,35 @@ const activeW = techs[REST].w;
   .aid__veil--r {
     right: 0;
     background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
+  }
+
+  /* Mobile — the badges render at 101 against the frame's 88 hub / 64 sides,
+     and the strip runs 418 in a 341 card. 0.8 brings both into the card and
+     is what stops the orbs reading as oversized discs. */
+  @media (max-width: 900px) {
+    /* Both are placed from a desktop left offset, so scaling them about their
+       own centre left them sitting off to one side of the card. Centre first,
+       then scale. */
+    .aid__orbit {
+      left: 50%;
+      margin-left: calc(var(--orbitW) / -2);
+      scale: 0.8;
+      transform-origin: top center;
+    }
+
+    .aid__strip {
+      left: 50%;
+      margin-left: calc(var(--stripW, 418px) / -2);
+      scale: 0.85;
+      transform-origin: top center;
+    }
+
+    /* Figma insets this veil 6px, which is still outside the card on desktop
+       where the orbit runs far wider. Centred and scaled to the phone it
+       becomes a visible gap at the card's edge, and an item can slide past
+       un-washed — the one thing the veil exists to prevent. */
+    .aid__veil--l {
+      left: 0;
+    }
   }
 </style>

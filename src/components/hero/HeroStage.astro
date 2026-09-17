@@ -195,9 +195,11 @@ import { heroScenes } from "../../data/hero";
      pairs are re-laid side by side from the left rather than by their frame
      offsets, which are measured against a 1440 column that no longer exists. */
   @media (max-width: 1080px) {
+    /* 620 left ~200px of dead air under the pair — the tallest card bottoms
+       out at 420. The stage is sized to the composition instead. */
     .stage {
       position: relative;
-      height: 620px;
+      height: 460px;
       transform: none;
     }
 
@@ -215,17 +217,20 @@ import { heroScenes } from "../../data/hero";
       left: 50%;
     }
 
-    .stage__pill-group { top: 260px; translate: -50% 0; }
-    .stage__glow { top: 150px; translate: -50% 0; }
+    .stage__pill-group { top: 190px; translate: -50% 0; }
+    .stage__glow { top: 90px; translate: -50% 0; }
     .stage__cards { top: 0; translate: -50% 0; width: 560px; }
 
     .stage__card--a { top: 130px; right: auto; left: 0; }
     .stage__card--b { top: 0; right: auto; left: 288px; }
   }
 
+  /* Scaled 0.62, the pair occupies 260 of the stage; 300 leaves it room to
+     breathe without the 260px of empty page the old 520 produced. */
   @media (max-width: 620px) {
-    .stage { height: 520px; }
+    .stage { height: 300px; }
     .stage__cards { scale: 0.62; transform-origin: top center; }
-    .stage__pill-group { scale: 0.9; top: 210px; }
+    .stage__pill-group { scale: 0.9; top: 115px; }
+    .stage__glow { top: 40px; }
   }
 </style>

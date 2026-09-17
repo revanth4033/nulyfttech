@@ -258,4 +258,42 @@ const { media } = row;
       white-space: normal;
     }
   }
+
+  /* One capability per line. Wrapping two onto a row left a short label
+     stranded beside a long one ("Workflow Automation" next to "RAG"), which
+     read as an accident rather than a grid. */
+  @media (max-width: 560px) {
+    .row__tags {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .row__tag {
+      width: 100%;
+    }
+
+    .row__chip {
+      width: 40px;
+      height: 40px;
+    }
+
+    .row__chip :global(.icon) {
+      width: 20px;
+      height: 20px;
+    }
+
+    .row__label {
+      font-size: 15px;
+    }
+
+    .row__title {
+      font-size: 22px;
+    }
+
+    .row__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
 </style>

@@ -27,12 +27,25 @@ registerSection(".ind", ({ root }) => {
   const links = Array.from(stage.querySelectorAll<SVGLineElement>("[data-link]"));
   if (!pulse || els.length !== pills.length) return;
 
+  /* The mobile scatter (493:2737) puts the pills at different radii, so the
+     wave reaches them in a different order. Tie the ping to the layout that
+     is actually live rather than to the desktop coordinates. */
+  /* Re-read on resize, not once at load: a page opened wide and then narrowed
+     kept the desktop ping order. */
+  const mq = window.matchMedia("(max-width: 900px)");
+  let mobile = mq.matches;
+  const at = (p: (typeof pills)[number]) => pingAt(p, mobile);
+  mq.addEventListener("change", (e) => {
+    mobile = e.matches;
+    ScrollTrigger.refresh();
+  });
+
   /* ---- entrance ------------------------------------------------------- */
 
   // Out from the hub, nearest pill first, so the constellation assembles
   // rather than simply fading up.
   const order = pills
-    .map((p, i) => ({ i, at: pingAt(p) }))
+    .map((p, i) => ({ i, at: at(p) }))
     .sort((a, b) => a.at - b.at);
 
   gsap.set(els, { opacity: 0, scale: 0.82 });
@@ -71,9 +84,9 @@ registerSection(".ind", ({ root }) => {
   tl.to(pulse, { opacity: 0, duration: TIMING.pulse * 0.55, ease: "none" }, TIMING.pulse * 0.45);
 
   pills.forEach((p, i) => {
-    const at = pingAt(p) * TIMING.pulse;
-    tl.to(els[i], { y: -4, duration: TIMING.ping * 0.4, ease: "power2.out" }, at)
-      .to(els[i], { y: 0, duration: TIMING.ping * 0.6, ease: "power2.inOut" }, at + TIMING.ping * 0.4);
+    const t = at(p) * TIMING.pulse;
+    tl.to(els[i], { y: -4, duration: TIMING.ping * 0.4, ease: "power2.out" }, t)
+      .to(els[i], { y: 0, duration: TIMING.ping * 0.6, ease: "power2.inOut" }, t + TIMING.ping * 0.4);
   });
 
   tl.set({}, {}, lap);

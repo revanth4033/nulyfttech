@@ -77,4 +77,21 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     flex: none;
     border-radius: 50%;
   }
+
+  /* Mobile — every 393 frame draws the section badge at 12/0.6 in a 6x12 box,
+     which is the 116x27 pill the headers are measured against. */
+  @media (max-width: 560px) {
+    .eyebrow--section,
+    .eyebrow--dark {
+      padding: 6px 12px;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+    }
+
+    /* Keep the badge hugging its text rather than filling the column. */
+    .eyebrow {
+      gap: 8px;
+      max-width: 100%;
+    }
+  }
 </style>

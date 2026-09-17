@@ -61,7 +61,7 @@ const resting = orbs.map((o) => place(o.base));
     <SectionHeader eyebrow="Technologies" title="The technology behind the products" />
 
     <div class="tech__cards">
-      <TechCard icon="icons/tech/stack-solid" title="AI & Automation" height={CARD_H}>
+      <TechCard icon="icons/tech/stack-solid" title="AI & Automation" height={CARD_H} mHeight={291}>
 
         <div class="tstage" data-orbit>
           <span
@@ -94,7 +94,7 @@ const resting = orbs.map((o) => place(o.base));
       </TechCard>
 
       <div class="tech__row">
-        <TechCard icon="icons/eng/card-engineering" title="Engineering" height={493}>
+        <TechCard icon="icons/eng/card-engineering" title="Engineering" height={493} mHeight={404}>
 
           <div class="eng" data-pipeline>
             <span class="eng__panel"></span>
@@ -410,5 +410,51 @@ const resting = orbs.map((o) => place(o.base));
     letter-spacing: -0.48px;
     text-align: center;
     color: var(--c-ink);
+  }
+
+  /* ========================================================================
+     Mobile — Figma 493:2524
+
+     The three-across row was `repeat(3, 1fr)` with no breakpoint at all, so
+     below ~900 it produced three 100px columns holding content built for 403.
+     All four cards now stack at the column width with the frame's 24px gap,
+     each taking its own drawn height.
+     ======================================================================== */
+  @media (max-width: 900px) {
+    .tech__inner {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .tech__cards {
+      gap: 24px;
+    }
+
+    .tech__row {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    /* The orbit is drawn for a 1240 card. At 0.33 its ring radius lands on
+       182 against the mobile frame's 180.5 (493:2538), which is the number
+       that matters — the orbs then read at ~27 against the frame's 32.
+       Already centred on the card, so scaling about the top centre holds. */
+    .tstage {
+      scale: 0.33;
+      transform-origin: top center;
+    }
+
+    /* The pipeline is 341 tall and the mobile card leaves it 264 (493:2557),
+       so the fifth chip fell off the bottom. 264/341 fits all five, and the
+       frame's own mobile body is that same proportion of the desktop one —
+       its nodes sit at 36/86/134/182/230 against 50/109/171/229/288 scaled. */
+    .eng {
+      /* Placed from a desktop left offset, so scaling about its own centre
+         left the panel 31px right of the card's. Centre first, then scale. */
+      left: 50%;
+      margin-left: calc(var(--bodyW) / -2);
+      scale: 0.774;
+      transform-origin: top center;
+    }
   }
 </style>

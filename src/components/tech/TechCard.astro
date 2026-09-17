@@ -14,15 +14,21 @@ interface Props {
   icon: string;
   title: string;
   height: number;
+  /** Mobile height (Figma 493:2524). Falls back to the desktop one. */
+  mHeight?: number;
   /** Figma insets the AI & Data header 2px lower than the rest. */
   headTop?: number;
   class?: string;
 }
 
-const { icon, title, height, headTop = 24, class: className } = Astro.props;
+const { icon, title, height, mHeight, headTop = 24, class: className } = Astro.props;
 ---
 
-<article class:list={["tcard", className]} data-animate style={`height:${height}px`}>
+<article
+  class:list={["tcard", className]}
+  data-animate
+  style={`--card-h:${height}px;--card-mh:${mHeight ?? height}px`}
+>
   <header class="tcard__head" style={`top:${headTop}px`}>
     <span class="tcard__chip"><Icon name={icon} size={24} /></span>
     <h3 class="tcard__title">{title}</h3>
@@ -34,6 +40,7 @@ const { icon, title, height, headTop = 24, class: className } = Astro.props;
   .tcard {
     position: relative;
     width: 100%;
+    height: var(--card-h);
     background: var(--c-surface);
     border-radius: 10px;
     /* Every card's animation runs wider or taller than the card on purpose
@@ -71,5 +78,12 @@ const { icon, title, height, headTop = 24, class: className } = Astro.props;
     letter-spacing: -0.4px;
     color: var(--c-ink);
     white-space: nowrap;
+  }
+
+  /* Mobile — the four cards stack at 361 and take their own frame heights. */
+  @media (max-width: 900px) {
+    .tcard {
+      height: var(--card-mh);
+    }
   }
 </style>

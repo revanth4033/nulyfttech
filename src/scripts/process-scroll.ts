@@ -12,8 +12,13 @@
  *
  * Six stations: the ball starts where it is drawn (the curve's origin,
  * before Discover) and then visits all five chips, so five scroll moves.
+ *
+ * Below 900 the section is a serpentine vertical timeline instead (Figma
+ * 536:13470). There is no pin, no ball and no track to slide — the page
+ * simply scrolls past it — so all this does is light each step as it is
+ * reached, which is the behaviour the mobile frame was signed off with.
  */
-import { ScrollTrigger, prefersReducedMotion } from "./gsap";
+import { gsap, ScrollTrigger, prefersReducedMotion } from "./gsap";
 import { processSteps, TRACK_W, VIEW_W } from "../data/process";
 
 const section = document.querySelector<HTMLElement>('[data-section="our-process"]');
@@ -71,11 +76,71 @@ if (section && track && path && trail && ball) {
     });
   }
 
-  if (prefersReducedMotion()) {
-    render(moves); // show the finished state, no pin
-  } else {
+  /** The mobile timeline: one trigger per step, lit once it is reached. */
+  function mobileSetup() {
+    const triggers = steps.map((step, i) =>
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top 85%",
+        // `once`: a step you have already read stays lit. Toggling it back off
+        // as it left the viewport made the whole section read as dim.
+        once: true,
+        onEnter: () => {
+          step.style.opacity = "1";
+          const chip = chips[i];
+          if (chip) {
+            chip.style.opacity = "1";
+            chip.style.scale = "1";
+          }
+        },
+      }),
+    );
+    return () => triggers.forEach((t) => t.kill());
+  }
+
+  /** Clear every inline style the other layout left behind. */
+  function reset() {
+    [...steps, ...chips].forEach((el) => {
+      el.style.opacity = "";
+      el.style.scale = "";
+    });
+    ball!.style.transform = "";
+    track!.style.transform = "";
+    trail!.style.strokeDashoffset = "";
+  }
+
+  /**
+   * The breakpoint is re-evaluated on resize rather than read once at load: a
+   * page opened wide and then narrowed kept the pinned horizontal track at
+   * mobile widths. `gsap.matchMedia` reverts each context on the way out.
+   */
+  const mm = gsap.matchMedia();
+
+  mm.add("(max-width: 900px)", () => {
+    reset();
+    if (prefersReducedMotion()) return reset;
+
+    // Start dim; each step lights as it is reached and stays lit.
+    steps.forEach((el) => (el.style.opacity = "0.4"));
+    chips.forEach((c) => {
+      c.style.opacity = "0.55";
+      c.style.scale = "1";
+    });
+
+    const kill = mobileSetup();
+    return () => {
+      kill();
+      reset();
+    };
+  });
+
+  mm.add("(min-width: 901px)", () => {
+    if (prefersReducedMotion()) {
+      render(moves); // the finished state, no pin
+      return reset;
+    }
     render(0);
-    const st = ScrollTrigger.create({
+    ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: `+=${moves * 80}%`,
@@ -88,8 +153,8 @@ if (section && track && path && trail && ball) {
       },
       onUpdate: (self) => render(self.progress * moves),
     });
-    if (import.meta.hot) import.meta.hot.dispose(() => st.kill());
-  }
+    return reset;
+  });
 
   if (import.meta.env.DEV) {
     Object.assign(window as unknown as Record<string, unknown>, {

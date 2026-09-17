@@ -1085,6 +1085,100 @@ below before the rule.
 and a UI Screens intro that still says "learning experience". Flagged, not
 silently corrected.
 
+## Mobile
+
+The five sections the user designed mobile frames for are built from Figma
+section **538:13647** ("mobile"), all 393 wide: Why nuLyft (493:2503),
+Technologies (493:2524), Industries (493:2737), Our Process (536:13470) and
+CTA + footer (539:705). Everything else on the page is adapted in code.
+
+**The breakpoint is 900 for layout and 560 for type.** Every mobile frame is
+393 with a 16px gutter, which is what puts its content column at 361 — the
+global gutter steps 100 -> 32 (<=900) -> 16 (<=560). Every mobile section runs
+40px of block padding.
+
+**Read the breakpoint through `gsap.matchMedia`, never once at load.** Four
+scripts (`why-orbit`, `process-scroll`, `industries`, `cta-fan`) checked
+`matchMedia(...).matches` a single time when the module ran. A page opened wide
+and then narrowed — which is exactly what device mode does, and what a rotation
+does — kept the desktop behaviour at phone widths: Why nuLyft's chips stayed
+out on the ellipse at (705, 48), and Our Process stayed pinned. `gsap.matchMedia`
+re-evaluates on resize and reverts each context on the way out. Anything those
+callbacks write as inline style has to be cleared by hand; GSAP only reverts
+what it created.
+
+**An inline `left`/`top` beats a media query.** Both Our Process and Industries
+emitted their desktop coordinates as inline styles, so the mobile layout could
+never take over however specific the rule was. Both coordinate sets now reach
+the CSS as custom properties and the media query re-points them.
+
+**`define:vars` sets its variables on the elements themselves.** Redefining
+one further up the tree therefore does not reach them — Industries' mobile ring
+offsets, hub size and pill height all had to be written as concrete properties
+rather than by re-pointing `--ringAOff` and friends on an ancestor.
+
+**Scale a card's art only after centring it.** The Technology cards' bodies are
+placed from a desktop left offset, so `transform-origin: top center` pivots
+about the element's own centre and leaves it where it was — Engineering came
+out 31px right of its card. `left: 50%` plus a negative half-width margin
+first, then `scale`.
+
+### Our Process — the mobile timeline
+
+A serpentine vertical timeline (536:13470), not the pinned horizontal track
+scaled down. No pin, no ball, no trail; `process-scroll.ts` only lights each
+step as it is reached, and `once: true` so a step you have read stays lit.
+
+**Figma turns the Timeline vector 180 degrees and the SVG export carries no
+transform.** Drawn as exported, every bend is on the wrong side *and* half a
+period out. A horizontal mirror alone fixes the left/right alternation — which
+makes the chips look right — and leaves the vertical phase wrong, so each bend
+peaks above its step instead of beside it. The test that settles it: measure
+the frame's own render for the curve's x at each title row (347-361 / 33-42 /
+347-362 / 31-46 / 349-360) and check which transform predicts all five. Only
+`rotate(180deg)` does.
+
+**Metadata reports a bounding box for that vector that is not its box** (it
+gives x=347, y=1512 for a 328x1512 node). The placement came off the render:
+ink at frame x 31..362, y 267..1724.
+
+### Technology — the mobile stack
+
+`repeat(3, 1fr)` had no breakpoint at all, so below ~900 it produced three
+100px columns holding content built for 403. The four cards now stack at the
+column width with the frame's 24px gap, each taking its own drawn height
+(291 / 404 / 440 / 413.71) via `mHeight` on `TechCard`.
+
+The interiors are fitted by scale rather than re-derived, because none of them
+is a clean ratio of its desktop self. What each scale is pinned to:
+
+| card | scale | why that number |
+| --- | --- | --- |
+| AI & Automation | 0.33 | puts the ring radius at 182 against the frame's 180.5 |
+| Engineering | 0.774 | the pipeline is 341 tall and the card leaves it 264 — below this the fifth chip falls off the bottom |
+| AI & Data | 0.8 | badges render 101 against the frame's 88 hub / 64 sides |
+| Cloud | 0.85 | tiles render 50 against the frame's 41.4 |
+
+**The AI & Data edge veils must reach the card's edge.** Figma insets the left
+one 6px, which is invisible on desktop where the orbit runs far wider than the
+card. Centred and scaled to a phone those 6px are a gap, and an item can slide
+past un-washed — the one thing the veils exist to prevent.
+
+### Sections adapted in code, no frame
+
+Hero (eyebrow hugs at 11/0.4 or it wraps and fills the column; the stage is
+sized to its composition, 300 at <=620, not the 520 that left 260px of dead
+air), Key Highlights (illustrations capped at 64 high), What We Do (one
+capability per line below 560 — wrapping two left a short label stranded
+beside a long one), Selected Work (the phone pieces were absolute px inside a
+fixed 575x317 stage and ran ~230px off screen; they are percentages of that
+box now, so the stage scales with its column).
+
+**A pinned section is expensive on a phone.** Why nuLyft is the only one left
+pinned, and its throw is 55% per step there against 90% on desktop — at 90% it
+was 2.7 screens of sticky scrolling for four items, which reads as the page
+having jammed.
+
 ## Assets from Figma
 
 Export icons individually (`download_assets` on the icon node, `svg`) rather

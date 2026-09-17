@@ -2,7 +2,16 @@
 import SectionHeader from "../ui/SectionHeader.astro";
 import GridLines from "../ui/GridLines.astro";
 import Icon from "../ui/Icon.astro";
-import { processSteps, TRACK_W, TRACK_H } from "../../data/process";
+import {
+  processSteps,
+  TRACK_W,
+  TRACK_H,
+  M_TRACK_W,
+  M_TRACK_H,
+  M_STEP_W,
+  M_CURVE,
+  M_CURVE_D,
+} from "../../data/process";
 
 /**
  * The curve is rebuilt from the Figma vector. The original layer exported at
@@ -10,6 +19,10 @@ import { processSteps, TRACK_W, TRACK_H } from "../../data/process";
  * the same shape refitted as a smooth C1 spline (2.1KB, within ~2px of the
  * original, with true horizontal tangents at every crest and trough).
  */
+/** Mobile coordinates ship as percentages of the 361 track, so the timeline
+ *  stays exact at 393 and simply narrows on a smaller handset. */
+const pctX = (v: number) => `${(v / M_TRACK_W) * 100}%`;
+
 const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 379.3 108.0 386.2C128.0 392.1 148.0 395.9 168.0 397.9C178.0 398.9 188.0 399.5 198.0 399.5C212.7 399.5 227.3 398.7 242.0 396.8C266.0 393.7 290.0 387.9 314.0 378.9C334.7 371.2 355.3 361.1 376.0 347.8C393.3 336.7 410.7 323.4 428.0 306.1C438.7 295.5 449.3 283.4 460.0 268.6C481.7 238.6 503.3 199.0 525.0 170.8C534.3 158.6 543.7 148.6 553.0 140.9C568.7 127.9 584.3 119.9 600.0 114.1C617.7 107.5 635.3 104.1 653.0 103.3C655.7 103.1 658.3 103.1 661.0 103.1C678.0 103.1 695.0 105.3 712.0 110.4C729.3 115.7 746.7 123.4 764.0 136.7C776.3 146.1 788.7 158.7 801.0 174.9C830.3 213.4 859.7 271.8 889.0 301.5C900.7 313.2 912.3 321.3 924.0 327.1C937.3 333.6 950.7 336.8 964.0 337.7C966.0 337.9 968.0 338.0 970.0 338.0C979.3 338.0 988.7 337.1 998.0 335.2C1009.7 332.8 1021.3 328.9 1033.0 323.6C1069.0 307.3 1105.0 270.1 1141.0 249.6C1155.3 241.4 1169.7 236.6 1184.0 236.6C1184.7 236.6 1185.3 236.6 1186.0 236.6C1200.3 236.6 1214.7 240.1 1229.0 245.6C1267.0 260.3 1305.0 284.0 1343.0 300.2C1378.0 315.2 1413.0 330.0 1448.0 338.8C1472.0 344.8 1496.0 348.0 1520.0 348.0C1520.7 348.0 1521.3 348.0 1522.0 348.0C1545.7 348.0 1569.3 345.4 1593.0 339.8C1614.3 334.7 1635.7 327.2 1657.0 316.7C1675.7 307.5 1694.3 296.0 1713.0 280.9C1724.7 271.4 1736.3 260.7 1748.0 247.4C1770.7 221.6 1793.3 186.9 1816.0 162.4C1825.3 152.4 1834.7 144.1 1844.0 137.6C1856.7 128.8 1869.3 122.8 1882.0 118.3C1896.3 113.2 1910.7 110.3 1925.0 109.2C1929.7 108.8 1934.3 108.7 1939.0 108.7C1952.7 108.7 1966.3 110.4 1980.0 113.9C1996.3 118.1 2012.7 124.7 2029.0 135.6C2041.0 143.6 2053.0 154.2 2065.0 167.2C2092.3 196.9 2119.7 239.6 2147.0 264.0C2156.3 272.3 2165.7 278.8 2175.0 283.7C2185.0 289.0 2195.0 292.4 2205.0 294.5C2213.0 296.2 2221.0 297.0 2229.0 297.0C2233.0 297.0 2237.0 296.8 2241.0 296.4C2254.3 295.3 2267.7 292.1 2281.0 287.4C2322.7 272.8 2364.3 233.5 2406.0 222.9C2413.3 221.0 2420.7 220.0 2428.0 220.0C2445.0 220.0 2462.0 220.8 2479.0 222.1";
 ---
 
@@ -24,9 +37,13 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
     />
 
     <div class="process__viewport">
-      <div class="process__track" data-process-track style={`width:${TRACK_W}px;height:${TRACK_H}px`}>
+      <div
+        class="process__track"
+        data-process-track
+        style={`--dw:${TRACK_W}px;--dh:${TRACK_H}px;--mh:${M_TRACK_H}px`}
+      >
         <svg
-          class="process__curve"
+          class="process__curve process__curve--d"
           viewBox={`0 0 ${TRACK_W} ${TRACK_H}`}
           width={TRACK_W}
           height={TRACK_H}
@@ -38,9 +55,24 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
           <path id="process-path" d={CURVE_D} fill="none" stroke="none" data-process-path />
         </svg>
 
+        {/* The mobile timeline is a different shape, not this one rescaled. */}
+        <svg
+          class="process__curve process__curve--m"
+          viewBox={`0 0 ${M_CURVE.vbW} ${M_CURVE.vbH}`}
+          preserveAspectRatio="none"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path class="process__curve-m" d={M_CURVE_D} />
+        </svg>
+
         {
           processSteps.map((s) => (
-            <div class="process__step" data-process-step style={`left:${s.tx}px;top:${s.ty}px;width:${s.tw}px`}>
+            <div
+              class="process__step"
+              data-process-step
+              style={`--dx:${s.tx}px;--dy:${s.ty}px;--dw:${s.tw}px;--mx:${pctX(s.mx)};--my:${s.my}px;--mw:${pctX(M_STEP_W)}`}
+            >
               <span class="process__numeral" aria-hidden="true">{s.n}</span>
               <h3 class="process__title">{s.title}</h3>
               <p class="process__body">{s.body}</p>
@@ -50,8 +82,12 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
 
         {
           processSteps.map((s) => (
-            <span class="process__chip" data-process-chip style={`left:${s.cx}px;top:${s.cy}px`}>
-              <Icon name={s.icon} size={40} />
+            <span
+              class="process__chip"
+              data-process-chip
+              style={`--dx:${s.cx}px;--dy:${s.cy}px;--mx:${pctX(s.mcx)};--my:${s.mcy}px`}
+            >
+              <Icon name={s.icon} size={40} class="process__glyph" />
             </span>
           ))
         }
@@ -99,10 +135,16 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
     clip-path: inset(-90px 0 -24px 0);
   }
 
+  /* Both coordinate sets reach the CSS as custom properties rather than as
+     inline `left`/`top`. An inline declaration beats a media query, so the
+     mobile layout could never take over while the desktop values were set
+     directly on the element. */
   .process__track {
     position: absolute;
     top: 0;
     left: 0;
+    width: var(--dw);
+    height: var(--dh);
     will-change: transform;
   }
 
@@ -131,6 +173,8 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
 
   .process__chip {
     position: absolute;
+    left: var(--dx);
+    top: var(--dy);
     display: grid;
     place-items: center;
     width: 64px;
@@ -144,6 +188,9 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
 
   .process__step {
     position: absolute;
+    left: var(--dx);
+    top: var(--dy);
+    width: var(--dw);
   }
 
   .process__numeral {
@@ -206,10 +253,120 @@ const CURVE_D = "M-1.0 348.2C12.3 351.6 25.7 353.4 39.0 358.1C62.0 366.4 85.0 37
     }
   }
 
+  .process__curve--m {
+    display: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile — Figma 536:13470
+
+     A different composition, not the desktop one squeezed: the pinned
+     horizontal track becomes a serpentine vertical timeline. The pin, the
+     ball and the trail all go with it, so the section is ordinary page flow
+     and `process-scroll.ts` only lights the steps as they are passed.
+
+     Horizontal offsets are percentages of the 361 track (emitted per element
+     as `--mx`), so the timeline is exact at 393 and narrows cleanly on a
+     smaller handset. Vertical offsets stay in px — the curve's height is what
+     sets the section's height, and it must not scale with the width.
+     ------------------------------------------------------------------------ */
   @media (max-width: 900px) {
     .process__inner {
-      gap: 48px;
-      padding-block: 72px;
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .process {
+      min-height: 0;
+      align-items: flex-start;
+    }
+
+    .process__viewport {
+      width: 100%;
+      max-width: 361px;
+      height: var(--mh);
+      clip-path: none;
+    }
+
+    .process__track {
+      position: relative;
+      width: 100%;
+      height: var(--mh);
+      transform: none !important; /* the desktop script may have set one */
+    }
+
+    .process__curve--d,
+    .process__ball {
+      display: none;
+    }
+
+    .process__curve--m {
+      display: block;
+      position: absolute;
+      top: 56px;
+      left: 4.155125%;   /* 15 / 361 */
+      width: 91.689751%; /* 331 / 361 */
+      height: 1457.56px;
+      overflow: visible;
+      /* Figma turns this vector 180deg on the canvas and the SVG export does
+         not carry the transform. A horizontal mirror alone gets the left/right
+         alternation right — which is why the chips looked correct — but leaves
+         the vertical phase wrong, so each bend peaked above its step instead of
+         beside it. Rotating puts all five extremes within a few px of the
+         frame's own measurements at every title row. */
+      transform: rotate(180deg);
+    }
+
+    .process__curve-m {
+      fill: none;
+      stroke: var(--c-accent);
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      /* The stretch is horizontal only, so an un-scaled stroke would thin
+         with it; Figma stretches the vector the same ~2% and draws 2.6. */
+      vector-effect: non-scaling-stroke;
+    }
+
+    .process__step {
+      left: var(--mx);
+      top: var(--my);
+      width: var(--mw);
+      padding: 24px;
+      border-radius: var(--r-card);
+    }
+
+    /* The numeral leads the block here instead of sitting beside it. Figma's
+       mobile gradient runs out to #f4f4f4, which reads as the numerals having
+       faded; the desktop ramp is kept instead at the user's request. */
+    .process__numeral {
+      position: static;
+      display: block;
+      font-size: 72px;
+    }
+
+    .process__title {
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: normal;
+    }
+
+    .process__body {
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: normal;
+    }
+
+    .process__chip {
+      left: var(--mx);
+      top: var(--my);
+      width: 44px;
+      height: 44px;
+      box-shadow: 0 4px 12px rgba(131, 77, 251, 0.24);
+    }
+
+    .process__chip :global(.process__glyph) {
+      width: 20px;
+      height: 20px;
     }
   }
 </style>

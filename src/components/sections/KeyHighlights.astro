@@ -161,5 +161,20 @@ const {
       width: 100%;
       justify-content: space-between;
     }
+
+    /* The illustrations ship at their desktop size and read as oversized next
+       to a 32px value on a 375 column; ~72% brings them back in scale. */
+    .highlights :global(.highlights__art) {
+      width: auto;
+      height: 64px;
+    }
+
+    .highlights__value {
+      font-size: 32px;
+    }
+
+    .highlights__label {
+      font-size: 13px;
+    }
   }
 </style>

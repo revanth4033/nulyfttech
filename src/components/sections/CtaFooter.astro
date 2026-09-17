@@ -509,4 +509,137 @@ const work = [
       opacity: 0.82;
     }
   }
+
+  /* ========================================================================
+     Mobile — Figma 539:705
+
+     The card narrows to the 361 column and its parts restack: copy centred,
+     the screenshot trio underneath it rather than fanned off to one side, and
+     the fan stops cycling (the frame draws a static trio, which is what the
+     user signed off). The footer keeps the overlap — it simply starts lower.
+     ======================================================================== */
+  @media (max-width: 900px) {
+    .cta {
+      left: var(--gutter);
+      top: 40px;
+      width: auto;
+      right: var(--gutter);
+      height: 451px;
+      translate: none;
+      border-radius: 20px;
+    }
+
+    .cta__copy {
+      position: static;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 40px 24px 0;
+      translate: none;
+      text-align: center;
+    }
+
+    .cta__title {
+      font-size: 24px;
+      line-height: 32px;
+    }
+
+    .cta__body {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .cta__btn {
+      margin-top: 12px;
+    }
+
+    /* The trio sits under the copy and is centred on the card, not hung off
+       its right edge. `cta-fan.ts` leaves it alone at this width. */
+    .cta__fan {
+      left: 50%;
+      top: 307px;
+      scale: 0.42;
+      transform-origin: top center;
+    }
+
+    .foot {
+      margin-top: 310px;
+    }
+
+    .foot__top {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 24px;
+      padding: 229px var(--gutter) 0;
+    }
+
+    .foot__brand {
+      gap: 16px;
+      width: 100%;
+    }
+
+    .foot__social {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .foot__tagline {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .foot__social-label {
+      font-size: 13px;
+    }
+
+    .foot__col {
+      gap: 12px;
+    }
+
+    .foot__col-title {
+      font-size: 15px;
+      line-height: normal;
+    }
+
+    .foot__col ul {
+      gap: 10px;
+    }
+
+    .foot__col li,
+    .foot__col a {
+      font-size: 15px;
+      line-height: normal;
+    }
+
+    /* Capabilities runs full width; Company and Work share the row under it. */
+    .foot__nav {
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .foot__col:first-child {
+      flex: 0 0 100%;
+    }
+
+    .foot__col--narrow {
+      flex: 1 0 0;
+      min-width: 0;
+    }
+
+    /* The rule and the two centred rows, 32 under the nav and 40 above the
+       bottom edge — Figma puts the line at 687 and the block at 719 of 809. */
+    .foot__bar {
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      padding: 32px var(--gutter) 40px;
+      font-size: 14px;
+      line-height: normal;
+    }
+
+    .foot__legal {
+      gap: 24px;
+    }
+  }
 </style>

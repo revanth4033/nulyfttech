@@ -17,6 +17,10 @@ const N = SLOTS.length;
 const STEP = TIMING.hold + TIMING.move;
 
 registerSection(".cta", ({ root }) => {
+  /* Mobile (539:705) draws the trio static under the copy — the frame carries
+     no cycle there. Checked through `gsap.matchMedia` below rather than as an
+     early return, so a resize in either direction picks the right behaviour. */
+
   const fan = root.querySelector<HTMLElement>("[data-fan]");
   if (!fan) return;
 
@@ -62,17 +66,30 @@ registerSection(".cta", ({ root }) => {
 
   tl.eventCallback("onRepeat", reset);
 
-  const st = ScrollTrigger.create({
-    trigger: fan,
-    start: "top bottom",
-    end: "bottom top",
-    onToggle: (self) => (self.isActive ? tl.play() : tl.pause()),
-  });
-  if (st.isActive) tl.play();
+  const mm = gsap.matchMedia();
 
-  // Hold while someone is actually looking at a screen.
-  fan.addEventListener("pointerenter", () => tl.pause());
-  fan.addEventListener("pointerleave", () => {
+  mm.add("(min-width: 901px)", () => {
+    const st = ScrollTrigger.create({
+      trigger: fan,
+      start: "top bottom",
+      end: "bottom top",
+      onToggle: (self) => (self.isActive ? tl.play() : tl.pause()),
+    });
     if (st.isActive) tl.play();
+
+    // Hold while someone is actually looking at a screen.
+    const hold = () => tl.pause();
+    const resume = () => {
+      if (st.isActive) tl.play();
+    };
+    fan.addEventListener("pointerenter", hold);
+    fan.addEventListener("pointerleave", resume);
+
+    return () => {
+      tl.pause(0);
+      reset();
+      fan.removeEventListener("pointerenter", hold);
+      fan.removeEventListener("pointerleave", resume);
+    };
   });
 });
