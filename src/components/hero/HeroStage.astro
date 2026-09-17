@@ -35,29 +35,33 @@ import { heroScenes } from "../../data/hero";
 
   <div class="stage__glow" data-stage-glow></div>
 
-  <!-- Scene 0: the pill the cursor clicks to start everything. -->
-  <div class="stage__pill-group" data-scene="pill">
-    <div class="stage__pill" data-stage-pill>
-      <span>Start Your Project nuLyft</span>
-    </div>
-    <Icon name="icons/cursor" size={32} class="stage__cursor" data-stage-cursor />
-  </div>
-
-  <!-- Scenes 1..4: the card pairs, lower-left card first. -->
-  {
-    heroScenes.map((scene, i) => (
-      <div class="stage__cards" data-scene="cards" data-scene-index={i} data-scene-id={scene.id}>
-        {scene.cards.map((card, j) => (
-          <div
-            class:list={["stage__card", j === 0 ? "stage__card--a" : "stage__card--b"]}
-            style={`--card-w:${scene.slots[j].w}px;--card-right:${scene.slots[j].right}px;--card-top:${scene.slots[j].top}px`}
-          >
-            {card.kind === "preview" ? <PreviewCard card={card} /> : <PipelineCard card={card} />}
-          </div>
-        ))}
+  <!-- Everything that moves lives in the field, which clips. The glow does
+       not: a 200px blur inside a clip becomes a hard-edged rectangle. -->
+  <div class="stage__field" data-stage-field>
+    <!-- Scene 0: the pill the cursor clicks to start everything. -->
+    <div class="stage__pill-group" data-scene="pill">
+      <div class="stage__pill" data-stage-pill>
+        <span>Start Your Project nuLyft</span>
       </div>
-    ))
-  }
+      <Icon name="icons/cursor" size={32} class="stage__cursor" data-stage-cursor />
+    </div>
+
+    <!-- Scenes 1..4: the card pairs, lower-left card first. -->
+    {
+      heroScenes.map((scene, i) => (
+        <div class="stage__cards" data-scene="cards" data-scene-index={i} data-scene-id={scene.id}>
+          {scene.cards.map((card, j) => (
+            <div
+              class:list={["stage__card", j === 0 ? "stage__card--a" : "stage__card--b"]}
+              style={`--card-w:${scene.slots[j].w}px;--card-right:${scene.slots[j].right}px;--card-top:${scene.slots[j].top}px`}
+            >
+              {card.kind === "preview" ? <PreviewCard card={card} /> : <PipelineCard card={card} />}
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
 </div>
 
 <style>
@@ -72,6 +76,21 @@ import { heroScenes } from "../../data/hero";
     position: absolute;
     width: 0;
     height: 0;
+  }
+
+  /* The threshold the loop plays behind.
+     Nothing is drawn here — the box only clips, so cards slide in and out past
+     an edge instead of fading up in open space. Its right edge is the stage's,
+     and 700 puts the left edge between the leftmost card at rest (667 from the
+     right) and the copy column's right edge (722 at 1440). Full stage height,
+     so only the two sides bite; the flight is horizontal. */
+  .stage__field {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--stage-field-w, 700px);
+    overflow: clip;
   }
 
   /* Scenes start hidden so nothing flashes before the timeline boots.
@@ -180,6 +199,13 @@ import { heroScenes } from "../../data/hero";
       position: relative;
       height: 620px;
       transform: none;
+    }
+
+    /* The composition is centred rather than right-anchored down here, so the
+       field takes the whole stage and clips at its own edges. */
+    .stage__field {
+      inset: 0;
+      width: auto;
     }
 
     .stage__glow,

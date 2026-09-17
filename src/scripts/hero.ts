@@ -101,6 +101,27 @@ function blurTween(
   );
 }
 
+/* --------------------------------------------------------------------------
+   Offstage distances
+
+   The stage clips to `.stage__field`, so nothing has to fade in or out any
+   more — a group just travels until it is past an edge. Both distances are
+   measured in layout pixels off the offset parent, which is inside the scaled
+   stage, so they stay correct at every breakpoint without reading a transform.
+   -------------------------------------------------------------------------- */
+const OFFSTAGE_PAD = 24;
+
+/** Travel that puts `el`'s left edge past the field's right edge. */
+function offstageRight(el: HTMLElement) {
+  const parent = el.offsetParent as HTMLElement | null;
+  return (parent?.offsetWidth ?? 0) - el.offsetLeft + OFFSTAGE_PAD;
+}
+
+/** Travel that puts `el`'s right edge past the field's left edge. Negative. */
+function offstageLeft(el: HTMLElement) {
+  return -(el.offsetLeft + el.offsetWidth + OFFSTAGE_PAD);
+}
+
 /* -------------------------------------------------------------------------- */
 
 registerSection(".hero", ({ root }) => {
@@ -178,8 +199,8 @@ registerSection(".hero", ({ root }) => {
     .to(glowEl, { ...GLOW.pill, duration: 0.8, ease: "power2.out" }, 0)
     .fromTo(
       pill,
-      { x: 420, scale: 0.55, opacity: 0 },
-      { x: 0, scale: 1, opacity: 1, duration: 0.62, ease: "expo" },
+      { x: offstageRight(pillGroup), scale: 0.92, opacity: 1 },
+      { x: 0, scale: 1, duration: 0.62, ease: "expo" },
       0,
     )
     .fromTo(
@@ -195,7 +216,7 @@ registerSection(".hero", ({ root }) => {
     .to(cursorEl, { x: 0, y: 0, duration: 0.28, ease: "back.out(3)" }, 1.27)
     // and out
     .to(cursorEl, { x: 60, y: 40, opacity: 0, duration: 0.35, ease: "power2.in" }, 1.75)
-    .to(pill, { x: -280, opacity: 0, duration: 0.45, ease: "power2.in" }, 1.8)
+    .to(pill, { x: offstageLeft(pillGroup), duration: 0.45, ease: "power2.in" }, 1.8)
     .set(pillGroup, { opacity: 0 });
 
   blurTween(act1, pillBlur, 26, 0, 0.55, 0);
@@ -213,16 +234,19 @@ registerSection(".hero", ({ root }) => {
 
     tl.set(scene, { opacity: 1 })
       .to(glowEl, { ...GLOW.cards, duration: 0.7, ease: "power2.out" }, 0)
+      // No opacity ramp on either end any more: the card is simply outside the
+      // field until it crosses the edge, which is what stops the loop reading
+      // as things appearing in open air.
       .fromTo(
         cardA,
-        { x: 430, y: -34, scale: 0.82, opacity: 0 },
-        { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.66, ease: "expo" },
+        { x: offstageRight(cardA), y: -34, scale: 0.9, opacity: 1 },
+        { x: 0, y: 0, scale: 1, duration: 0.66, ease: "expo" },
         0,
       )
       .fromTo(
         cardB,
-        { x: 520, y: -12, scale: 0.82, opacity: 0 },
-        { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.66, ease: "expo" },
+        { x: offstageRight(cardB), y: -12, scale: 0.9, opacity: 1 },
+        { x: 0, y: 0, scale: 1, duration: 0.66, ease: "expo" },
         0.1,
       );
 
@@ -234,11 +258,11 @@ registerSection(".hero", ({ root }) => {
       .to(cardB, { y: 10, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.75)
       .to({}, { duration: 0.4 }); // hold
 
-    // out
+    // out — each card leaves by its own edge, so the two travel different
+    // distances and the value is per target.
     tl.to([cardA, cardB], {
-      x: -170,
+      x: (_i: number, target: HTMLElement) => offstageLeft(target),
       y: -60,
-      opacity: 0,
       duration: 0.42,
       ease: "power2.in",
       stagger: 0.05,
