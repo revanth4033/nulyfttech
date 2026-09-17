@@ -98,10 +98,43 @@ export const challenge = {
   ],
 };
 
+/**
+ * A screenshot placed by its Figma node rather than by its own size.
+ *
+ * Every export on this page arrives larger than the node it came from, because
+ * the card's drop shadow is baked into the raster. The shadow is `0 32px` with
+ * ~61px of spread, so the export hangs ~29px above the card and ~93px below —
+ * it is **not** centred on the node. Sizing a figure to its export therefore
+ * inflates the block: this page rendered its Approach +48 and its UI Screens
+ * +293 against their own frames before these numbers existed.
+ *
+ * So the figure reserves `node` in flow and the export overflows it, placed at
+ * `off`. Each `off` was measured, not assumed: the card's edge was located in
+ * an isolated node render and again in the full-section render, and the
+ * difference taken. Symmetric centring puts every card ~30px low.
+ */
+export interface Media {
+  src: ImageMetadata;
+  alt: string;
+  /** The box the frame reserves — what the figure occupies in flow. */
+  node: { w: number; h: number };
+  /** The export's own size, shadow included. */
+  exp: { w: number; h: number };
+  /** The export's top-left in node space. */
+  off: { x: number; y: number };
+}
+
+/** Both phase screenshots are the same card at the same size. */
+const PHASE_MEDIA = {
+  node: { w: 568.42, h: 406.56 },
+  exp: { w: 690.5, h: 527.5 },
+  off: { x: -61.04, y: -28.3 },
+} as const;
+
 export interface Phase {
   title: string;
   items: { title: string; body: string }[];
-  media?: { src: ImageMetadata; alt: string };
+  media?: Media;
   /** Which side the screenshot sits on; the phases alternate. */
   mediaSide?: "left" | "right";
 }
@@ -144,7 +177,7 @@ export const approach = {
           body: "Transformed wireframes into a consistent and visual language.",
         },
       ],
-      media: { src: approachP02, alt: "The Skill Wagon revenue dashboard" },
+      media: { src: approachP02, alt: "The Skill Wagon revenue dashboard", ...PHASE_MEDIA },
       mediaSide: "left",
     },
     {
@@ -163,7 +196,7 @@ export const approach = {
           body: "Brought everything together into a scalable, seamless SaaS platform.",
         },
       ],
-      media: { src: approachP03, alt: "The Skill Wagon course library" },
+      media: { src: approachP03, alt: "The Skill Wagon course library", ...PHASE_MEDIA },
       mediaSide: "right",
     },
   ] satisfies Phase[],
@@ -203,24 +236,43 @@ export const palette = {
   },
 };
 
-export interface Screen {
-  src: ImageMetadata;
-  alt: string;
+export interface Screen extends Media {
   title?: string;
   body?: string;
   /** `full` spans the column; `pair` is one of a side-by-side row. */
   layout: "full" | "left" | "right" | "pair";
 }
 
+/**
+ * Three of the five blocks are the same browser card at the same scale, so
+ * they carry the same bleed: 61 to each side, 29 above and 93 below.
+ */
+const CARD_OFF = { x: -61, y: -29 };
+
 export const screens = {
   eyebrow: "UI Screens",
   title: "Designed for Every Learning Journey",
   body: "Explore the core screens of Skill Wagon, designed to simplify navigation and create a seamless learning experience for both admins and learners.",
   blocks: [
+    /**
+     * The one block the frame does not run full width: a 1200 node in the 1240
+     * column, with the phone hanging off its right edge. That overhang is why
+     * this export's bleed is 57 left against 139 right — it is the only
+     * asymmetry here that is artwork rather than shadow.
+     *
+     * The export also carried a 1px dark column down its right edge, baked in
+     * by Figma. It hides inside the frame, where it lands on the 1440 canvas
+     * boundary; on the page it was a hairline hanging 100px clear of the
+     * column. The source is trimmed by that column, so this is 1396 and not
+     * the 1397 Figma reports — `off.x` anchors from the left, so nothing moved.
+     */
     {
       src: showcaseHero,
       alt: "The Skill Wagon marketing site on desktop and mobile",
       layout: "full",
+      node: { w: 1200, h: 700 },
+      exp: { w: 1396, h: 898.5 },
+      off: { x: -57, y: -84 },
     },
     {
       src: showcaseCourses,
@@ -228,6 +280,9 @@ export const screens = {
       title: "All Courses Screen",
       body: "The Courses screen centralizes course creation and management, allowing admins to create, edit, publish, unpublish, and delete courses from one streamlined workspace.",
       layout: "left",
+      node: { w: 608, h: 394 },
+      exp: { w: 730, h: 516 },
+      off: CARD_OFF,
     },
     {
       src: showcaseEnrollments,
@@ -235,8 +290,25 @@ export const screens = {
       title: "Students Enrollments Screen",
       body: "The Student Enrollments screen lets administrators manage enrolled students, view enrollment details, monitor access, and revoke access when needed.",
       layout: "right",
+      node: { w: 608, h: 394 },
+      exp: { w: 730, h: 516 },
+      off: CARD_OFF,
     },
-    { src: showcaseTablets, alt: "Skill Wagon on two tablets", layout: "full" },
-    { src: showcasePair, alt: "Two further Skill Wagon admin screens", layout: "full" },
+    {
+      src: showcaseTablets,
+      alt: "Skill Wagon on two tablets",
+      layout: "full",
+      node: { w: 1240, h: 922 },
+      exp: { w: 1347, h: 1053 },
+      off: { x: -53, y: -33 },
+    },
+    {
+      src: showcasePair,
+      alt: "Two further Skill Wagon admin screens",
+      layout: "full",
+      node: { w: 1240, h: 394 },
+      exp: { w: 1362, h: 516 },
+      off: CARD_OFF,
+    },
   ] satisfies Screen[],
 };

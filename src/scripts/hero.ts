@@ -5,14 +5,17 @@
  * beats are reproduced here as a GSAP timeline:
  *
  *   intro      copy resolves in
- *   pill       the CTA flies in, a cursor arrives and clicks it   (plays once)
- *   scene 1    two capability cards fly in, settle, drift
- *   scene 2    they blur out, the next pair flies in
- *   stat       the pair clears and the summary card builds itself
+ *   pill       the CTA flies in, a cursor arrives and clicks it
+ *   scene 1-4  a pair of cards flies in, settles, drifts, blurs out, and the
+ *              next pair takes the stage
  *   -> loops back to scene 1
  *
+ * The pairs come from `data/hero.ts`; add one there and the loop picks it up.
+ * There is no separate closing beat — a summary dashboard used to hold that
+ * slot and the fourth pair replaced it.
+ *
  * The cursor click is the narrative hinge: everything after it reads as the
- * consequence of pressing the button, so it only plays on the first pass.
+ * consequence of pressing the button, and it opens every lap.
  */
 import { gsap, ScrollTrigger, registerSection, splitWhenReady } from "./gsap";
 
@@ -109,7 +112,6 @@ registerSection(".hero", ({ root }) => {
   const pill = q("[data-stage-pill]")[0] as HTMLElement | undefined;
   const cursor = q("[data-stage-cursor]")[0] as HTMLElement | undefined;
   const cardScenes = q('[data-scene="cards"]') as HTMLElement[];
-  const statScene = q('[data-scene="stat"]')[0] as HTMLElement | undefined;
 
   /* ---------------- intro: the copy resolves in ---------------- */
 
@@ -146,24 +148,23 @@ registerSection(".hero", ({ root }) => {
 
   /* ---------------- stage ---------------- */
 
-  if (!stage || !glow || !pillGroup || !pill || !cursor || !statScene) return;
+  if (!stage || !glow || !pillGroup || !pill || !cursor || !cardScenes.length) return;
 
   // Bind to consts so the null-checks above survive into the closures below.
   const glowEl = glow;
-  const statEl = statScene;
   const cursorEl = cursor;
 
   const master = gsap.timeline({ paused: true });
 
   // Glow geometry, expressed as transforms off its CSS position (the card
-  // scene). 1.23 scale lands exactly on the stat scene's 492x400.
+  // scene). Every frame draws the glow at the same 400x325 ellipse, so the
+  // card pairs share one resting value and only the pill beat moves it.
   const GLOW = {
     pill: { x: -32, y: 19, scale: 1, opacity: 0.55 },
     cards: { x: 0, y: 0, scale: 1, opacity: 0.6 },
-    stat: { x: -52, y: 16.5, scale: 1.23, opacity: 0.5 },
   };
 
-  gsap.set([pillGroup, ...cardScenes, statScene], { opacity: 0 });
+  gsap.set([pillGroup, ...cardScenes], { opacity: 0 });
   gsap.set(glow, { ...GLOW.cards, opacity: 0 });
 
   const pillBlur = createMotionBlur(pill);
@@ -202,7 +203,7 @@ registerSection(".hero", ({ root }) => {
 
   /* --- act 2: the card pairs --- */
 
-  const cardSceneTl = (scene: HTMLElement) => {
+  const cardSceneTl = (scene: HTMLElement, isLast: boolean) => {
     const cardA = scene.querySelector<HTMLElement>(".stage__card--a")!;
     const cardB = scene.querySelector<HTMLElement>(".stage__card--b")!;
     const blurA = createMotionBlur(cardA);
@@ -244,39 +245,15 @@ registerSection(".hero", ({ root }) => {
     });
     blurTween(tl, blurA, 0, 28, 0.42, "<");
     blurTween(tl, blurB, 0, 28, 0.42, "<");
+
+    // The last pair hands the stage back empty, so the pill beat opens on a
+    // dark glow exactly as it did on the first pass. Without this the glow is
+    // still lit at the loop seam and snaps.
+    if (isLast) {
+      tl.to(glowEl, { ...GLOW.cards, opacity: 0, duration: 0.42, ease: "power2.in" }, "<");
+    }
+
     tl.set(scene, { opacity: 0 });
-
-    return tl;
-  };
-
-  /* --- act 3: the summary card builds itself --- */
-
-  const statSceneTl = () => {
-    const parts = statEl.querySelectorAll<HTMLElement>("[data-stat-part]");
-    const card = statEl.querySelector<HTMLElement>("[data-hero-stat]")!;
-    const tl = gsap.timeline();
-
-    tl.set(statEl, { opacity: 1 })
-      .to(glowEl, { ...GLOW.stat, duration: 0.8, ease: "power2.out" }, 0)
-      .fromTo(
-        card,
-        { scale: 0.93, y: 26, opacity: 0 },
-        { scale: 1, y: 0, opacity: 1, duration: 0.7, ease: "expo" },
-        0,
-      )
-      .fromTo(
-        parts,
-        { y: 18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.55, ease: "power3.out", stagger: 0.13 },
-        0.35,
-      )
-      .to({}, { duration: 2.1 })
-      .to(card, { scale: 0.97, opacity: 0, duration: 0.45, ease: "power2.in" })
-      // Hand the stage back empty. Without this the glow would still be at the
-      // stat position/scale when the loop restarts, and snap on the next pass.
-      .to(glowEl, { ...GLOW.cards, opacity: 0, duration: 0.45, ease: "power2.in" }, "<")
-      .set(statEl, { opacity: 0 })
-      .set(parts, { clearProps: "all" });
 
     return tl;
   };
@@ -285,8 +262,7 @@ registerSection(".hero", ({ root }) => {
 
   const loop = gsap.timeline({ repeat: -1 });
   loop.add(act1);
-  cardScenes.forEach((scene) => loop.add(cardSceneTl(scene)));
-  loop.add(statSceneTl());
+  cardScenes.forEach((scene, i) => loop.add(cardSceneTl(scene, i === cardScenes.length - 1)));
 
   master.add(loop);
 

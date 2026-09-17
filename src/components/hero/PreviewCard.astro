@@ -1,0 +1,124 @@
+---
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import type { PreviewCard } from "../../data/hero";
+
+interface Props {
+  card: PreviewCard;
+}
+
+const { card } = Astro.props;
+const { media, logo } = card;
+const exp = media.exp ?? { w: media.w, h: media.h };
+---
+
+<article class="pcard">
+  <h3 class="pcard__title">{card.title}</h3>
+
+  <div class="pcard__media" style={`width:${media.w}px;height:${media.h}px`}>
+    <Image
+      src={media.src}
+      alt={media.alt}
+      width={Math.round(exp.w * 2)}
+      widths={[Math.round(exp.w), Math.round(exp.w * 2)]}
+      sizes={`${Math.round(exp.w)}px`}
+      style={`width:${exp.w}px;height:${exp.h}px`}
+    />
+  </div>
+
+  <div class="pcard__caption">
+    <div class="pcard__text">
+      <p class="pcard__name">{card.name}</p>
+      <p class="pcard__body">{card.body}</p>
+    </div>
+    {logo && <Icon name={logo.icon} width={logo.w} height={29.5} class="pcard__logo" />}
+  </div>
+</article>
+
+<style>
+  /* Figma 528:8331 — hug-content, so the height is the sum of the parts:
+     16 + title 19 + 16 + media + 16 + caption 53.5 + 16. The shell carries a
+     1.5px tinted border and no shadow; probing the frame's own render at the
+     card edge shows background immediately outside the border. */
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--c-surface);
+    border-radius: var(--r-card);
+    /* Figma strokes this frame on the inside, so the 1.5px ring is paint and
+       not box: as a `border` it made every card 3px taller than its frame. */
+    box-shadow: inset 0 0 0 1.5px rgba(131, 77, 251, 0.16);
+  }
+
+  .pcard__title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    letter-spacing: -0.32px;
+    color: var(--c-ink);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* The panel box is the Figma node; the export may be wider than it and is
+     allowed to hang out, anchored left — the Experience Simulation art runs
+     11px past its panel on the right and the frame draws that overhang. */
+  .pcard__media {
+    position: relative;
+    flex: none;
+  }
+
+  .pcard__media :global(img) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    max-width: none;
+  }
+
+  /* Fixed 53.5 in the frame — the text is 46 and the slack is real. */
+  .pcard__caption {
+    display: flex;
+    align-items: flex-start;
+    gap: 34.5px;
+    height: 53.5px;
+  }
+
+  .pcard__text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--c-ink);
+  }
+
+  .pcard__name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  /* `pre-line` so a caption can carry the frame's hard breaks (pair 1 does)
+     while the rest still wrap to the column on their own. */
+  .pcard__body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 8px;
+    line-height: 12px;
+    white-space: pre-line;
+  }
+
+  /* A caption with a logo reserves the frame's 165.5 text column so the two
+     sit where they are drawn; without one the text takes the full width. */
+  .pcard__caption:has(.pcard__logo) .pcard__text {
+    width: 165.5px;
+  }
+
+  .pcard :global(.pcard__logo) {
+    flex: none;
+  }
+</style>

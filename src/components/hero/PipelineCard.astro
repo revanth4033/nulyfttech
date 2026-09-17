@@ -1,0 +1,222 @@
+---
+import Icon from "../ui/Icon.astro";
+import type { PipelineCard } from "../../data/hero";
+
+interface Props {
+  card: PipelineCard;
+}
+
+const { card } = Astro.props;
+
+/**
+ * Figma 528:8882 / 528:8941.
+ *
+ * Three steps hang off a lavender rail. Their discs sit at 0 / 83.25 / 165.75
+ * in a 221.25-tall body, and everything else in a step keeps a fixed offset
+ * from its disc. Rows 2 and 3 agree on those offsets exactly; row 1 is drawn
+ * 0.75-2.25px tighter, which is frame sloppiness rather than intent, so one
+ * template is used for all three.
+ *
+ * The first step reads greyed out in the frame. That is not a state — the disc
+ * art is byte-identical across all three — it is the 30px white veil over the
+ * top of the body. The veils are what make the rail read as a longer sequence
+ * than the card can show.
+ */
+const DISC_TOP = [0, 83.25, 165.75];
+---
+
+<article class="qcard">
+  <h3 class="qcard__title">{card.title}</h3>
+
+  <div class="qcard__body">
+    <div class="qcard__rail"></div>
+    <div class="qcard__dashes"></div>
+
+    {
+      card.steps.map((step, i) => (
+        <div class="qstep" style={`top:${DISC_TOP[i]}px`}>
+          <Icon name="icons/hero/pipeline-node" size={19.65} class="qstep__disc" />
+          <span class="qstep__wire" />
+          <span class:list={["qstep__dot", { "qstep__dot--lead": i === 0 }]} />
+
+          <span class="qstep__elbow">
+            <Icon name="icons/hero/elbow" width={16.125} height={34.875} />
+            <span class="qstep__chip">
+              <Icon name={step.icon} size={12} />
+            </span>
+          </span>
+
+          <div class="qstep__text">
+            <p class="qstep__name">{step.title}</p>
+            <p class="qstep__sub">{step.body}</p>
+          </div>
+        </div>
+      ))
+    }
+
+    <div class="qcard__veil qcard__veil--top"></div>
+    <div class="qcard__veil qcard__veil--bottom"></div>
+  </div>
+</article>
+
+<style>
+  .qcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    overflow: clip;
+    background: var(--c-surface);
+    border-radius: 6px;
+    /* Inside stroke — see PreviewCard: a real border adds 3px to the height. */
+    box-shadow: inset 0 0 0 1.5px rgba(131, 77, 251, 0.16);
+  }
+
+  .qcard__title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: -0.32px;
+    color: var(--c-ink);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .qcard__body {
+    position: relative;
+    width: 100%;
+    height: 221.25px;
+  }
+
+  /* The rail is three stacked bars: a 6px lavender capsule with a 1.5px dashed
+     white line down its centre. Both start at the first disc's centre. */
+  .qcard__rail {
+    position: absolute;
+    top: 8.25px;
+    left: 6px;
+    width: 6px;
+    height: 172.5px;
+    border-radius: 28.5px;
+    background: #d5c3fe;
+  }
+
+  .qcard__dashes {
+    position: absolute;
+    top: 8.25px;
+    left: 8.25px;
+    width: 1.5px;
+    height: 166.5px;
+    border-left: 1.5px dashed #fff;
+  }
+
+  .qstep {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+
+  .qstep :global(.qstep__disc) {
+    position: absolute;
+    top: -0.825px;
+    left: -0.825px;
+  }
+
+  /* 0.75px hairline from the rail out to the branch dot. */
+  .qstep__wire {
+    position: absolute;
+    top: 10.5px;
+    left: 24.375px;
+    width: 16.516px;
+    height: 0.75px;
+    border-radius: 0.375px;
+    background: #6624fa;
+  }
+
+  .qstep__dot {
+    position: absolute;
+    top: 7.5px;
+    left: 40.5px;
+    width: 4.5px;
+    height: 4.5px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    box-shadow: 0 0 0 1.5px #fff;
+  }
+
+  /* The frame gives the first branch a slightly deeper purple. */
+  .qstep__dot--lead {
+    background: #6624fa;
+  }
+
+  .qstep__elbow {
+    position: absolute;
+    top: 12px;
+    left: 42.375px;
+    display: block;
+    line-height: 0;
+  }
+
+  .qstep__chip {
+    position: absolute;
+    top: 25.5px;
+    left: 16.125px;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    background: var(--c-accent-tint);
+  }
+
+  .qstep__text {
+    position: absolute;
+    top: 4.5px;
+    left: 52.5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  /* Figma sets these in Sora SemiBold. The site does not load Sora, and a
+     third webfont for twelve short labels of decorative UI is not worth the
+     bytes — same call as the deck viewer's Open Sans. */
+  .qstep__name {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: normal;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .qstep__sub {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 10px;
+    line-height: normal;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  /* Not decoration: these are what fade the first and last steps, so the rail
+     reads as a longer sequence running past the card. */
+  .qcard__veil {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    pointer-events: none;
+  }
+
+  .qcard__veil--top {
+    top: 0;
+    background: linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0));
+  }
+
+  .qcard__veil--bottom {
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+  }
+</style>
