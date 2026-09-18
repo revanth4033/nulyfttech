@@ -74,6 +74,12 @@ if (tablist && indicator) {
     moveIndicator(next, animate);
     if (focus) next.focus();
 
+    /* Below 900 the bar scrolls and the tab you just chose can be off screen —
+       bring it into view. `nearest` so a tab already visible does not jump. */
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      next.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", inline: "nearest", block: "nearest" });
+    }
+
     /* Panels differ enormously in height — the Talent pitch is several times a
        card grid — so every trigger below this point is wrong until ScrollTrigger
        re-measures. */

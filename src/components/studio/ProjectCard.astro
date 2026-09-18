@@ -31,6 +31,16 @@ const ctaLabel = project.ctaLabel ?? (media.kind === "deck" ? "View Pitch Deck" 
 const PHONE_SLOTS = [0, 330, 660, 990];
 const PHONE_BLEED = 5.67;
 const PHONE_W = 261.33;
+
+/**
+ * The stage the four phones are placed against. Their slots were inline px,
+ * which meant the row laid out ~1251 wide whatever the card was — at 375 that
+ * was most of a second screen of horizontal page scroll. Expressed as
+ * percentages of this box, the whole composition scales with its card.
+ */
+const PHONE_STAGE_W = PHONE_SLOTS[PHONE_SLOTS.length - 1] + PHONE_W;
+const PHONE_STAGE_H = 542;
+const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
 ---
 
 <article class:list={["pcard", `pcard--${project.span}`]} data-section data-project={project.id}>
@@ -72,7 +82,7 @@ const PHONE_W = 261.33;
               widths={[262, 524]}
               sizes="262px"
               class="phones__unit"
-              style={`left:${PHONE_SLOTS[i] - PHONE_BLEED}px;width:${PHONE_W}px`}
+              style={`--px:${pctW(PHONE_SLOTS[i] - PHONE_BLEED)};--pw:${pctW(PHONE_W)};--pt:${(-PHONE_BLEED / PHONE_STAGE_H) * 100}%`}
             />
           ))}
         </div>
@@ -175,12 +185,18 @@ const PHONE_W = 261.33;
 
   .phones {
     position: relative;
-    height: 542px;
+    width: 100%;
+    aspect-ratio: 1251.33 / 542;
   }
 
+  /* Slots reach the CSS as custom properties rather than inline `left`/`width`
+     — an inline declaration would beat the mobile rule below and the row could
+     never re-lay itself. */
   .phones :global(.phones__unit) {
     position: absolute;
-    top: -5.67px;
+    left: var(--px);
+    top: var(--pt);
+    width: var(--pw);
     display: block;
     height: auto;
   }
@@ -242,6 +258,59 @@ const PHONE_W = 261.33;
     .plate {
       height: auto;
       aspect-ratio: 612 / 400;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile
+
+     The meta line is `nowrap` on purpose — on desktop the longest one is
+     582.5 against the 580 the caption leaves it, and wrapping there drops
+     "2025" onto a second row and makes that card 19px taller than its
+     neighbour. At 341 it has 572px of text in a 311 box, so it has to wrap;
+     it was the last thing making this page scroll sideways.
+     ------------------------------------------------------------------------ */
+  @media (max-width: 900px) {
+    /* The stage reserves four slots whatever a project has, so a three-shot
+       card sat left-aligned with a quarter of the card empty, and each phone
+       came out 68 wide. A flex row fills the card and sizes the shots to
+       however many there are — ~100 for three, ~74 for four. */
+    .phones {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      aspect-ratio: auto;
+      height: auto;
+    }
+
+    .phones :global(.phones__unit) {
+      position: static;
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+    }
+
+    .pcard__meta {
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-right: 0;
+      white-space: normal;
+    }
+
+    .pcard__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .pcard__title {
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .pcard__caption {
+      gap: 12px;
+      padding: 12px;
     }
   }
 </style>

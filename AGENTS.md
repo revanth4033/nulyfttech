@@ -1170,6 +1170,35 @@ one 6px, which is invisible on desktop where the orbit runs far wider than the
 card. Centred and scaled to a phone those 6px are a gap, and an item can slide
 past un-washed — the one thing the veils exist to prevent.
 
+### Studio page — mobile
+
+No Figma frame for this one; it is adapted in code. It was the only page that
+**actually scrolled sideways** (1261px of document in a 375 viewport), from
+three separate causes, each worth knowing:
+
+- **`.pcard__meta` is `nowrap` on purpose** — on desktop the longest line is
+  582.5 against the 580 the caption leaves it, and wrapping there drops "2025"
+  onto a second row and makes that card 19px taller than its neighbour. At 341
+  it has 572px of text in a 311 box, so below 900 it has to wrap.
+- **The phone row lays out against a four-slot 1251-wide stage** whatever the
+  project holds. Its slots were inline px; they are custom properties now, and
+  below 900 the row is a flex row instead — which also fixes a three-shot card
+  sitting left-aligned with a quarter of the card empty.
+- **The four filter tabs lay out ~984 wide.** The bar scrolls below 900.
+
+**The sliding tab indicator cannot follow a scrolling row.** It lives in a
+sibling track that does not move with the row, and nothing re-measures on
+scroll. Below 900 the track is dropped and the selected tab carries its own
+underline, with the rule as a border on the bar. `studio-tabs.ts` scrolls the
+chosen tab into view, since the one you just tapped can be off screen.
+
+**`PageHero`'s copy is absolutely placed and must join the flow.** Its frame
+reserves `--phero-h` (700 Studio / 605 Careers) and the copy sits at a fixed
+`top`, so at mobile the frame is sized to its content and the copy goes
+static — but `left` stops applying while **`translate: -50%` does not**, and
+the -50% alone drags the copy off the left edge. Reset it. Hero comes down
+from 700 to 421 at 375, with the heading at 30 rather than 48.
+
 ### Sections adapted in code, no frame
 
 Hero (eyebrow hugs at 11/0.4 or it wraps and fills the column; the stage is

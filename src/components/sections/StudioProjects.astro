@@ -215,9 +215,45 @@ const panels = studioTabs.map((tab) => ({ tab, items: projectsByTab(tab.id) }));
       gap: 64px;
     }
 
-    .tabs__row {
-      gap: 24px;
+    /* ----------------------------------------------------------------------
+       The four labels lay out ~984 wide, so the bar scrolls. The sliding
+       indicator cannot follow a scrolling row — it lives in a sibling track
+       that does not move — so at this width the selected tab carries its own
+       underline instead and the track is dropped. The rule becomes a border
+       on the bar itself.
+       ---------------------------------------------------------------------- */
+    .tabs {
+      gap: 0;
       overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      border-bottom: 2px solid var(--c-tab-rule);
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tabs__row {
+      gap: 20px;
+      width: max-content;
+      overflow: visible;
+    }
+
+    .tabs__track {
+      display: none;
+    }
+
+    .tabs__tab {
+      font-size: 15px;
+      line-height: 24px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tabs__tab[aria-selected="true"] {
+      border-bottom-color: var(--c-accent);
     }
   }
 </style>

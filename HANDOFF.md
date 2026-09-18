@@ -314,9 +314,21 @@ throw). Document 15,583px. The overflows that remain are deliberate and
 clipped: the in-flight hero card, the decorative grid-line SVGs, the CTA
 starfield, and the Industries halo.
 
+### Studio is done too
+`/studio` has had the same treatment — no Figma frame, adapted in code. It was
+the only page that genuinely scrolled sideways (1261px of document at 375):
+the project meta line is `nowrap` by design and had to wrap, the phone row
+laid out against a four-slot 1251-wide stage, and the four filter tabs came to
+~984. Verified 1440 / 900 / 375 / 320 with no horizontal scroll and the
+desktop untouched. `AGENTS.md` has the traps.
+
+One judgement call to revisit if the user dislikes it: with four shots in a
+row the phones land at ~75px on a 375 screen. They fill the card evenly and
+the card links to the full case study, so they read as thumbnails — but a 2x2
+grid would double their size at the cost of card height. Offered, not taken.
+
 ### Still open
-**The inner pages have never had a mobile pass** — `/studio`, `/careers` and
-the three case studies. The shared `CtaFooter`, `SectionHeader` and
+**Careers and the three case studies have never had a mobile pass.** The shared `CtaFooter`, `SectionHeader` and
 `EyebrowBadge` fixes reach them for free, so they are better than they were,
 but nothing has been designed or verified. The Studio grid collapses to one
 column at 900 and the gutter steps down; that is all.
