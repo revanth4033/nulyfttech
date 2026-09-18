@@ -1207,6 +1207,13 @@ sideways on *every* page that uses `CtaFooter`, the home page included. It is
 fluid below 1240 now. Worth remembering that the 900-1240 band was never
 audited: both defects found on Studio lived there, not on phones.
 
+**Mobile block rhythm is 40, and two rules hold the desktop's 100.** The
+section keeps `padding-top: 100` and the panel `padding-bottom: 100`, which put
+the hero 156 clear of the filter and the last card 140 clear of the CTA. Note
+the panel's rule is `.projects__panel:not([data-panel="talent"])` — a media
+query does not beat specificity, so the override has to carry the same
+`:not()` or it silently loses.
+
 **`PageHero`'s copy is absolutely placed and must join the flow.** Its frame
 reserves `--phero-h` (700 Studio / 605 Careers) and the copy sits at a fixed
 `top`, so at mobile the frame is sized to its content and the copy goes

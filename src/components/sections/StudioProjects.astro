@@ -237,6 +237,24 @@ const panels = studioTabs.map((tab) => ({ tab, items: projectsByTab(tab.id) }));
       gap: 64px;
     }
 
+    /* The section kept its desktop 100px top padding and the panel its 100px
+       bottom, so the hero sat 156 clear of the filter and the last card 140
+       clear of the CTA. 40 is the block rhythm the home page's mobile frames
+       use throughout. */
+    .projects {
+      padding-top: 40px;
+    }
+
+    /* Same selector as the base rule — `:not(...)` outranks a bare class, and
+       a media query does not change that. */
+    .projects__panel:not([data-panel="talent"]) {
+      padding-bottom: 40px;
+    }
+
+    .projects__panels {
+      margin-top: 32px;
+    }
+
   }
 
   /* The tab row's natural width is 1032, and with the 100px gutters it only
