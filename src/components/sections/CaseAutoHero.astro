@@ -148,4 +148,50 @@ const { phones } = hero;
       margin: 48px auto 0;
     }
   }
+
+  @media (max-width: 900px) {
+    .ahero__copy {
+      padding-top: 140px;
+    }
+
+    .ahero__title {
+      font-size: 36px;
+      line-height: 1.25;
+      letter-spacing: -1px;
+    }
+
+    .ahero__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    /* The copy is absolutely placed on desktop and joins the flow at 1180;
+       it still needs the gutter, which `left` was carrying. */
+    .ahero__copy {
+      padding-top: 120px;
+      padding-inline: var(--gutter);
+    }
+
+    .ahero__title {
+      font-size: 28px;
+      letter-spacing: -0.5px;
+    }
+
+    .ahero__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .ahero__eyebrow {
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .ahero__phones {
+      margin-top: 32px;
+    }
+  }
 </style>

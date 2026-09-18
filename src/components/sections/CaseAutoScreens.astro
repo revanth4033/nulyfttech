@@ -168,9 +168,16 @@ const { rowA, rowC, features } = screens;
       height: auto;
     }
 
+    /* Each shot carries its own width inline — 1387 for the three-phone rows
+       but only 311.5 for a single phone. `width: 100%` blew that phone up to
+       the full column: 836px of a 311px mockup at 900, and soft at any width
+       under 1280. Dropping the override lets the inline width stand and
+       `max-width` clamp only the rows that actually need it. */
     .ascr__shot {
       position: static;
-      width: 100% !important;
+      max-width: 100%;
+      height: auto;
+      margin-inline: auto;
     }
 
     .ascr__features {
@@ -197,6 +204,56 @@ const { rowA, rowC, features } = screens;
 
     .aglow {
       display: none;
+    }
+  }
+
+  .ascr {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .ascr__frame {
+      padding-block: 64px;
+    }
+
+    .ascr__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .ascr__text {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .ascr__frame {
+      padding-block: 40px;
+    }
+
+    .ascr__body {
+      gap: 40px;
+    }
+
+    .ascr__features {
+      gap: 40px;
+    }
+
+    .ascr__feature,
+    .ascr__feature:nth-child(2) {
+      gap: 24px;
+    }
+
+    .ascr__title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .ascr__text {
+      font-size: 14px;
+      line-height: 22px;
     }
   }
 </style>
