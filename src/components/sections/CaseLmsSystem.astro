@@ -240,4 +240,31 @@ const DASH = { stroke: "#A1A1AA", width: 2.147, dash: "4.29 4.29" };
       display: none;
     }
   }
+
+  .typo,
+  .pal {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .typo__inner,
+    .pal__inner {
+      padding-block: 64px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .typo__inner,
+    .pal__inner,
+    .typo .container,
+    .pal .container {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .typo__body {
+      gap: 32px;
+    }
+  }
 </style>
