@@ -309,11 +309,98 @@ const ch = challenge;
       position: static;
       width: 100% !important;
       max-width: 651px;
-      margin-top: 48px;
+      /* These were placed by `left` on desktop; once they join the flow that
+         stops applying and a capped width leaves them hard against the left
+         gutter. */
+      margin: 48px auto 0;
     }
 
     .aglow {
       display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .aov__frame,
+    .ach__frame {
+      padding-block: 64px;
+    }
+
+    .aov__title {
+      font-size: 22px;
+      line-height: 30px;
+    }
+
+    .aov__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .aov__frame,
+    .ach__frame {
+      padding-block: 40px;
+    }
+
+    .aov__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .aov__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .aov__eyebrow,
+    .ach__eyebrow {
+      font-size: 11px;
+      letter-spacing: 1.6px;
+    }
+
+    /* A 32px flex row of four facts cannot hold a 341 column. */
+    .aov__facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px 16px;
+    }
+
+    .aov__facts dt {
+      font-size: 11px;
+      letter-spacing: 1.2px;
+    }
+
+    /* The fact labels and values are `nowrap` so they hold one line in a
+       desktop column. In a 171px mobile track "Automotive Marketplace" is
+       wider than its cell and simply ran over the next one — the grid was
+       right, the nowrap was not. */
+    .aov__facts dt,
+    .aov__facts dd {
+      white-space: normal;
+    }
+
+
+    .aov__facts dd {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .aov__modules {
+      font-size: 14px;
+    }
+
+    /* At 15/2.4 the longest point wrapped and closed the gap to its rule. */
+    .ach__points li {
+      gap: 8px;
+      padding-block: 14px;
+      font-size: 12px;
+      letter-spacing: 1.2px;
+    }
+
+    .ach__x {
+      font-size: 12px;
     }
   }
 </style>

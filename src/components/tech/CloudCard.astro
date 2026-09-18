@@ -33,7 +33,7 @@ import {
 const REST = 0;
 ---
 
-<TechCard icon="icons/cloud/card-cloud" title="Cloud & Infrastructure" height={CARD_H} mHeight={413.71} class="cloud">
+<TechCard icon="icons/cloud/card-cloud" title="Cloud & Infrastructure" height={CARD_H} mHeight={453} class="cloud">
   <div class="cloud__bar" data-bar style={`--p:${fillAt(REST)}px`}>
     <span class="cloud__track"></span>
     <span class="cloud__fill"></span>
@@ -219,12 +219,19 @@ const REST = 0;
   /* Mobile — tiles render at 50 against the frame's 41.4 and the rows at 360
      in a 341 card (493:2679). */
   @media (max-width: 900px) {
+    /* Both are placed from a desktop left offset, so scaling about their own
+       centre left them 31px right of the card's — the same trap Engineering
+       and the AI & Data orbit hit. Centre first, then scale. */
     .cloud__rows {
+      left: 50%;
+      margin-left: calc(var(--rowsW) / -2);
       scale: 0.85;
       transform-origin: top center;
     }
 
     .cloud__bar {
+      left: 50%;
+      margin-left: calc(var(--barW, 355px) / -2);
       scale: 0.88;
       transform-origin: top center;
     }

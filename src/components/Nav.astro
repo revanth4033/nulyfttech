@@ -107,7 +107,7 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
 
   .nav__links a:hover,
   .nav__links a[aria-current="page"],
-  .nav__drawer a[aria-current="page"] {
+  .nav__drawer ul a[aria-current="page"] {
     color: var(--c-accent);
   }
 
@@ -154,7 +154,12 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
     gap: 4px;
   }
 
-  .nav__drawer a {
+  /* Scoped to the list, not `.nav__drawer a` — `PillButton` renders an `<a>`
+     when it carries an href, so the bare selector caught the "Build With Us"
+     CTA as well: `display: block` killed its flex centring and `padding: 10px
+     0` its horizontal padding, so the label sat hard against the left edge of
+     the pill. Same trap as `.deck__title span` catching `<Icon>`. */
+  .nav__drawer ul a {
     display: block;
     padding: 10px 0;
     font-weight: 500;

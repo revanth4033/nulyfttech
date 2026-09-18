@@ -14,7 +14,37 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from "./gsap";
 const tablist = document.querySelector<HTMLElement>('[role="tablist"]');
 const indicator = document.querySelector<HTMLElement>("[data-tab-indicator]");
 
+const shell = document.querySelector<HTMLElement>("[data-tabs]");
+const toggle = document.querySelector<HTMLButtonElement>("[data-tab-toggle]");
+const toggleLabel = document.querySelector<HTMLElement>("[data-tab-toggle-label]");
+
 if (tablist && indicator) {
+  /**
+   * Below 900 the four labels lay out ~984 wide, so the bar is a disclosure
+   * rather than a scrolling row — a scrolling row has no affordance and loses
+   * its swipe to ScrollSmoother. `.tabs__row` is the menu and the tab buttons
+   * are its options, so there is still only one source of truth for the
+   * active filter.
+   */
+  function setMenu(open: boolean) {
+    if (!shell || !toggle) return;
+    shell.toggleAttribute("data-open", open);
+    tablist!.toggleAttribute("data-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  }
+
+  toggle?.addEventListener("click", () => {
+    setMenu(toggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (shell && !shell.contains(e.target as Node)) setMenu(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setMenu(false);
+  });
+
   const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
   const panels = new Map(
     [...document.querySelectorAll<HTMLElement>("[data-panel]")].map((p) => [p.dataset.panel, p]),
@@ -73,6 +103,11 @@ if (tablist && indicator) {
     setCta(next.dataset.tab);
     moveIndicator(next, animate);
     if (focus) next.focus();
+
+    /* Below 900 the tabs are a disclosure: keep the trigger's label honest
+       and close the menu once a filter is chosen. */
+    if (toggleLabel) toggleLabel.textContent = next.textContent?.trim() ?? "";
+    setMenu(false);
 
     /* Panels differ enormously in height — the Talent pitch is several times a
        card grid — so every trigger below this point is wrong until ScrollTrigger

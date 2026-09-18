@@ -217,6 +217,9 @@ const { phase1, phase2, phase3 } = approach;
       position: static;
       width: 100% !important;
       max-width: 541px;
+      /* `left` stops applying once these join the flow, so a capped width
+         parks them on the left gutter instead of under their phase copy. */
+      margin-inline: auto;
     }
 
     .aph__phone {
@@ -225,6 +228,59 @@ const { phase1, phase2, phase3 } = approach;
 
     .aglow {
       display: none;
+    }
+  }
+
+  /* The phase phones carry baked shadow past their box on purpose; on a phone
+     that overflow is wider than the column. `clip`, not `hidden`, so no scroll
+     container is created. */
+  .aph {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .aph__frame {
+      padding-block: 64px;
+    }
+
+    .aph__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .aph__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .aph__frame {
+      padding-block: 40px;
+    }
+
+    .aph__title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .aph__label {
+      font-size: 13px;
+      letter-spacing: 1.2px;
+    }
+
+    .aph__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .aph__item {
+      padding-block: 16px;
+    }
+
+    .aph__block {
+      gap: 32px;
     }
   }
 </style>

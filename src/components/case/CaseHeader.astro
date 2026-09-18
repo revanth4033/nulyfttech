@@ -78,6 +78,30 @@ const { eyebrow, title, body, class: className } = Astro.props;
     color: var(--c-muted);
   }
 
+  /* Between 1080 and 1240 the row is still side by side, but its two columns
+     are rigid — 525 + 32 + 503 = 1060 against an 896 content width at 1100 —
+     so the intro ran 64px past the section. It used to scroll the page; with
+     the sections clipping their shadow bleed it would silently truncate
+     instead. Let both columns shrink, and drop the fixed height, because a
+     narrower title takes a second line. */
+  @media (max-width: 1240px) {
+    .chead {
+      height: auto;
+      min-height: 84px;
+    }
+
+    .chead__left,
+    .chead__body {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+    }
+
+    .chead__title {
+      width: auto;
+    }
+  }
+
   @media (max-width: 1080px) {
     .chead {
       flex-direction: column;
@@ -89,6 +113,45 @@ const { eyebrow, title, body, class: className } = Astro.props;
     .chead__title,
     .chead__body {
       width: auto;
+    }
+  }
+
+  /* Tablet — the header has already stacked by here (1080), so this is the
+     first scale step; 560 below is the phone one. */
+  @media (max-width: 900px) {
+    .chead__title {
+      font-size: 22px;
+      line-height: 30px;
+    }
+
+    .chead__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile — this header sits above every block on all three case studies, so
+     it sets the page's scale. At 24/16 it read larger than the 20px heading
+     the rest of the site uses on a phone. */
+  @media (max-width: 560px) {
+    .chead {
+      gap: 12px;
+    }
+
+    .chead__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .chead__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .chead__eyebrow {
+      font-size: 11px;
+      letter-spacing: 1.6px;
+      padding-block: 6px;
     }
   }
 </style>

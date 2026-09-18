@@ -7,6 +7,8 @@ import problemPhotos from "../assets/images/case-rec/problem-photos.png";
 import approachP02 from "../assets/images/case-rec/approach-p02.png";
 import approachP03 from "../assets/images/case-rec/approach-p03.png";
 import typographyFigure from "../assets/images/case-rec/typography.png";
+import typographyFigureA from "../assets/images/case-rec/typography-m1.png";
+import typographyFigureB from "../assets/images/case-rec/typography-m2.png";
 import screen1 from "../assets/images/case-rec/screen-1.png";
 import screenJd from "../assets/images/case-rec/screen-jd.png";
 import screenReq from "../assets/images/case-rec/screen-req.png";
@@ -174,6 +176,28 @@ export const typography = {
     w: 1240,
     alt: "Roboto specimen in Light, Regular, Medium, Semibold and Bold, beside the requirements grid labelling its heading and body text styles",
   },
+  /**
+   * The same figure as two panels, for phones.
+   *
+   * It is one flattened 1240-wide export, so on a phone it can only shrink —
+   * at 339 it lands at 0.27x and the card's labels go sub-pixel. The export
+   * has exactly one clean vertical gap in it (device x 980-1096), so the two
+   * halves crop apart without cutting any artwork, and stacking them roughly
+   * doubles the scale. Cropped by hand from the same source; regenerate both
+   * if `typography.png` is ever re-exported.
+   */
+  split: [
+    {
+      src: typographyFigureA,
+      w: 496,
+      alt: "Roboto specimen in Light, Regular, Medium, Semibold and Bold",
+    },
+    {
+      src: typographyFigureB,
+      w: 698,
+      alt: "A requirements card with leaders labelling its heading and body text styles",
+    },
+  ],
 };
 
 /** Exported whole: the figure, its four leader lines and their labels. */

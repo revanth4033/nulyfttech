@@ -126,4 +126,62 @@ const { eyebrow, title, emphasis, emphasisTone = "accent", body, height } = Astr
     letter-spacing: var(--tr-body);
     color: var(--c-muted);
   }
+
+  /* ------------------------------------------------------------------------
+     Mobile
+
+     The hero is drawn at 700 (Studio) / 605 (Careers) with the copy pinned by
+     the mask behind it, so on desktop only the bottom is available to cut.
+     At 375 that leaves a screen and a half of empty grid around three lines of
+     48px type — the heading comes down to 30 and the frame stops reserving
+     the desktop height, the same call the home hero needed.
+     ------------------------------------------------------------------------ */
+  @media (max-width: 900px) {
+    .phero {
+      min-height: 0;
+    }
+
+    .phero__frame {
+      height: auto;
+      padding-block: 72px;
+    }
+
+    /* The copy is absolutely placed against the desktop frame; with the frame
+       sized to its content it has to join the flow or the frame collapses. */
+    .phero__content {
+      position: static;
+      /* `left` stops applying once this is static but `translate` does not,
+         and the -50% alone drags the copy off the left edge. */
+      translate: none;
+      width: 100%;
+      max-width: 100%;
+      padding-inline: var(--gutter);
+    }
+
+    .phero__title {
+      font-size: 32px;
+      letter-spacing: -0.5px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .phero__frame {
+      padding-block: 56px;
+    }
+
+    .phero__title {
+      font-size: 30px;
+    }
+
+    .phero__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .phero :global(.phero__eyebrow) {
+      padding: 6px 12px;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+    }
+  }
 </style>

@@ -43,6 +43,22 @@ import { typography, palette } from "../../data/caseRec";
       class="rtypo__figure"
       data-animate
     />
+
+    <div class="rtypo__panels">
+      {
+        typography.split.map((panel) => (
+          <Image
+            src={panel.src}
+            alt={panel.alt}
+            width={panel.w * 2}
+            widths={[panel.w, panel.w * 2]}
+            sizes={`${panel.w}px`}
+            class="rtypo__panel"
+            data-animate
+          />
+        ))
+      }
+    </div>
   </div>
 </section>
 
@@ -80,10 +96,54 @@ import { typography, palette } from "../../data/caseRec";
     height: auto;
   }
 
+  /* Phones get the same figure as two stacked panels — see the note on
+     `typography.split`. Both are in the markup and one pair is always hidden,
+     which keeps this a CSS swap with no script. */
+  .rtypo__panels {
+    display: none;
+  }
+
+  .rtypo__panel {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 900px) {
+    .rtypo__figure {
+      display: none;
+    }
+
+    .rtypo__panels {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+  }
+
   @media (max-width: 1080px) {
     .rtypo__frame,
     .rpal__frame {
       padding-inline: var(--gutter);
+    }
+  }
+
+  .rtypo,
+  .rpal {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .rtypo__inner {
+      padding-block: 64px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .rtypo__inner {
+      gap: 32px;
+      padding-block: 40px;
     }
   }
 </style>

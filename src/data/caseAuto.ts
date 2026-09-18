@@ -4,6 +4,8 @@ import problemPhotos from "../assets/images/case-auto/problem-photos.png";
 import phase02 from "../assets/images/case-auto/phase-02.png";
 import phase03 from "../assets/images/case-auto/phase-03.png";
 import typographyFigure from "../assets/images/case-auto/typography.png";
+import typographyFigureA from "../assets/images/case-auto/typography-m1.png";
+import typographyFigureB from "../assets/images/case-auto/typography-m2.png";
 import screensRowA from "../assets/images/case-auto/screens-row-a.png";
 import screensRowC from "../assets/images/case-auto/screens-row-c.png";
 import screenStock from "../assets/images/case-auto/screen-stock.png";
@@ -156,6 +158,23 @@ export const typography = {
    * the 479 height against the body's 447 is the leaders overhanging.
    */
   figure: { src: typographyFigure, x: 0, y: 148, w: 1240, h: 479 },
+  /**
+   * The same figure as two panels, for phones — see the note on the
+   * Recruitment page's `typography.split`. The clean gap here is at device
+   * x 968-1232.
+   */
+  split: [
+    {
+      src: typographyFigureA,
+      w: 490,
+      alt: "DM Sans specimen in Light, Regular, Medium, Semibold and Bold",
+    },
+    {
+      src: typographyFigureB,
+      w: 630,
+      alt: "A Ready To Go Live dialog with leaders labelling its heading, body text and button label styles",
+    },
+  ],
 };
 
 export const colorography = {

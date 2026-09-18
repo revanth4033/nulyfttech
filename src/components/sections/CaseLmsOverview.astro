@@ -367,6 +367,95 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
       flex: none;
     }
   }
+
+  @media (max-width: 900px) {
+    .cover__inner,
+    .chal__inner {
+      padding-block: 64px;
+    }
+
+    .cover__title,
+    .chal__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+      line-height: 34px;
+    }
+
+    .cover__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .cover__inner,
+    .chal__inner,
+    .cover .container,
+    .chal .container {
+      padding-block: 40px;
+    }
+
+    /* `--tr-h2` is -2px, which is a 40px heading's tracking. At 20 it closes
+       the words up by a tenth of their width and the line reads as one word. */
+    .cover__title,
+    .chal__title {
+      font-size: 20px;
+      line-height: 28px;
+      letter-spacing: -0.4px;
+    }
+
+    .cover__eyebrow {
+      font-size: 11px;
+      letter-spacing: 1.6px;
+    }
+
+    /* The values were set at 20 — the same size as the section title, which
+       made the fact row shout louder than the heading above it. */
+    .cover__facts {
+      font-size: 13px;
+      line-height: 20px;
+      gap: 20px 16px;
+    }
+
+    .cover__facts dt {
+      font-size: 11px;
+      letter-spacing: 1.2px;
+    }
+
+    /* The fact labels and values are `nowrap` so they hold one line in a
+       desktop column. In a 171px mobile track "Automotive Marketplace" is
+       wider than its cell and simply ran over the next one — the grid was
+       right, the nowrap was not. */
+    .cover__facts dt,
+    .cover__facts dd {
+      white-space: normal;
+    }
+
+
+    .cover__facts dd {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    /* At 15/2.4 the longest point wrapped onto a second line and closed the
+       gap to the rule above it. */
+    .chal__points li {
+      gap: 8px;
+      padding-block: 14px;
+      font-size: 12px;
+      letter-spacing: 1.2px;
+    }
+
+    .chal__x {
+      font-size: 12px;
+    }
+
+    .cover__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
 </style>
 
 <script>

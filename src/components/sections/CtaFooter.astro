@@ -510,6 +510,18 @@ const work = [
     }
   }
 
+  /* The card is a fixed 1240 centred on the page, so under that width it
+     overhangs both edges — at 1100 it sat at left -70 and scrolled the page
+     sideways on every page that uses this footer. Fluid below the frame. */
+  @media (max-width: 1240px) {
+    .cta {
+      left: var(--gutter);
+      right: var(--gutter);
+      width: auto;
+      translate: none;
+    }
+  }
+
   /* ========================================================================
      Mobile — Figma 539:705
 

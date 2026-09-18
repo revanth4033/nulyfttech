@@ -33,6 +33,22 @@ const INSET = 100;
       style={`left:${typography.figure.x}px;top:${typography.figure.y + INSET}px;width:${typography.figure.w}px`}
       data-animate
     />
+
+    <div class="asys__panels">
+      {
+        typography.split.map((panel) => (
+          <Image
+            src={panel.src}
+            alt={panel.alt}
+            width={panel.w * 2}
+            widths={[panel.w, panel.w * 2]}
+            sizes={`${panel.w}px`}
+            class="asys__panel"
+            data-animate
+          />
+        ))
+      }
+    </div>
   </div>
 </section>
 
@@ -86,6 +102,30 @@ const INSET = 100;
     max-width: none;
   }
 
+  /* Phones get the same figure as two stacked panels — see the note on
+     `typography.split` in `caseAuto.ts`. */
+  .asys__panels {
+    display: none;
+  }
+
+  .asys__panel {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 900px) {
+    .asys__figure {
+      display: none;
+    }
+
+    .asys__panels {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+  }
+
   @media (max-width: 1280px) {
     .asys__frame,
     .acol__frame {
@@ -97,6 +137,26 @@ const INSET = 100;
       position: static;
       width: 100% !important;
       margin-top: 48px;
+    }
+  }
+
+  .asys,
+  .acol {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .asys__frame,
+    .acol__frame {
+      padding-block: 64px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .asys__frame,
+    .acol__frame {
+      padding-block: 40px;
     }
   }
 </style>
