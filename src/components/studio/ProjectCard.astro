@@ -270,6 +270,19 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
      neighbour. At 341 it has 572px of text in a 311 box, so it has to wrap;
      it was the last thing making this page scroll sideways.
      ------------------------------------------------------------------------ */
+  /* The meta line only fits on one row while its column is wider than 582.5 —
+     true at full width and in the 2-up grid above ~1240, and false below it.
+     At 1100 the column is 442 and the line is 572, which scrolled the page
+     sideways there just as it did at 375. */
+  @media (max-width: 1240px) {
+    .pcard__meta {
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-right: 0;
+      white-space: normal;
+    }
+  }
+
   @media (max-width: 900px) {
     /* The stage reserves four slots whatever a project has, so a three-shot
        card sat left-aligned with a quarter of the card empty, and each phone
@@ -288,13 +301,6 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
       flex: 1 1 0;
       min-width: 0;
       width: auto;
-    }
-
-    .pcard__meta {
-      font-size: 11px;
-      letter-spacing: 1px;
-      margin-right: 0;
-      white-space: normal;
     }
 
     .pcard__head {

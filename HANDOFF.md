@@ -322,6 +322,15 @@ laid out against a four-slot 1251-wide stage, and the four filter tabs came to
 ~984. Verified 1440 / 900 / 375 / 320 with no horizontal scroll and the
 desktop untouched. `AGENTS.md` has the traps.
 
+The filter tabs are a **dropdown** below 1240, not a scrolling bar — the user
+rejected the scrolling row as bad mobile UX and chose the disclosure from
+three options. Two defects turned up in the **900-1240 band**, which nobody
+had ever audited: the project meta line only fits one row while its column is
+wider than 582.5 (false in the 2-up grid below ~1240), and `.cta` is a fixed
+1240 centred, so it overhung both edges and scrolled *every* page using
+`CtaFooter`. Both fixed. Verified 1440 / 1240 / 1100 / 1000 / 900 / 768 / 560 /
+430 / 375 / 320 on Studio, and spot-checked home and Careers.
+
 One judgement call to revisit if the user dislikes it: with four shots in a
 row the phones land at ~75px on a 375 screen. They fill the card evenly and
 the card links to the full case study, so they read as thumbnails — but a 2x2

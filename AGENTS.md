@@ -1186,11 +1186,26 @@ three separate causes, each worth knowing:
   sitting left-aligned with a quarter of the card empty.
 - **The four filter tabs lay out ~984 wide.** The bar scrolls below 900.
 
-**The sliding tab indicator cannot follow a scrolling row.** It lives in a
-sibling track that does not move with the row, and nothing re-measures on
-scroll. Below 900 the track is dropped and the selected tab carries its own
-underline, with the rule as a border on the bar. `studio-tabs.ts` scrolls the
-chosen tab into view, since the one you just tapped can be off screen.
+**The filter bar is a disclosure below 1240, not a scrolling row.** The four
+labels come to a natural 1032, which only fits once the gutters leave 1032 —
+about 1232 up. A scrolling row was tried first and is the wrong answer twice
+over: it carries no affordance, and **ScrollSmoother's Observer swallows the
+horizontal swipe**, so on a device it reads as stuck. The trigger shows the
+current filter and `.tabs__row` becomes the menu — the existing tab buttons
+are reused as its options, so there is still one source of truth for the
+active filter. The sliding indicator and its rule are dropped there; the
+indicator lives in a sibling track that could never have followed a scroll.
+
+**The menu has to be lifted above the whole tab block.** The cards below open
+their own stacking contexts (reveal.ts leaves a transform on them), so a
+z-index on `.tabs__row` alone is not enough — `.projects__tabs` gets the
+z-index and the row sits inside it.
+
+**`.cta` is a fixed 1240 centred with `translate: -50%`,** so under that width
+it overhangs both edges — at 1100 it sat at left -70 and scrolled the page
+sideways on *every* page that uses `CtaFooter`, the home page included. It is
+fluid below 1240 now. Worth remembering that the 900-1240 band was never
+audited: both defects found on Studio lived there, not on phones.
 
 **`PageHero`'s copy is absolutely placed and must join the flow.** Its frame
 reserves `--phero-h` (700 Studio / 605 Careers) and the copy sits at a fixed

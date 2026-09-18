@@ -1,4 +1,5 @@
 ---
+import Icon from "../ui/Icon.astro";
 import ProjectCard from "../studio/ProjectCard.astro";
 import TalentIntelligence from "./TalentIntelligence.astro";
 import KeyHighlights from "./KeyHighlights.astro";
@@ -28,8 +29,24 @@ const panels = studioTabs.map((tab) => ({ tab, items: projectsByTab(tab.id) }));
 <section class="projects" id="projects">
   <div class="container">
     <div class="projects__tabs" data-section>
-      <div class="tabs" role="tablist" aria-label="Filter case studies by capability" data-animate>
-        <div class="tabs__row">
+      <div class="tabs" aria-label="Filter case studies by capability" data-animate data-tabs>
+        {/* Mobile only. The four labels run ~984 wide, and a scrolling bar has
+            no affordance and loses its swipe to ScrollSmoother — so below 900
+            this button discloses the list instead, and `.tabs__row` becomes
+            the menu. The tab buttons are reused as the options, so there is
+            only one source of truth for which filter is on. */}
+        <button
+          type="button"
+          class="tabs__toggle"
+          data-tab-toggle
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          <span class="tabs__toggle-label" data-tab-toggle-label>{studioTabs[0].label}</span>
+          <Icon name="icons/chevron-down" size={20} class="tabs__chev" />
+        </button>
+
+        <div class="tabs__row" role="tablist">
           {
             studioTabs.map((tab, i) => (
               <button
@@ -126,6 +143,11 @@ const panels = studioTabs.map((tab) => ({ tab, items: projectsByTab(tab.id) }));
     align-items: center;
   }
 
+  /* The mobile disclosure trigger; the media query below turns it on. */
+  .tabs__toggle {
+    display: none;
+  }
+
   .tabs__tab {
     flex: none;
     font-family: var(--font-sans);
@@ -215,47 +237,107 @@ const panels = studioTabs.map((tab) => ({ tab, items: projectsByTab(tab.id) }));
       gap: 64px;
     }
 
+  }
+
+  /* The tab row's natural width is 1032, and with the 100px gutters it only
+     fits from about 1232 up — below that it overflowed its container and the
+     page scrolled sideways at 1000 exactly as it did at 375. So the disclosure
+     covers the whole range under the desktop layout, capped to a control's
+     width rather than running the full column. */
+  @media (max-width: 1240px) {
     /* ----------------------------------------------------------------------
-       The four labels lay out ~984 wide, so the bar scrolls. The sliding
-       indicator cannot follow a scrolling row — it lives in a sibling track
-       that does not move — so at this width the selected tab carries its own
-       underline instead and the track is dropped. The rule becomes a border
-       on the bar itself.
+       The four labels lay out ~984 wide. A scrolling bar carries no affordance
+       and loses its horizontal swipe to ScrollSmoother's Observer, so this is
+       a disclosure instead: the trigger shows the current filter and
+       `.tabs__row` becomes the menu. The sliding indicator and its rule go —
+       they could not have followed a scrolling row anyway.
        ---------------------------------------------------------------------- */
+    /* The cards below open their own stacking contexts (reveal.ts leaves a
+       transform on them), so the menu has to be lifted above the whole tab
+       block, not just given a z-index inside it. */
+    .projects__tabs {
+      position: relative;
+      z-index: 20;
+    }
+
     .tabs {
+      position: relative;
       gap: 0;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scrollbar-width: none;
-      border-bottom: 2px solid var(--c-tab-rule);
-    }
-
-    .tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tabs__row {
-      gap: 20px;
-      width: max-content;
       overflow: visible;
+    }
+
+    .tabs__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--c-card-border);
+      border-radius: 12px;
+      background: var(--c-surface);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 20px;
+      text-align: left;
+      color: var(--c-ink);
+      cursor: pointer;
+    }
+
+    .tabs :global(.tabs__chev) {
+      flex: none;
+      color: var(--c-muted);
+      transition: rotate var(--dur-fast) var(--ease-out);
+    }
+
+    .tabs[data-open] :global(.tabs__chev) {
+      rotate: 180deg;
     }
 
     .tabs__track {
       display: none;
     }
 
+    .tabs__row {
+      position: absolute;
+      z-index: 21;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 2px;
+      width: auto;
+      padding: 6px;
+      border: 1px solid var(--c-card-border);
+      border-radius: 12px;
+      background: var(--c-surface);
+      box-shadow: 0 12px 32px rgba(24, 16, 43, 0.12);
+    }
+
+    .tabs__row:not([data-open]) {
+      display: none;
+    }
+
     .tabs__tab {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
       font-size: 15px;
-      line-height: 24px;
-      padding-bottom: 8px;
-      border-bottom: 3px solid transparent;
-      margin-bottom: -2px;
+      line-height: 20px;
+      text-align: left;
     }
 
     .tabs__tab[aria-selected="true"] {
-      border-bottom-color: var(--c-accent);
+      color: var(--c-accent);
+      background: var(--c-accent-tint);
+    }
+
+    .tabs {
+      max-width: 420px;
     }
   }
+
 </style>
 
 <script>
