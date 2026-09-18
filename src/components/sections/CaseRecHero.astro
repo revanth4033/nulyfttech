@@ -150,11 +150,64 @@ import { hero } from "../../data/caseRec";
       height: auto;
     }
 
+    /* `left`/`right` stop applying the moment this goes static, so the gutter
+       has to come back as padding or the whole hero runs edge to edge. */
     .chero__band {
       position: static;
       flex-direction: column;
       align-items: stretch;
       padding-top: 64px;
+      padding-inline: var(--gutter);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .chero__title {
+      font-size: 36px;
+      letter-spacing: -1px;
+    }
+
+    .chero__body {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile — the hero already stacks at 980; this is scale and rhythm. */
+  @media (max-width: 560px) {
+    .chero {
+      padding-bottom: 40px;
+    }
+
+    .chero__band {
+      padding-top: 40px;
+      gap: 24px;
+    }
+
+    .chero__title {
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: -0.5px;
+    }
+
+    .chero__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    /* The badge is tracked for a 48px headline; at 14/2.4 its label wrapped
+       onto a second line and the pill stretched the full column. */
+    .chero__band :global(.eyebrow) {
+      align-self: flex-start;
+      padding: 6px 12px;
+      gap: 8px;
+    }
+
+    /* This label is 44 characters against the LMS hero's 35, so it needs a
+       step further down to hold one line in a 339px column. */
+    .chero__band :global(.eyebrow__label) {
+      font-size: 9px;
+      letter-spacing: 0.6px;
     }
   }
 </style>

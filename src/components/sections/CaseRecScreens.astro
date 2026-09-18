@@ -134,4 +134,48 @@ import { screens } from "../../data/caseRec";
       order: 0;
     }
   }
+
+  /* Same as Approach: the exports run well past their node box by design,
+     which is wider than the column on a phone. */
+  .scr {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .scr__inner {
+      padding-block: 64px;
+    }
+
+    .shot__copy h3 {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .shot__copy p {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .scr__inner {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .scr__blocks {
+      gap: 48px;
+    }
+
+    .shot__copy h3 {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .shot__copy p {
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
 </style>

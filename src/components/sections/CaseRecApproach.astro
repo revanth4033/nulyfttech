@@ -211,4 +211,61 @@ const [discover, ...paired] = approach.phases;
       width: 100%;
     }
   }
+
+  /* The phase screenshots carry ~61px of baked shadow per side and overflow
+     their box on purpose. On a phone that overflow is wider than the column,
+     so the section clips it rather than letting it push the page sideways —
+     `clip` rather than `hidden` so no scroll container is created. */
+  .appr {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 900px) {
+    .appr__inner {
+      padding-block: 64px;
+    }
+
+    .phase__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .phase__items p {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .appr__inner {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .appr__phases {
+      gap: 40px;
+    }
+
+    .phase__title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    /* 2.4px is a 14px eyebrow's tracking; left on a 13px label it opens the
+       words up by nearly a fifth of their width. */
+    .phase__items h4 {
+      font-size: 13px;
+      letter-spacing: 1.2px;
+    }
+
+    .phase__items p {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .phase--split {
+      gap: 24px;
+    }
+  }
 </style>
