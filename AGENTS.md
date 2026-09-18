@@ -1159,6 +1159,12 @@ is a clean ratio of its desktop self. What each scale is pinned to:
 | AI & Data | 0.8 | badges render 101 against the frame's 88 hub / 64 sides |
 | Cloud | 0.85 | tiles render 50 against the frame's 41.4 |
 
+**Cloud's card is 453 rather than the frame's 413.71.** Four rows at a scale
+that keeps the tiles near the frame's 41.4 need 429 of card, so at 413.71 the
+fourth (Kubernetes) was cut off. The user chose the taller card over smaller
+tiles. Its rows alternate their tile indent 0 / 64 / 0 / 64 — that is the
+frame, not a centring error.
+
 **The AI & Data edge veils must reach the card's edge.** Figma insets the left
 one 6px, which is invisible on desktop where the orbit runs far wider than the
 card. Centred and scaled to a phone those 6px are a gap, and an item can slide
