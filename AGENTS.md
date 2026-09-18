@@ -460,6 +460,16 @@ stack a zigzag. The design context has it at -40.22 — an even diagonal, which
 is what the render shows.
 
 
+**The mobile drawer's CTA is an `<a>`, so `.nav__drawer a` caught it.**
+`PillButton` renders an anchor whenever it carries an `href`, and the drawer's
+link rule — `display: block; padding: 10px 0; color: var(--c-ink)` — applied to
+the "Build With Us" pill as well. `display: block` killed its `justify-content:
+center` (a block is not a flex container), the zero horizontal padding put the
+label hard against the left edge of the pill, and the ink colour overrode the
+outline variant's accent. The rules are `.nav__drawer ul a` now. Same trap as
+`.deck__title span` catching `<Icon>` on the Studio page: **never select a bare
+element inside a container that also holds a component.**
+
 ## In-page navigation
 
 `src/scripts/anchors.ts` handles every same-page `#` link. ScrollSmoother
@@ -1169,6 +1179,120 @@ frame, not a centring error.
 one 6px, which is invisible on desktop where the orbit runs far wider than the
 card. Centred and scaled to a phone those 6px are a gap, and an item can slide
 past un-washed — the one thing the veils exist to prevent.
+
+### The case studies — mobile
+
+No Figma frames; adapted in code. All three share one pass, and four of its
+findings are shared with them:
+
+**Exports overflow their box on purpose, and below 1240 there is no gutter
+left to absorb it.** Every screenshot here carries 53-84px of baked drop
+shadow. `.appr` / `.scr` / `.typo` / `.pal` / `.aph` / `.ascr` / `.asys` /
+`.acol` carry `overflow-x: clip` — `clip` rather than `hidden`, so no scroll
+container is created and `position: sticky` elsewhere still works. Without it
+the page scrolled sideways at 1100, 900, 768, 560 and 375 alike.
+
+**A hero band that goes `position: static` loses its gutter.** `left` and
+`right` stop applying the moment it does; `translate` does not. Both
+`CaseLmsHero` / `CaseRecHero` (`.chero__band`, static at 980) and
+`CaseAutoHero` (`.ahero__copy`, static at 1180) need the gutter back as
+`padding-inline`. This is the third place in the build this has bitten —
+`PageHero` was the first.
+
+**`CaseHeader`'s two columns are rigid.** 525 + 32 + 503 = 1060 against an 896
+content width at 1100, so the intro ran 64px past its section between 1080 and
+1240. It scrolled the page before the sections clipped; after, it would have
+truncated the paragraph silently. Both columns are `flex: 1 1 0; min-width: 0`
+below 1240, and the row's fixed `height: 84px` becomes `min-height` because a
+narrower title takes a second line.
+
+**Tracking does not scale with the font size.** `--tr-h2` is -2px, which is a
+40px heading's tracking; left on a 20px mobile heading it closes the words up
+by a tenth of their width and the line reads as one word. Same for a 13px
+label still carrying a 14px eyebrow's 2.4px. Every mobile size here sets its
+own `letter-spacing`.
+
+**The hero badge has to be sized per page.** It is one line of uppercase in a
+339px column: LMS's label is 35 characters and fits at 10px/1px, Recruitment's
+is 44 and needs 9px/0.6px. The tell that it does not fit is the pill measuring
+the full column width rather than hugging — `getClientRects().length` and the
+element's height both report one line while the render shows two.
+
+**Scale steps at 900 then 560**, which is the site's existing convention (see
+`SectionHeader`). Without the 900 step the tablet band runs desktop type in a
+single narrow column — it was ~3,400px taller than the phone layout.
+
+**`white-space: nowrap` on a fact row survives into the mobile grid.** All
+three fact rows set it so a label holds one line in a wide desktop column.
+Dropped into a 171px mobile track, "Automotive Marketplace" is simply wider
+than its cell and paints straight over the next one — the grid was correct,
+the nowrap was not. Every mobile block resets `dt`/`dd` to `white-space:
+normal`. Symptom: the columns measure right and the text still overlaps.
+
+**Media placed by `left` needs `margin-inline: auto` once it joins the flow.**
+Automotive's phase phones, overview phone and challenge photos are absolutely
+positioned on desktop; below 1280 they go static with a capped `max-width`,
+and without an auto margin a 240px phone sits hard against the left gutter
+under centred copy. Same for `.ascr__shot`. This is the companion to the
+`left` / `translate` note above — `left` stops applying, so nothing is
+centring them any more.
+
+#### Recruitment and Automotive — the typography figure is flattened
+
+Both pages ship their type specimen as one 1240-wide export, unlike the LMS
+page which places its specimen, table and callouts individually. A flat export
+cannot reflow, so on a phone it can only shrink: 0.27x, with the card's labels
+sub-pixel and the whole block reading as blank against the ground.
+
+Each export has **exactly one clean vertical gap** in it (device x 980-1096 on
+Recruitment, 968-1232 on Automotive), found by counting alpha coverage per
+column. The halves crop apart there without cutting any artwork, including the
+leader labels, and stacking them below 900 roughly doubles the scale. They are
+`typography-m1.png` / `typography-m2.png` beside the original, declared as
+`typography.split` in the data, and swapped by CSS alone — both pairs are in
+the markup and one is always `display: none`. **Regenerate both crops if the
+source figure is ever re-exported.**
+
+#### Automotive — `width: 100% !important` is wrong when the width is inline
+
+`.ascr__shot` carries its size inline per shot: 1387 for the three-phone rows,
+311.5 for a single phone. The `≤1280` rule forced all of them to the column
+width, which blew one phone mockup to 836px at 900 and left it soft at every
+width under 1280. Dropping the override and clamping with `max-width: 100%`
+lets the inline width stand where it is small enough — inline beats a
+stylesheet `width`, so nothing else is needed — and took 3,100px off the page
+at 1280.
+
+Note that **Automotive stacks at 1280, not 900**: its section frames are
+absolute compositions, so below the design width everything goes static at
+once and the page grows from 10,119 to 12,912. That is inherent to the page,
+not this pass.
+
+#### Two things left as they are
+
+**The Colorography figures' hex labels are ~8px on a phone.** The figure
+scales to the column and its leaders reach both edges, so there is no slack.
+The fixes are a horizontal scroller — which `normalizeScroll: true` swallows,
+the same reason the Studio tabs became a dropdown — or rebuilding it as a
+swatch list from data that currently lives inside the SVG. Flagged to the
+user.
+
+**Desktop product screenshots are illegible at 375.** Their captions carry the
+meaning there.
+
+#### Verifying
+
+1440 / 1280 / 1240 / 1100 / 1000 / 900 / 768 / 600 / 560 / 430 / 375 / 320,
+checking `documentElement.scrollWidth === clientWidth` and that every
+`.chead__body`'s right edge is inside its section. Desktop heights must stay
+9,776 (LMS) / 9,622 (Recruitment) / 10,119 (Automotive).
+
+**Screenshots of these pages need two captures.** Images here are `lazy` with
+`decoding="async"`, and the first shot after a scroll routinely comes back
+blank for an image that measures as loaded with `opacity: 1`. Several "the
+figure is not rendering" diagnoses in this pass were that. Sample the pixels
+(`drawImage` to a canvas) before believing a blank — but note a transparent
+PNG reads as black on a fresh canvas, so count alpha, not luminance.
 
 ### Studio page — mobile
 

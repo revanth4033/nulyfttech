@@ -268,7 +268,7 @@ The user expects claims to be backed by measurement, not by eyeballing.
 
 ---
 
-## 6. Mobile — the home page is done, the inner pages are not
+## 6. Mobile — every page is done
 
 The user designed **five** mobile frames in Figma (section `538:13647`, all 393
 wide) and they are built: Why nuLyft, Technologies, Industries, Our Process and
@@ -345,11 +345,76 @@ fixed grid rows and take the image's own ratio, running the portrait shot to
 1252 tall. Verified 1440 through 320 with no horizontal scroll and the desktop
 untouched.
 
-### Still open
-**The three case studies have never had a mobile pass.** The shared `CtaFooter`, `SectionHeader` and
-`EyebrowBadge` fixes reach them for free, so they are better than they were,
-but nothing has been designed or verified. The Studio grid collapses to one
-column at 900 and the gutter steps down; that is all.
+### The three case studies are done too
+No Figma frames for these either. All three got the same pass, LMS first for
+the user to approve and the other two after. Four defects were shared by all
+three and are worth knowing, because each hid behind something else:
+
+1. **The page scrolled sideways at every width below 1240.** Every product
+   screenshot carries 53-84px of baked drop shadow and overflows its box on
+   purpose; below 1240 there is no gutter left to absorb it. The sections
+   holding media now carry `overflow-x: clip` — `clip`, not `hidden`, so no
+   scroll container is created.
+2. **The hero ran edge to edge on a phone.** `.chero__band` / `.ahero__copy`
+   go `position: static` when the hero stacks, and `left`/`right` stop
+   applying the moment they do. Same trap as `PageHero`'s copy. The gutter is
+   back as padding.
+3. **`CaseHeader`'s intro was 64px wider than its section between 1080 and
+   1240** — its two columns are rigid at 525 + 32 + 503 against an 896 content
+   width. It used to push the page sideways; once the sections clipped it
+   would have silently *truncated* the paragraph, which is worse. Both columns
+   shrink now. This is the shared header, so the fix lands on all three.
+4. **20px headings were still tracked at -2px**, a 40px heading's tracking —
+   a tenth of the word's width closed up. Same for 13px labels left at 2.4.
+
+Two more were specific:
+
+- **The Recruitment and Automotive typography figures are one flattened
+  1240-wide export each**, so on a phone they could only shrink — 0.27x, with
+  the card labels sub-pixel and the whole block reading as blank. Each export
+  has exactly one clean vertical gap in it, so the halves crop apart without
+  cutting artwork; they ship as `typography-m1/m2.png` and stack below 900,
+  which roughly doubles the scale. The LMS page needs none of this because its
+  typography is separate placed pieces that reflow on their own.
+- **Automotive's `.ascr__shot` was `width: 100% !important`**, but each shot
+  carries its own width inline — 1387 for the three-phone rows and only 311.5
+  for a single phone. That blew one phone mockup to 836px at 900. Dropping the
+  override and clamping with `max-width` took 3,100px off the page at 1280.
+
+Two more the user caught on review, both on Automotive:
+
+- **The fact row overlapped itself.** All three pages set `white-space:
+  nowrap` on the fact labels and values so they hold one line in a wide
+  desktop column; in a 171px mobile track "Automotive Marketplace" was wider
+  than its cell and painted over the next one. The grid was right, the nowrap
+  was not — it is reset at mobile on all three.
+- **The phase mockups were not centred.** They are placed by `left` on
+  desktop and go static below 1280 with a capped width, so nothing was
+  centring them any more. `margin-inline: auto` on the phase phones, the
+  overview phone, the challenge photos and the screen shots.
+
+Scale follows the site's existing two-step convention, 900 then 560, so the
+tablet band is not running desktop type in one narrow column.
+
+**Verified 1440 / 1280 / 1240 / 1100 / 1000 / 900 / 768 / 600 / 560 / 430 /
+375 / 320 on all three**: no horizontal scroll, every section header inside
+its section, and the desktop untouched — 9,776 / 9,622 / 10,119, the same as
+their frames.
+
+Two things flagged rather than fixed, both inherent to the artwork:
+
+- **The Colorography figures' hex labels land at ~8px on a phone.** The figure
+  scales to the column and its leaders reach the edges. Making them legible
+  needs either a horizontal scroller — which `normalizeScroll: true` would
+  swallow, the same reason the Studio tabs became a dropdown — or rebuilding
+  the figure as a swatch list from data the SVG currently owns.
+- **Desktop product screenshots are illegible at 375.** Only their captions
+  carry meaning there. Every case-study site has this.
+
+Also worth knowing: **Automotive stacks at 1280, not 900.** Its frames are
+absolute compositions, so below the design width everything goes static at
+once and the page grows from 10,119 to 12,912. That breakpoint predates this
+pass and is inherent to how the page was built.
 
 ---
 
@@ -379,7 +444,9 @@ column at 900 and the gutter steps down; that is all.
   157.2 against the frame's 169. None of the others change a height, so the
   section totals stay right either way. Challenge was -23 and is unmeasured
   since.
-- Everything above under mobile responsiveness, including the Studio page.
+- ~~Everything above under mobile responsiveness, including the Studio page.~~
+  **Done.** Home, Studio, Careers and all three case studies are responsive and
+  verified 320-1440; see section 6.
 - **Micro-interactions.** Built so far: the Overview stack swap (LMS and
   Recruitment) and the Colorography draw-in + hover (all three). Every other
   case-study section is static; the user describes each one's motion, and the
@@ -395,6 +462,10 @@ column at 900 and the gutter steps down; that is all.
   height, which is why they measure correct, but their cards sit low. Porting
   the measured offsets over is the obvious next contained fix. `AGENTS.md`
   carries the method.
+- **The mobile typography crops add two PNGs per page** on Recruitment and
+  Automotive (`typography-m1/m2.png`). They are cropped from the page's own
+  `typography.png` by column alpha coverage — if that source is ever
+  re-exported, regenerate both crops or the split will cut artwork.
 - **The three new case studies add ~16MB of PNG source** to a repo that was
   already 62MB of images. They are real sources — Astro makes the WebP from
   them — but they are photographic *with alpha*, so they cannot become JPEG.
