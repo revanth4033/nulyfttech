@@ -1221,6 +1221,23 @@ static — but `left` stops applying while **`translate: -50%` does not**, and
 the -50% alone drags the copy off the left edge. Reset it. Hero comes down
 from 700 to 421 at 375, with the heading at 30 rather than 48.
 
+### Careers page — mobile
+
+No Figma frame; adapted in code. It inherited the `PageHero`, `SectionHeader`,
+`EyebrowBadge`, gutter and `CtaFooter` fixes for free, so it never scrolled
+sideways — the work was scale and rhythm:
+
+- **The cards read larger than the section they sat in.** Card titles were 24
+  against a 20px section heading and bodies 16 against 12. 18/14 with a 40px
+  chip restores the hierarchy.
+- **The empty state's heading was 32** — the one thing on the page, shouting.
+- Block rhythm was still the desktop's 100 (perks) and 120 (jobs); both are 40.
+- **The photos lose their fixed grid rows when the bento restacks** and fall
+  back to the image's own aspect ratio, which ran the portrait shot to **1252
+  tall at 900** — again in the band nobody audits. `.shot` takes 16/9 from
+  1080 down and 4/3 below 560; `object-fit: cover` is already on, so a ratio
+  crops rather than distorts.
+
 ### Sections adapted in code, no frame
 
 Hero (eyebrow hugs at 11/0.4 or it wraps and fills the column; the stage is

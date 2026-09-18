@@ -288,4 +288,47 @@ const hasRoles = jobs.length > 0;
       transform: none;
     }
   }
+
+  /* ------------------------------------------------------------------------
+     Mobile
+
+     The empty state's heading was 32 against a 20px section heading, which
+     made the one thing on the page shout. Same 40px block rhythm as the rest.
+     ------------------------------------------------------------------------ */
+  @media (max-width: 560px) {
+    .jobs__inner {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .empty {
+      gap: 12px;
+    }
+
+    .empty :global(.empty__art) {
+      width: 160px;
+      height: 144px;
+      margin-bottom: 8px;
+    }
+
+    .empty__title {
+      font-size: 20px;
+      line-height: normal;
+      letter-spacing: -1px;
+    }
+
+    .empty__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .jobs__title {
+      font-size: 20px;
+      letter-spacing: -1px;
+    }
+
+    .jobs__grid {
+      gap: 32px;
+    }
+  }
 </style>

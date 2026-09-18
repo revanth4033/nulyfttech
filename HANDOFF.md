@@ -336,8 +336,17 @@ row the phones land at ~75px on a 375 screen. They fill the card evenly and
 the card links to the full case study, so they read as thumbnails — but a 2x2
 grid would double their size at the cost of card height. Offered, not taken.
 
+### Careers is done too
+No frame; adapted in code, and it inherited the shared fixes so it never
+scrolled sideways. The work was scale — card titles ran 24 against a 20px
+section heading, the empty state's heading 32 — and rhythm. One defect again
+sat in the **900-1080 band**: when the bento restacks, the photos lose their
+fixed grid rows and take the image's own ratio, running the portrait shot to
+1252 tall. Verified 1440 through 320 with no horizontal scroll and the desktop
+untouched.
+
 ### Still open
-**Careers and the three case studies have never had a mobile pass.** The shared `CtaFooter`, `SectionHeader` and
+**The three case studies have never had a mobile pass.** The shared `CtaFooter`, `SectionHeader` and
 `EyebrowBadge` fixes reach them for free, so they are better than they were,
 but nothing has been designed or verified. The Studio grid collapses to one
 column at 900 and the gutter steps down; that is all.

@@ -210,6 +210,13 @@ const [growth, empowering] = perks;
       min-height: 320px;
     }
 
+    /* Once the bento restacks, the photos lose their fixed grid rows and take
+       the image's own aspect ratio instead — the portrait shot ran 1252 tall
+       at 900. `object-fit: cover` is already on, so a ratio crops. */
+    .shot {
+      aspect-ratio: 16 / 9;
+    }
+
     .pcard :global(.pcard__curves) {
       display: none;
     }
@@ -227,6 +234,59 @@ const [growth, empowering] = perks;
 
     .bento__wide {
       min-height: 240px;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile
+
+     The bento already collapses to one column at 720; what was left was scale.
+     The card titles were running 24 against a 20px section heading and the
+     bodies 16 against 12, so the cards read larger than the section they sit
+     in. The block rhythm comes down to the 40 the rest of the site uses on a
+     phone, and the two photos take one aspect ratio instead of the tall one
+     running 511 in a single column.
+     ------------------------------------------------------------------------ */
+  @media (max-width: 560px) {
+    .perks__inner {
+      gap: 32px;
+      padding-block: 40px;
+    }
+
+    .bento {
+      gap: 16px;
+    }
+
+    .pcard {
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .pcard__chip {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .pcard__title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .pcard__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    /* `object-fit: cover` already, so a fixed ratio crops rather than
+       distorts — the portrait shot is what ran long. */
+    .shot {
+      aspect-ratio: 4 / 3;
+    }
+
+    .bento__wide,
+    .bento__tall {
+      min-height: 0;
     }
   }
 </style>
