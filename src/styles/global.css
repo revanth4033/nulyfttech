@@ -103,6 +103,27 @@ ol {
   :root { --gutter: 32px; }
 }
 
+/* A fixed-size picture scaled to its column — see scripts/fit.ts. The
+   wrapper takes the column (never wider than the drawn size) and keeps the
+   drawn ratio; the inner box is laid out at the drawn size and scaled. */
+.fit {
+  --fit: 1;
+  position: relative;
+  width: min(100%, calc(var(--fit-w) * 1px));
+  aspect-ratio: var(--fit-w) / var(--fit-h);
+  margin-inline: auto;
+}
+
+.fit__inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--fit-w) * 1px);
+  height: calc(var(--fit-h) * 1px);
+  transform: scale(var(--fit));
+  transform-origin: 0 0;
+}
+
 /* Every mobile frame in Figma is 393 wide with a 16px gutter, which is what
    puts its content column at 361. */
 @media (max-width: 560px) {

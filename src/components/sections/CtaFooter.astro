@@ -26,9 +26,13 @@ const rasters = { "screen-1": screen1, "screen-2": screen2, "screen-3": screen3 
 interface Props {
   title?: string;
   body?: string;
+  /** Copy column width. Figma draws 504; AI & Automation widens it to 642
+      from the same left edge so its longer body sets in two lines. */
+  copyWidth?: number;
 }
 
 const {
+  copyWidth = 504,
   title = "Have a product worth building? Let\u2019s talk about it",
   body = "Tell us what you\u2019re trying to solve, where you\u2019re stuck, or what you\u2019re planning next. We\u2019ll figure out the right way forward together.",
 } = Astro.props;
@@ -60,7 +64,7 @@ const work = [
     <span class="cta__tint" aria-hidden="true"></span>
     <span class="cta__arcs" aria-hidden="true"><Icon name="brand/cta-arcs" width={965} height={965} /></span>
 
-    <div class="cta__copy">
+    <div class="cta__copy" style={`--cta-copy-w:${copyWidth}px`}>
       <h2 class="cta__title" data-animate data-cta-title>{title}</h2>
       <p class="cta__body" data-animate data-cta-body>{body}</p>
       <a class="cta__btn" href="#contact" data-animate>
@@ -219,14 +223,15 @@ const work = [
   .cta__copy {
     position: absolute;
     z-index: 2;
-    left: calc(50% - 280.5px);
+    /* Anchored by its left edge (87.5 in the 1240 card) whatever the width. */
+    left: calc(50% - 280.5px + (var(--cta-copy-w, 504px) - 504px) / 2);
     top: calc(50% + 0.24px);
     translate: -50% -50%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
-    width: 504px;
+    width: var(--cta-copy-w, 504px);
   }
 
   .cta__title {
@@ -236,6 +241,9 @@ const work = [
     line-height: 40px;
     letter-spacing: -1px;
     color: #fff;
+    /* A "\n" in a page's title is a deliberate break (Product Engineering's
+       "...better / engineering."); balance alone splits it differently. */
+    white-space: pre-line;
   }
 
   .cta__body {
@@ -519,6 +527,15 @@ const work = [
       right: var(--gutter);
       width: auto;
       translate: none;
+    }
+
+    /* The copy is placed from the card's centre, which only holds while the
+       card is 1240: on a fluid card it slid off the left edge (-120 at
+       1024). Its left edge is 87.5 into the card at any width, so anchor
+       that instead. */
+    .cta__copy {
+      left: 87.5px;
+      translate: 0 -50%;
     }
   }
 

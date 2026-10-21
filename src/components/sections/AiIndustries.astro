@@ -1,0 +1,254 @@
+---
+/**
+ * Where can we help — Figma 647:6886. A row of 292-wide industry cards,
+ * 24 apart, clipped to the 1240 column with the centred one lifted.
+ *
+ * Figma draws pager dots and arrows under it; they are removed by request,
+ * and `ai-industries.ts` steps the row along on its own instead, handing
+ * the highlight to whichever card lands in the middle. The set is rendered
+ * three times so the loop can wrap one set back without a visible jump; at
+ * rest (no JS, reduced motion) the row shows Figma's frame — HR &
+ * Recruitment centred.
+ */
+import Icon from "../ui/Icon.astro";
+import { industries } from "../../data/capAi";
+
+const n = industries.cards.length;
+const COPIES = 3;
+const cards = Array.from({ length: COPIES }, (_, c) => industries.cards.map((card, i) => ({ ...card, copy: c, i }))).flat();
+// Index of the card centred at rest: the middle copy's active card.
+const start = n + industries.active;
+---
+
+<section class="aind" data-section>
+  <div class="aind__inner">
+    <header class="aind__head">
+      <span class="aind__eyebrow" data-animate>{industries.eyebrow}</span>
+      <div class="aind__head-copy">
+        <h2 class="aind__title" data-animate>{industries.title}</h2>
+        <p class="aind__body" data-animate>{industries.body}</p>
+      </div>
+    </header>
+
+    <div class="aind__carousel" data-animate>
+      <div class="aind__track" data-aind-track>
+        <div class="aind__row" style={`--start:${start}`} data-aind-row>
+          {
+            cards.map((c, k) => (
+              <article
+                class:list={["aind__card", { "is-active": k === start }]}
+                aria-hidden={c.copy === 1 ? undefined : "true"}
+                data-aind-card
+              >
+                <span class="aind__chip">
+                  <Icon name={c.icon} size={c.size} />
+                </span>
+                <h3 class="aind__card-title">{c.title}</h3>
+                <ul class="aind__list">
+                  {c.items.map((it) => (
+                    <li>
+                      <Icon name="icons/ai/diamond" size={8} />
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .aind {
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    overflow-x: clip;
+  }
+
+  .aind__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .aind__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .aind__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .aind__head-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 766px;
+    max-width: 100%;
+  }
+
+  /* Inter 40/48 here, not the IBM Plex section heading. */
+  .aind__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: 48px;
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  .aind__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .aind__carousel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .aind__track {
+    position: relative;
+    height: 292px;
+    overflow: hidden;
+  }
+
+  /* Card k's centre sits on the column's centre when the row is offset by
+     k steps; --start puts Figma's frame there before any script runs. */
+  .aind__row {
+    position: absolute;
+    top: 10px;
+    left: calc(50% - 146px - var(--start) * 316px);
+    display: flex;
+    gap: 24px;
+    will-change: transform;
+  }
+
+  .aind__card {
+    position: relative;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 292px;
+    padding: 24px;
+    border: 1px solid rgba(131, 77, 251, 0.24);
+    border-radius: 16px;
+    background: var(--c-surface);
+    /* A transparent shadow, so the ring fades in rather than snapping. */
+    filter: drop-shadow(0 0 2px rgba(131, 77, 251, 0));
+    transition:
+      translate 0.5s var(--ease-out),
+      border-color 0.5s var(--ease-out),
+      filter 0.5s var(--ease-out);
+  }
+
+  /* Figma lifts the active card 2px and rings it. */
+  .aind__card.is-active {
+    translate: 0 -2px;
+    border-color: var(--c-accent);
+    filter: drop-shadow(0 0 2px rgba(131, 77, 251, 0.56));
+  }
+
+  .aind__chip {
+    display: flex;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(143, 76, 250, 0.1);
+    line-height: 0;
+  }
+
+  .aind__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: 32px;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .aind__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aind__list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-body);
+    line-height: 20px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+
+  @media (max-width: 1279px) {
+    .aind {
+      padding-block: 72px;
+    }
+
+    .aind__inner {
+      gap: 48px;
+    }
+
+    .aind__title {
+      font-size: 32px;
+      line-height: 40px;
+      text-wrap: balance;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .aind {
+      padding-block: 48px;
+    }
+
+    .aind__inner {
+      gap: 32px;
+    }
+
+    .aind__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .aind__title {
+      font-size: 26px;
+      line-height: 32px;
+    }
+
+    .aind__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
+</style>

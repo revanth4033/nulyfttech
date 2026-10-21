@@ -1,0 +1,455 @@
+---
+/**
+ * Design Approach — Figma 637:2196 (dark, 750 tall), states 637:4316.
+ *
+ * Six steps on a 1200px ring centred 480px off the left edge. The section
+ * pins and each scroll step advances one state: the numbers and dots ride
+ * up the ring, the copy swaps, and the photo stack shifts like a queue —
+ * see `scripts/cap-approach.ts` and `cap-approach-geometry.ts`.
+ *
+ * Everything is rendered at state 01 on the server, from the same geometry
+ * the script animates, so the section is correct with JS off.
+ *
+ * Below 1280 the ring cannot fit beside the copy and a pin is expensive on
+ * a phone, so the section becomes a vertical timeline: header, the photo
+ * stack (state 01, scaled as one picture), then all six steps on a rail,
+ * each lighting as it reaches the middle of the screen.
+ */
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import FigmaFill from "../cap/FigmaFill.astro";
+import { approach } from "../../data/capProductDesign";
+import { cardPose, markPose } from "../../scripts/cap-approach-geometry";
+
+const marks = approach.steps.map((step, i) => ({ step, pose: markPose(i) }));
+const cards = approach.cards.map((card, i) => ({ card, pose: cardPose(i) }));
+
+const markStyle = (p: ReturnType<typeof markPose>) => `opacity:${p.opacity}`;
+const dotStyle = (p: ReturnType<typeof markPose>) =>
+  `transform:translate(${p.dot.x}px, ${p.dot.y}px) translate(-50%, -50%);background:${p.dot.color}`;
+const numStyle = (p: ReturnType<typeof markPose>) =>
+  `transform:translate(${p.num.x}px, ${p.num.y}px) translate(-50%, -50%) rotate(${p.num.rot}deg);color:rgba(255, 255, 255, ${p.num.alpha})`;
+const cardStyle = (p: ReturnType<typeof cardPose>) =>
+  `left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;--r:${p.r}px;--lift:${p.lift};opacity:${p.opacity};z-index:${p.z}`;
+---
+
+<section class="appr" data-approach>
+  <div class="appr__frame">
+    <span class="appr__ring" aria-hidden="true"></span>
+
+    <div class="appr__marks" aria-hidden="true">
+      {
+        marks.map(({ step, pose }) => (
+          <span class="appr__mark" style={markStyle(pose)} data-mark>
+            <span class="appr__dot" style={dotStyle(pose)} data-dot />
+            <span class="appr__num" style={numStyle(pose)} data-num>
+              {step.n}
+            </span>
+          </span>
+        ))
+      }
+    </div>
+
+    <div class="appr__intro">
+      <div class="appr__head">
+        <span class="appr__eyebrow">{approach.eyebrow}</span>
+        <h2 class="appr__title">{approach.title}</h2>
+      </div>
+
+      <div class="fit appr__fit" data-fit="469" style="--fit-w:469;--fit-h:250">
+      <div class="appr__photos fit__inner">
+        {
+          cards.map(({ card, pose }, i) => (
+            <div
+              class:list={["appr__card", `appr__card--${card.kind}`]}
+              style={cardStyle(pose)}
+              aria-hidden={i === 0 ? undefined : "true"}
+              data-card
+            >
+              {card.kind === "browser" && (
+                <div class="appr__bar">
+                  <div class="appr__bar-inner">
+                    <BrowserChrome />
+                  </div>
+                </div>
+              )}
+              <div class="appr__shot">
+                <FigmaFill shot={card} boxW={400} />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      </div>
+    </div>
+
+    <div class="appr__steps" data-approach-steps>
+      {
+        approach.steps.map((step, i) => (
+          <div class:list={["appr__step", { "is-on": i === 0 }]} aria-hidden={i === 0 ? undefined : "true"} data-step>
+            <span class="appr__step-n" aria-hidden="true">{step.n}</span>
+            <h3 class="appr__step-title">{step.title}</h3>
+            <p class="appr__step-tags">{step.tags}</p>
+            <p class="appr__step-body">{step.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .appr {
+    position: relative;
+    height: 750px;
+    background: var(--c-bg-dark);
+    overflow: hidden;
+  }
+
+  .appr__frame {
+    position: relative;
+    max-width: var(--frame-w);
+    height: 100%;
+    margin-inline: auto;
+  }
+
+  /* 1200 box at (-480, -225); the stroke is 2.4 centred on r = 598.8. */
+  .appr__ring {
+    position: absolute;
+    top: -225px;
+    left: -480px;
+    width: 1200px;
+    height: 1200px;
+    border: 2.4px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Marks are placed by transform from the section's top-left corner. */
+  .appr__marks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .appr__dot,
+  .appr__num {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+
+  .appr__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--r-pill);
+  }
+
+  .appr__num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  /* --- left column ------------------------------------------------------ */
+
+  .appr__intro {
+    position: absolute;
+    top: 100px;
+    left: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 469px;
+  }
+
+  .appr__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .appr__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15); /* inside stroke: the pill is 32 tall */
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  .appr__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: #fff;
+    text-wrap: wrap;
+  }
+
+  /* .appr__photos is the .fit__inner: 469 x 250, positioned by fit. */
+
+  .appr__card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--c-surface);
+  }
+
+  /* Photos carry the drop shadow and the larger radius while in front. */
+  .appr__card--photo {
+    border-radius: var(--r);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, calc(0.24 * var(--lift)));
+  }
+
+  .appr__card--browser {
+    border: 0.568px solid #fff;
+    border-radius: 9.091px;
+  }
+
+  /* The chrome is a fixed 30.49 tall at every card width: BrowserChrome's
+     53.67 bar scaled by 0.5682, laid out at the card width / that scale. */
+  .appr__bar {
+    flex: none;
+    height: 30.492px;
+    overflow: hidden;
+  }
+
+  .appr__bar-inner {
+    width: calc(100% / 0.5682);
+    transform: scale(0.5682);
+    transform-origin: 0 0;
+  }
+
+  .appr__shot {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* --- step copy -------------------------------------------------------- */
+
+  /* 493 at 1440; from 1280 up it gives way to the column's right edge. */
+  .appr__steps {
+    position: absolute;
+    top: 50%;
+    left: 846px;
+    width: min(493px, calc(100% - 846px - var(--gutter)));
+  }
+
+  .appr__step {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    translate: 0 -50%;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .appr__step.is-on {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .appr__step-title {
+    font-weight: 500;
+    font-size: var(--fs-lg);
+    line-height: 26.4px;
+    letter-spacing: var(--tr-project-title);
+    color: #fff;
+  }
+
+  .appr__step-tags {
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-nav);
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .appr__step-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  /* On desktop the number lives on the ring, not with the copy. */
+  .appr__step-n {
+    display: none;
+  }
+
+  /* --- tablet + phone: a timeline --------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .appr {
+      height: auto;
+      padding-block: 80px;
+    }
+
+    .appr__frame {
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+      max-width: calc(720px + 2 * var(--gutter));
+      padding-inline: var(--gutter);
+    }
+
+    .appr__ring,
+    .appr__marks {
+      display: none;
+    }
+
+    .appr__intro {
+      position: static;
+      width: auto;
+    }
+
+    /* Left-aligned with the copy above and below it, not centred. */
+    .appr__fit {
+      margin-inline: 0;
+    }
+
+    /* The aria-hidden the desktop sets on inactive steps does not apply to
+       a list where every step is on screen; the script clears it. */
+    .appr__steps {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* The rail: a hairline down the numbers' column, filled in as steps are
+       reached. */
+    .appr__steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 19px;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .appr__step {
+      position: relative;
+      gap: 12px;
+      padding-left: 64px;
+      translate: none;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.6s var(--ease-out);
+    }
+
+    /* Number on the rail: a dark plate masks the line behind it. */
+    .appr__step-n {
+      position: absolute;
+      top: -6px;
+      left: 0;
+      display: block;
+      width: 40px;
+      padding-block: 4px;
+      background: var(--c-bg-dark);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 30px;
+      text-align: center;
+      color: #fff;
+      transition: color 0.6s var(--ease-out);
+    }
+
+    /* With the script running, a step waits dimmed until it is reached —
+       the desktop ring's inactive numbers are the same 12% white. */
+    .appr__steps.is-scroll .appr__step:not(.is-lit) {
+      opacity: 0.4;
+    }
+
+    .appr__steps.is-scroll .appr__step:not(.is-lit) .appr__step-n {
+      color: rgba(255, 255, 255, 0.12);
+    }
+
+    .appr__step-title {
+      font-size: 22px;
+      line-height: 28px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .appr {
+      padding-block: 56px;
+    }
+
+    .appr__frame {
+      gap: 40px;
+    }
+
+    .appr__intro {
+      gap: 28px;
+    }
+
+    .appr__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .appr__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .appr__steps {
+      gap: 32px;
+    }
+
+    .appr__steps::before {
+      left: 15px;
+    }
+
+    .appr__step {
+      gap: 8px;
+      padding-left: 48px;
+    }
+
+    .appr__step-n {
+      width: 32px;
+      font-size: 20px;
+      line-height: 26px;
+    }
+
+    .appr__step-title {
+      font-size: 18px;
+      line-height: 24px;
+    }
+
+    .appr__step-tags {
+      font-size: 11px;
+      letter-spacing: 1px;
+      line-height: 16px;
+    }
+
+    .appr__step-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
+</style>
+
+<script>
+  import "../../scripts/cap-approach.ts";
+</script>

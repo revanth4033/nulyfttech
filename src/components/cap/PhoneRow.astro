@@ -1,0 +1,70 @@
+---
+/**
+ * Three phones in a 575 x 348 row — the Automotive Marketplace media
+ * (Figma 637:2721 / 646:6095). The outer two are dimmed to 40%; the
+ * middle one lifts with a soft shadow. The notch is a crop of Figma's
+ * iPhone frame, shared with the Product Design page.
+ */
+import { Image } from "astro:assets";
+import FigmaFill from "./FigmaFill.astro";
+import islandSrc from "../../assets/images/cap-design/auto-island.png";
+import type { Shot } from "../../data/capProductDesign";
+
+interface Props {
+  phones: (Shot & { dim?: boolean })[];
+}
+
+const { phones } = Astro.props;
+---
+
+<div class="prow">
+  {
+    phones.map((ph) => (
+      <div class:list={["prow__phone", { "prow__phone--dim": ph.dim, "prow__phone--lit": !ph.dim }]}>
+        <FigmaFill shot={ph} boxW={168} />
+        <Image src={islandSrc} alt="" width={79} widths={[79, 158]} sizes="79px" class="prow__island" />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .prow {
+    display: flex;
+    gap: 24px;
+    width: 575px;
+    height: 348px;
+    padding: 3px;
+  }
+
+  .prow__phone {
+    position: relative;
+    flex: 1 1 0;
+    border: 3px solid #010101;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #010101;
+  }
+
+  .prow__phone--dim {
+    opacity: 0.4;
+  }
+
+  .prow__phone--lit {
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.24);
+  }
+
+  .prow__phone :global(.fill) {
+    border-radius: 13px;
+  }
+
+  .prow__phone :global(.prow__island) {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 79px;
+    height: 22px;
+    translate: -50% 0;
+    border-radius: 0 0 13.327px 13.327px;
+  }
+</style>

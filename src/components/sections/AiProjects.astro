@@ -1,0 +1,325 @@
+---
+/**
+ * What we've been building — Figma 647:6702 / 6768 / 6827 (dark):
+ * three project rows, each its own frame (803 with the header, then 607,
+ * 607); the middle one puts the screen on the left.
+ *
+ * From 1280 the copy column gives way so the screen keeps its drawn size.
+ * Below 1280 each row is copy over screen, the screen scaled as one
+ * picture (fit.ts).
+ */
+import Icon from "../ui/Icon.astro";
+import BrowserCard from "../cap/BrowserCard.astro";
+import { projects } from "../../data/capAi";
+---
+
+<div class="aip" id="ai-work">
+  {
+    projects.rows.map((r, i) => (
+      <section class="aip__frame" data-section>
+        <div class="aip__inner">
+          {i === 0 && (
+            <header class="aip__head">
+              <div class="aip__head-top">
+                <span class="aip__eyebrow" data-animate>
+                  {projects.eyebrow}
+                </span>
+                <h2 class="aip__title" data-animate>
+                  {projects.title}
+                </h2>
+              </div>
+              <p class="aip__body" data-animate>
+                {projects.body}
+              </p>
+            </header>
+          )}
+
+          <div class:list={["aip__row", { "aip__row--reverse": r.reverse }]}>
+            <div class="aip__copy" data-animate>
+              <div class="aip__about">
+                <h3 class="aip__name">{r.name}</h3>
+                <p class="aip__kicker">{r.kicker}</p>
+                <p class="aip__text">{r.body}</p>
+              </div>
+              <ul class="aip__tags">
+                {r.tags.map((t) => (
+                  <li>
+                    <Icon name="icons/ai/diamond" size={16} />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div class="aip__media" data-animate>
+              <div class="fit" data-fit="568.419" style="--fit-w:568.419;--fit-h:406.556">
+              <div class="fit__inner">
+              <BrowserCard
+                shot={r.shot}
+                w={565.84}
+                h={394.672}
+                boxW={568.419}
+                boxH={406.556}
+                chromeWrapW={567.23}
+                chromeW={565.84}
+                shotRight={1.66}
+                shadow="0 32px 122px -61.128px rgba(0, 0, 0, 0.25)"
+              />
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .aip {
+    background: var(--c-bg-dark);
+    overflow-x: clip;
+  }
+
+  .aip__frame {
+    padding-block: 100px;
+  }
+
+  .aip__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .aip__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .aip__head-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .aip__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  .aip__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .aip__body {
+    width: 788px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  .aip__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .aip__row--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .aip__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 0 1 541px;
+    min-width: 0;
+  }
+
+  .aip__row:not(.aip__row--reverse) .aip__copy {
+    margin-right: 40px;
+  }
+
+  .aip__row--reverse .aip__copy {
+    margin-left: 40px;
+  }
+
+  .aip__about {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .aip__name {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: 32px;
+    color: #fff;
+  }
+
+  .aip__kicker {
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .aip__text {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  .aip__tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aip__tags li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-card);
+    letter-spacing: var(--tr-label);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .aip__media {
+    flex: none;
+    width: 568.419px;
+  }
+
+  .aip__media .fit {
+    margin: 0;
+  }
+
+  /* --- narrower: copy over screen ---------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .aip__frame {
+      padding-block: 72px;
+    }
+
+    .aip__frame + .aip__frame {
+      padding-top: 24px;
+    }
+
+    .aip__inner {
+      gap: 48px;
+      max-width: min(calc(100% - 2 * var(--gutter)), 720px);
+    }
+
+    .aip__title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    .aip__row,
+    .aip__row--reverse {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 40px;
+    }
+
+    .aip__row .aip__copy {
+      flex: none;
+      margin: 0;
+    }
+
+    .aip__media {
+      width: 100%;
+    }
+
+    .aip__media .fit {
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .aip__frame {
+      padding-block: 48px;
+    }
+
+    .aip__frame + .aip__frame {
+      padding-top: 16px;
+    }
+
+    .aip__inner {
+      gap: 32px;
+    }
+
+    .aip__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .aip__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .aip__body,
+    .aip__text {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .aip__row,
+    .aip__row--reverse {
+      gap: 32px;
+    }
+
+    .aip__copy {
+      gap: 24px;
+    }
+
+    .aip__about {
+      gap: 12px;
+    }
+
+    .aip__tags {
+      gap: 16px;
+    }
+
+    .aip__tags li {
+      font-size: 14px;
+    }
+  }
+</style>

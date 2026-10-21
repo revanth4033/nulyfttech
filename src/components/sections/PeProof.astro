@@ -1,0 +1,356 @@
+---
+/**
+ * Proof — Figma 646:5936 (2155 tall): three project rows, each in its own
+ * 1440 frame (865 with the section header, then 645, 645). Copy and media
+ * swap sides on the middle row.
+ *
+ * From 1280 the copy column gives way so the media keeps its drawn size.
+ * Below 1280 every row is copy over media, the media scaled as one
+ * picture (fit.ts); the swap has nothing to alternate in one column.
+ */
+import PillButton from "../ui/PillButton.astro";
+import BrowserCard from "../cap/BrowserCard.astro";
+import PhoneRow from "../cap/PhoneRow.astro";
+import { proof } from "../../data/capProductEngineering";
+---
+
+<div class="pf" id="proof">
+  {
+    proof.projects.map((p, i) => (
+      <section class="pf__frame" data-section>
+        <div class="pf__inner">
+          {i === 0 && (
+            <header class="pf__head">
+              <div class="pf__head-top">
+                <span class="pf__eyebrow" data-animate>
+                  {proof.eyebrow}
+                </span>
+                <h2 class="pf__title" data-animate>
+                  {proof.title}
+                </h2>
+              </div>
+              <p class="pf__body" data-animate>
+                {proof.body}
+              </p>
+            </header>
+          )}
+
+          <div class:list={["pf__row", { "pf__row--reverse": p.reverse }]}>
+            <div class="pf__copy" data-animate>
+              <div class="pf__about">
+                <h3 class="pf__name">{p.name}</h3>
+                <div class="pf__list">
+                  <p class="pf__kicker">What we Engineered</p>
+                  <dl>
+                    {p.items.map((it) => (
+                      <div class="pf__item">
+                        <dt>{it.label}</dt>
+                        <dd>{it.text}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
+              <div class="pf__cta">
+                <PillButton href={p.href} variant="outline" arrow={20} arrowIcon="icons/arrow-circle-20-outline">
+                  Full Case Study
+                </PillButton>
+              </div>
+            </div>
+
+            <div class="pf__media" style={`--media-w:${p.media.kind === "browser" ? 568.419 : 575}px`} data-animate>
+              <div
+                class="fit"
+                data-fit={p.media.kind === "browser" ? 568.419 : 575}
+                style={p.media.kind === "browser" ? "--fit-w:568.419;--fit-h:406.556" : "--fit-w:575;--fit-h:348"}
+              >
+              <div class="fit__inner">
+              {p.media.kind === "browser" && (
+                <BrowserCard
+                  shot={p.media.shot}
+                  w={565.84}
+                  h={394.672}
+                  boxW={568.419}
+                  boxH={406.556}
+                  chromeWrapW={567.23}
+                  chromeW={565.84}
+                  shotRight={1.66}
+                  shadow="0 32px 122px -61.128px rgba(0, 0, 0, 0.25)"
+                />
+              )}
+              {p.media.kind === "phones" && <PhoneRow phones={p.media.phones} />}
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .pf {
+    background: var(--c-bg-light);
+    /* Fixed Figma widths; never let them scroll the page sideways. */
+    overflow-x: clip;
+  }
+
+  .pf__frame {
+    padding-block: 100px;
+  }
+
+  .pf__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .pf__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .pf__head-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pf__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .pf__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .pf__body {
+    width: 788px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .pf__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 445.061px;
+  }
+
+  .pf__row--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .pf__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    height: 100%;
+    flex: 0 1 541px;
+    min-width: 0;
+  }
+
+  .pf__row:not(.pf__row--reverse) .pf__copy {
+    margin-right: 40px;
+  }
+
+  .pf__row--reverse .pf__copy {
+    margin-left: 40px;
+  }
+
+  .pf__about {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .pf__name {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    line-height: 32px;
+    color: var(--c-ink);
+  }
+
+  .pf__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pf__kicker {
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .pf__item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-block: 24px;
+    border-bottom: 1px solid var(--c-card-border-strong);
+  }
+
+  .pf__item dt {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--c-ink);
+  }
+
+  .pf__item dd {
+    width: 519px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .pf__cta {
+    display: flex;
+    align-items: center;
+    height: 50.06px;
+  }
+
+  .pf__media {
+    flex: none;
+    width: var(--media-w);
+  }
+
+  .pf__media .fit {
+    margin-inline: 0 0;
+  }
+
+  /* --- narrower: copy over media ----------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .pf__frame {
+      padding-block: 72px;
+    }
+
+    .pf__frame + .pf__frame {
+      padding-top: 24px;
+    }
+
+    .pf__inner {
+      gap: 48px;
+      max-width: min(calc(100% - 2 * var(--gutter)), 720px);
+    }
+
+    .pf__title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    .pf__row,
+    .pf__row--reverse {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 40px;
+      height: auto;
+    }
+
+    .pf__row .pf__copy {
+      flex: none;
+      margin: 0;
+    }
+
+    .pf__item dt {
+      white-space: normal;
+    }
+
+    .pf__media {
+      width: 100%;
+    }
+
+    .pf__media .fit {
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .pf__frame {
+      padding-block: 48px;
+    }
+
+    .pf__frame + .pf__frame {
+      padding-top: 16px;
+    }
+
+    .pf__inner {
+      gap: 32px;
+    }
+
+    .pf__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .pf__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .pf__body,
+    .pf__item dd {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .pf__row,
+    .pf__row--reverse {
+      gap: 32px;
+    }
+
+    .pf__copy {
+      gap: 24px;
+    }
+
+    .pf__item {
+      gap: 6px;
+      padding-block: 16px;
+    }
+
+    .pf__item dt {
+      font-size: 12px;
+      letter-spacing: 1.2px;
+    }
+  }
+</style>

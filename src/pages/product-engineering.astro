@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import PeHero from "../components/sections/PeHero.astro";
+import PeServices from "../components/sections/PeServices.astro";
+import PeProcess from "../components/sections/PeProcess.astro";
+import PeProof from "../components/sections/PeProof.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { cta } from "../data/capProductEngineering";
+---
+
+<BaseLayout
+  title="Product Engineering — nuLyft"
+  description="From product idea to production-ready: we design, engineer, and evolve digital products where experience, architecture, data, AI, and infrastructure work together."
+>
+  <Nav slot="overlay" />
+
+  <PeHero />
+  <PeServices />
+  <PeProcess />
+  <PeProof />
+  <CtaFooter title={cta.title} body={cta.body} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/fit.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+  import "../scripts/pe-hero.ts";
+  import "../scripts/pe-services.ts";
+</script>

@@ -1,0 +1,320 @@
+---
+/**
+ * How we engineer it — Figma 647:7044 (895 tall). Four step cards in a
+ * zig-zag across a 1240 x 455 stage, joined by dashed arrows that fade in
+ * from their tail. One arrow export, turned per position.
+ *
+ * 1280-1439: the stage is a placed composition, so it scales as one
+ * (fit.ts). Below 1280 the zig-zag turns vertical: the cards alternate
+ * left and right at 82% of the column, each joined to the next by a dashed
+ * elbow — the desktop arrows' job, run downwards. The elbow is drawn in
+ * the card's own width units (stretched, non-scaling stroke) from its
+ * centre to the next card's: 18% of the column is 21.95% of a card.
+ */
+import Icon from "../ui/Icon.astro";
+import { engineer } from "../../data/capAi";
+---
+
+<section class="aen" data-section>
+  <div class="aen__inner">
+    <header class="aen__head">
+      <span class="aen__eyebrow" data-animate>{engineer.eyebrow}</span>
+      <div class="aen__head-copy">
+        <h2 class="aen__title" data-animate>{engineer.title}</h2>
+        <p class="aen__body" data-animate>{engineer.body}</p>
+      </div>
+    </header>
+
+    <div class="aen__fit fit" data-fit="1240" style="--fit-w:1240;--fit-h:455">
+    <div class="aen__stage fit__inner">
+      {
+        engineer.arrows.map((a) => (
+          <span class="aen__arrow" style={`left:${a.x}px;top:${a.y}px`} aria-hidden="true">
+            <span class="aen__arrow-box" style={`transform:${a.flip}`}>
+              <Icon name="brand/ai/eng-arrow" width={119.04} height={170.7} />
+            </span>
+          </span>
+        ))
+      }
+      {
+        engineer.steps.map((s, i) => (
+          <article class="aen__card" style={`left:${s.x}px;top:${s.y}px`} data-animate>
+            <span class="aen__chip">
+              <Icon name={s.icon} size={20} />
+            </span>
+            <h3 class="aen__card-title">{s.title}</h3>
+            <p class="aen__card-body">{s.body}</p>
+            {i < engineer.steps.length - 1 && (
+              <span class:list={["aen__link", i % 2 ? "aen__link--back" : "aen__link--on"]} aria-hidden="true">
+                <svg viewBox="0 0 100 44" preserveAspectRatio="none">
+                  <path d={i % 2 ? "M50 0V18Q50 22 46 22H32.05Q28.05 22 28.05 26V40" : "M50 0V18Q50 22 54 22H67.95Q71.95 22 71.95 26V40"} />
+                </svg>
+                <span class="aen__link-head" />
+              </span>
+            )}
+          </article>
+        ))
+      }
+    </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .aen {
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    overflow-x: clip;
+  }
+
+  .aen__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .aen__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .aen__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .aen__head-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 766px;
+    max-width: 100%;
+  }
+
+  .aen__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: 48px;
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  .aen__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* .aen__stage is the .fit__inner: 1240 x 455, scaled from 1280 to 1439. */
+
+  .aen__link {
+    display: none;
+  }
+
+  .aen__card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 292px;
+    padding: 20px;
+    border: 1px solid var(--c-accent);
+    border-radius: 16px;
+    background: var(--c-surface);
+  }
+
+  .aen__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(143, 76, 250, 0.1);
+    line-height: 0;
+  }
+
+  .aen__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: 0.6px;
+    color: var(--c-accent);
+  }
+
+  .aen__card-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* 170 x 115 slot; the 115 x 170 art turned inside it. The export hangs
+     0.7 above and 4.04 right of its box for the arrowhead. */
+  .aen__arrow {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 170px;
+    height: 115px;
+  }
+
+  .aen__arrow-box {
+    position: relative;
+    flex: none;
+    width: 115px;
+    height: 170px;
+  }
+
+  .aen__arrow-box :global(.icon) {
+    position: absolute;
+    top: -0.7px;
+    left: 0;
+  }
+
+  /* --- narrower: the zig-zag runs down ------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .aen {
+      padding-block: 72px;
+    }
+
+    .aen__inner {
+      gap: 48px;
+      max-width: min(calc(100% - 2 * var(--gutter)), 720px);
+    }
+
+    .aen__title {
+      font-size: 32px;
+      line-height: 40px;
+      text-wrap: balance;
+    }
+
+    .aen__fit {
+      width: 100%;
+      aspect-ratio: auto;
+    }
+
+    .aen__stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+      width: 100%;
+      height: auto;
+      transform: none;
+    }
+
+    .aen__arrow {
+      display: none;
+    }
+
+    /* Inline left/top are the desktop placement. */
+    .aen__card {
+      position: relative;
+      left: auto !important;
+      top: auto !important;
+      width: 82%;
+    }
+
+    .aen__card:nth-child(even of .aen__card) {
+      align-self: flex-end;
+    }
+
+    .aen__link {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      display: block;
+      width: 100%;
+      height: 44px;
+      pointer-events: none;
+    }
+
+    .aen__link svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .aen__link path {
+      fill: none;
+      stroke: var(--c-accent);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* A small chevron where the elbow lands on the next card. */
+    .aen__link-head {
+      position: absolute;
+      bottom: -1px;
+      width: 8px;
+      height: 8px;
+      border-right: 1px solid var(--c-accent);
+      border-bottom: 1px solid var(--c-accent);
+      translate: -50% 0;
+      rotate: 45deg;
+    }
+
+    .aen__link--on .aen__link-head {
+      left: 71.95%;
+    }
+
+    .aen__link--back .aen__link-head {
+      left: 28.05%;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .aen {
+      padding-block: 48px;
+    }
+
+    .aen__inner {
+      gap: 32px;
+    }
+
+    .aen__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .aen__title {
+      font-size: 26px;
+      line-height: 32px;
+    }
+
+    .aen__body,
+    .aen__card-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .aen__card {
+      gap: 12px;
+      padding: 16px;
+    }
+  }
+</style>

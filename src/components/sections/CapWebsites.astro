@@ -1,0 +1,447 @@
+---
+/**
+ * Website Capability — Figma 637:2843 (826 tall).
+ *
+ * Three browser frames fanned to the left of a description card, with a
+ * five-dot pager and prev/next arrows under them. The frame draws the first
+ * slide; the pager is static until its behaviour is specified.
+ *
+ * The stage starts at the section's left edge and the card's right edge
+ * lines up with the content column. Below 1440 the card holds its width
+ * and the stack slides left under the wash, which is what the wash is for.
+ *
+ * Below 1280 the stack (scaled as one picture, fit.ts) sits above the card,
+ * and the card takes back the left border it gives up to the front browser
+ * on desktop.
+ */
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import Icon from "../ui/Icon.astro";
+import FigmaFill from "../cap/FigmaFill.astro";
+import { websites } from "../../data/capProductDesign";
+
+const { stack, card } = websites;
+
+// BrowserChrome is drawn at 53.67 tall; these frames carry it at 30.49 and
+// 38.06, i.e. the same bar scaled.
+const BAR_H = 53.667;
+const browsers = [
+  { key: "back1", shot: stack.back1, w: 465, h: 290, left: 0, bar: 30.492, cls: "web__browser--back" },
+  { key: "back2", shot: stack.back2, w: 513, h: 320, left: 80, bar: 30.492, cls: "web__browser--back" },
+  { key: "front", shot: stack.front, w: 561, h: 350, left: 160, bar: 38.061, cls: "web__browser--front" },
+];
+---
+
+<section class="web" data-section>
+  <header class="web__head">
+    <div class="web__head-top">
+      <span class="web__eyebrow" data-animate>{websites.eyebrow}</span>
+      <h2 class="web__title" data-animate>{websites.title}</h2>
+    </div>
+    <p class="web__body" data-animate>{websites.body}</p>
+  </header>
+
+  <div class="web__frame">
+    <div class="web__stage" data-animate>
+      <div class="web__stackwrap fit" data-fit="721" style="--fit-w:721;--fit-h:350">
+      <div class="web__stack fit__inner">
+        {
+          browsers.map((b) => {
+            const s = b.bar / BAR_H;
+            return (
+              <div
+                class:list={["web__browser", b.cls]}
+                style={`left:${b.left}px;width:${b.w}px;height:${b.h}px`}
+              >
+                <div class="web__bar" style={`height:${b.bar}px`}>
+                  <div class="web__bar-inner" style={`width:${b.w / s}px;scale:${s}`}>
+                    <BrowserChrome />
+                  </div>
+                </div>
+                <div class="web__shot">
+                  <FigmaFill shot={b.shot} boxW={b.w} />
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+      </div>
+
+      <span class="web__wash" aria-hidden="true"></span>
+
+      <article class="web__card">
+        <div class="web__card-copy">
+          <h3 class="web__card-title">{card.title}</h3>
+          <p class="web__card-body">{card.body}</p>
+        </div>
+        <ul class="web__points">
+          {
+            card.points.map((pt) => (
+              <li>
+                <Icon name="icons/cap/circle-check-20" size={20} />
+                <span>{pt}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+
+    <div class="web__pager">
+      <div class="web__dots" aria-hidden="true">
+        {Array.from({ length: websites.slides }, (_, i) => <span class:list={["web__dot", { "web__dot--on": i === 0 }]} />)}
+      </div>
+      <div class="web__arrows">
+        <button type="button" class="web__arrow" aria-label="Previous website">
+          <Icon name="icons/cap/chevron-left-white" size={20} />
+        </button>
+        <button type="button" class="web__arrow web__arrow--next" aria-label="Next website">
+          <Icon name="icons/cap/chevron-left-white" size={20} />
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .web {
+    position: relative;
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  /* --- header ------------------------------------------------------------ */
+
+  .web__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 64px;
+    padding-inline: var(--gutter);
+    text-align: center;
+  }
+
+  .web__head-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .web__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15); /* inside stroke: the pill is 32 tall */
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .web__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-heading);
+    white-space: nowrap;
+  }
+
+  .web__body {
+    width: 788px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- stage ------------------------------------------------------------- */
+
+  .web__frame {
+    position: relative;
+    max-width: var(--frame-w);
+    margin-inline: auto;
+  }
+
+  .web__stage {
+    position: relative;
+    height: 350px;
+  }
+
+  /* 721 stack + 519 card = the 1240 column at 1440; narrower, the stack
+     gives way to the left. */
+  .web__stackwrap {
+    position: absolute;
+    top: 0;
+    left: calc(100% - var(--gutter) - 519px - 721px);
+    margin: 0;
+  }
+
+  .web__browser {
+    position: absolute;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    translate: 0 -50%;
+    overflow: hidden;
+    background: var(--c-surface);
+  }
+
+  .web__browser--back {
+    border: 0.568px solid #fff;
+    border-radius: 9.091px;
+  }
+
+  .web__browser--front {
+    border: 0.709px solid var(--c-card-border);
+    border-radius: 11.348px;
+    box-shadow:
+      -4px 0 24px rgba(0, 0, 0, 0.12),
+      4px 4px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .web__bar {
+    flex: none;
+    overflow: hidden;
+  }
+
+  .web__bar-inner {
+    transform-origin: 0 0;
+  }
+
+  .web__shot {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .web__wash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 350px;
+    background: linear-gradient(to right, var(--c-bg-light), rgba(245, 243, 255, 0));
+    pointer-events: none;
+  }
+
+  .web__card {
+    position: absolute;
+    top: 61px;
+    right: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 519px;
+    padding: 24px;
+    border: 1px solid rgba(131, 77, 251, 0.56);
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    background: var(--c-surface);
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));
+  }
+
+  .web__card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .web__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: normal;
+    color: var(--c-accent);
+  }
+
+  .web__card-body {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .web__points {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .web__points li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: 20px;
+    letter-spacing: var(--tr-card);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* --- pager ------------------------------------------------------------- */
+
+  .web__pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+    margin: 24px var(--gutter) 0;
+  }
+
+  .web__dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .web__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: #e4dfef;
+  }
+
+  .web__dot--on {
+    width: 35px;
+    background: #915ffd;
+  }
+
+  .web__arrows {
+    display: flex;
+    gap: 12px;
+  }
+
+  .web__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--c-accent);
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .web__arrow--next :global(svg) {
+    rotate: 180deg;
+  }
+
+  /* --- tablet + phone: picture over card --------------------------------- */
+
+  @media (max-width: 1279px) {
+    .web {
+      padding-block: 72px;
+    }
+
+    .web__head {
+      margin-bottom: 48px;
+    }
+
+    .web__title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    .web__frame {
+      max-width: calc(720px + 2 * var(--gutter));
+      padding-inline: var(--gutter);
+    }
+
+    .web__stage {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      height: auto;
+    }
+
+    .web__stackwrap {
+      position: relative;
+      left: auto;
+    }
+
+    .web__wash {
+      display: none;
+    }
+
+    .web__card {
+      position: static;
+      width: auto;
+      border-left: 1px solid rgba(131, 77, 251, 0.56);
+      border-radius: 8px;
+    }
+
+    .web__pager {
+      margin: 24px 0 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .web {
+      padding-block: 48px;
+    }
+
+    .web__head {
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .web__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .web__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .web__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .web__stage {
+      gap: 16px;
+    }
+
+    .web__card {
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .web__card-copy {
+      gap: 12px;
+    }
+
+    .web__card-title {
+      font-size: 18px;
+    }
+
+    .web__card-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .web__points {
+      gap: 10px 16px;
+    }
+
+    .web__points li {
+      font-size: 13px;
+    }
+  }
+</style>

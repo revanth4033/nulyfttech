@@ -16,6 +16,10 @@ interface Props {
   arrow?: false | 16 | 20;
   size?: "md" | "sm";
   block?: boolean;
+  /** Solid fill in the flat accent rather than the gradient (capability heroes). */
+  flat?: boolean;
+  /** Override the arrow glyph, e.g. the 20px outline circle the capability pages use. */
+  arrowIcon?: string;
   class?: string;
   [key: string]: unknown;
 }
@@ -26,18 +30,21 @@ const {
   arrow = false,
   size = "md",
   block = false,
+  flat = false,
+  arrowIcon,
   class: className,
   ...rest
 } = Astro.props;
 
 const Tag = href ? "a" : "button";
-const iconName = variant === "solid" ? "icons/arrow-circle-20" : "icons/arrow-circle-16";
+const iconName =
+  arrowIcon ?? (variant === "solid" ? "icons/arrow-circle-20" : "icons/arrow-circle-16");
 ---
 
 <Tag
   href={href}
   type={href ? undefined : "button"}
-  class:list={["pill", `pill--${variant}`, `pill--${size}`, { "pill--block": block }, className]}
+  class:list={["pill", `pill--${variant}`, `pill--${size}`, { "pill--block": block, "pill--flat": flat }, className]}
   {...rest}
 >
   <span class="pill__inner">
@@ -91,6 +98,11 @@ const iconName = variant === "solid" ? "icons/arrow-circle-20" : "icons/arrow-ci
     background-image: var(--grad-pill);
     color: #fff;
     box-shadow: var(--sh-button-inset);
+  }
+
+  .pill--flat {
+    background-image: none;
+    background-color: var(--c-accent);
   }
 
   .pill--outline {

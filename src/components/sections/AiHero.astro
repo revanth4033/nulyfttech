@@ -1,0 +1,348 @@
+---
+/**
+ * AI & Automation hero — Figma 647:6303 (707 tall).
+ *
+ * Copy on the left; on the right a 460px target — three nested lavender
+ * discs round the nuLyft hub — with nine tool logos on white discs placed
+ * at their Figma coordinates.
+ *
+ * The target holds no text, so narrower screens scale it as one picture
+ * (fit.ts): right-anchored from 1280 to 1440, centred under the copy below
+ * 1280, and fitted to the column on a phone.
+ *
+ * `ai-hero.ts` brings it to life: dashed lines shoot from the hub out to
+ * all nine logos at once and run on through them; underneath, every logo
+ * drifts on its own slow path. The lines are drawn by the script into `[data-ai-links]`; with JS off or
+ * under reduced motion the target is Figma's still frame.
+ */
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import { hero } from "../../data/capAi";
+---
+
+<section class="aih" data-section style={`--aih-h:${hero.height}px`}>
+  <div class="aih__frame">
+    <div class="aih__copy">
+      <div class="aih__intro">
+        <div class="aih__head">
+          <EyebrowBadge variant="studio" data-animate>{hero.eyebrow}</EyebrowBadge>
+          <h1 class="aih__title" data-animate>
+            {hero.title}<br /><em>{hero.emphasis}</em>
+          </h1>
+        </div>
+        <p class="aih__body" data-animate>{hero.body}</p>
+      </div>
+      <div class="aih__actions" data-animate>
+        <PillButton href={hero.primary.href} arrow={20} flat>{hero.primary.label}</PillButton>
+        <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>
+      </div>
+    </div>
+
+    <div class="aih__fit fit" data-fit="460" style="--fit-w:460;--fit-h:460" data-animate>
+    <div class="aih__target fit__inner" aria-hidden="true" data-ai-target>
+      <span class="aih__disc aih__disc--1"></span>
+      <span class="aih__disc aih__disc--2"></span>
+      <span class="aih__disc aih__disc--3"></span>
+      <svg class="aih__links" viewBox="0 0 460 460" width="460" height="460" data-ai-links></svg>
+      <span class="aih__hub">
+        <Icon name="brand/ai/hub-avatar-light" size={40} class="aih__avatar" />
+        <Icon name="icons/ai/sparkle" size={10} class="aih__sparkle" />
+      </span>
+
+      {
+        hero.logos.map((l) => (
+          <span
+            class="aih__logo"
+            style={`left:${l.x}px;top:${l.y}px;width:${l.d}px;height:${l.d}px`}
+            data-ai-logo
+            data-cx={l.x + l.d / 2}
+            data-cy={l.y + l.d / 2}
+          >
+            <Icon name={l.icon} width={l.w} height={l.h} />
+          </span>
+        ))
+      }
+    </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .aih {
+    position: relative;
+    height: var(--aih-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .aih__frame {
+    position: relative;
+    max-width: var(--frame-w);
+    height: 100%;
+    margin-inline: auto;
+  }
+
+  .aih__copy {
+    position: absolute;
+    top: 253px;
+    left: var(--gutter);
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 577px;
+  }
+
+  .aih__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .aih__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Inter with the 3.19 italic, as on the other capability heroes. */
+  .aih__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: 58px;
+    letter-spacing: var(--tr-h2-tight);
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  .aih__title em {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .aih__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .aih__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 50.65px;
+  }
+
+  /* --- target ------------------------------------------------------------ */
+
+  /* 460 at (880, 183): right-anchored, so it ends on the column edge. */
+  .aih__fit {
+    position: absolute;
+    top: 183px;
+    right: var(--gutter);
+    width: min(460px, calc(100% - 2 * var(--gutter) - 577px - 40px));
+    margin: 0;
+  }
+
+  .aih__disc,
+  .aih__hub,
+  .aih__logo {
+    position: absolute;
+  }
+
+  .aih__disc {
+    border-radius: 50%;
+  }
+
+  .aih__disc--1 {
+    inset: 0;
+    background: #f1ebfe;
+  }
+
+  .aih__disc--2 {
+    top: 57.5px;
+    left: 57.5px;
+    width: 345px;
+    height: 345px;
+    background: #e9e1fe;
+  }
+
+  .aih__disc--3 {
+    top: 115px;
+    left: 115px;
+    width: 230px;
+    height: 230px;
+    background: #e3d8fe;
+    box-shadow: 0 0 4.6px rgba(131, 77, 251, 0.24);
+  }
+
+  .aih__hub {
+    top: calc(50% - 41.4px);
+    left: calc(50% - 41.4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 82.8px;
+    height: 82.8px;
+    border-radius: 18.4px;
+    background: var(--c-accent);
+  }
+
+  .aih__hub :global(.aih__avatar) {
+    display: block;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  /* Centred 7px right and 10px up of the hub's middle. */
+  .aih__hub :global(.aih__sparkle) {
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% + 2px);
+  }
+
+  .aih__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--c-surface);
+    box-shadow:
+      0 2.3px 6.9px rgba(0, 0, 0, 0.08),
+      0 0 0 0 rgba(131, 77, 251, 0),
+      0 0 0 0 rgba(131, 77, 251, 0);
+    line-height: 0;
+    transition:
+      box-shadow 0.45s var(--ease-out),
+      scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* A logo the chain has reached: accent ring, soft halo, a small lift. */
+  .aih__logo.is-live {
+    scale: 1.08;
+    box-shadow:
+      0 4px 12px rgba(131, 77, 251, 0.18),
+      0 0 0 1.5px var(--c-accent),
+      0 0 0 7px rgba(131, 77, 251, 0.12);
+  }
+
+  /* Under the hub and the logos, so each link starts and ends hidden
+     beneath the discs it joins. */
+  .aih__links {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .aih__links :global(.aih__link) {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+    stroke-linecap: round;
+  }
+
+
+  /* --- tablet + phone: copy over the target ------------------------------- */
+
+  @media (max-width: 1279px) {
+    .aih {
+      height: auto;
+    }
+
+    .aih__frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 48px;
+      padding: calc(var(--nav-h) + 56px) var(--gutter) 72px;
+    }
+
+    .aih__copy {
+      position: static;
+      align-items: center;
+      width: min(600px, 100%);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .aih__head {
+      align-items: center;
+    }
+
+    .aih__actions {
+      justify-content: center;
+    }
+
+    .aih__fit {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: min(460px, 100%);
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .aih__frame {
+      gap: 40px;
+      padding: calc(var(--nav-h) + 40px) var(--gutter) 56px;
+    }
+
+    .aih__copy {
+      gap: 28px;
+    }
+
+    .aih__intro {
+      gap: 12px;
+    }
+
+    /* "NULYFT STUDIO · AI & AUTOMATION" in tracked capitals: one hugging
+       line at 10.5/0.8, as on the Product Engineering hero. */
+    .aih__head :global(.eyebrow) {
+      gap: 8px;
+      padding: 5px 12px 5px 5px;
+      font-size: 10.5px;
+      letter-spacing: 0.8px;
+    }
+
+    .aih__head :global(.eyebrow__avatar) {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Figma breaks after "your"; at 34 the first line wraps first and
+       strands it. 29 holds "Make AI part of how your" on one line down to
+       a 343 column. */
+    .aih__title {
+      font-size: 29px;
+      line-height: 37px;
+      letter-spacing: -1px;
+    }
+
+    .aih__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .aih__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .aih__title {
+      font-size: 25px;
+      line-height: 32px;
+    }
+  }
+</style>

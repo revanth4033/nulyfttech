@@ -1,0 +1,274 @@
+---
+/**
+ * What we do — Figma 647:6387 (1386 tall). Header over a 2 x 2 bento:
+ * wide / narrow, then narrow / wide, 24px apart.
+ *
+ * All four panels are live DOM so they can animate — see AgentsArt,
+ * WorkflowArt, DocArt and VoiceArt.
+ *
+ * Below 1280 the bento's narrow tracks squeeze the illustrations, so the
+ * cards go one per row (720 max). On a phone the illustration runs to the
+ * card's edges — every pixel of width matters to it there — and each art
+ * switches to its own phone composition at <= 700 (see the art files).
+ * Under 375 the compositions (built for a 330 panel) are zoomed to fit.
+ */
+import AgentsArt from "../ai/AgentsArt.astro";
+import WorkflowArt from "../ai/WorkflowArt.astro";
+import DocArt from "../ai/DocArt.astro";
+import VoiceArt from "../ai/VoiceArt.astro";
+import { services } from "../../data/capAi";
+
+const { agents, workflow, doc, voice } = services;
+---
+
+<section class="ais" data-section>
+  <div class="ais__inner">
+    <header class="ais__head">
+      <div class="ais__head-top">
+        <span class="ais__eyebrow" data-animate>{services.eyebrow}</span>
+        <h2 class="ais__title" data-animate>{services.title}</h2>
+      </div>
+      <p class="ais__body" data-animate>{services.body}</p>
+    </header>
+
+    <div class="ais__grid">
+      <div class="ais__row">
+      <article class="ais__card ais__card--wide" data-animate>
+        <AgentsArt />
+        <p class="ais__kicker">{agents.kicker}</p>
+        <h3 class="ais__card-title">{agents.title}</h3>
+        <p class="ais__card-body">{agents.body}</p>
+      </article>
+
+      <article class="ais__card" data-animate>
+        <WorkflowArt />
+        <p class="ais__kicker">{workflow.kicker}</p>
+        <h3 class="ais__card-title">{workflow.title}</h3>
+        <p class="ais__card-body">{workflow.body}</p>
+      </article>
+      </div>
+
+      <div class="ais__row">
+      <article class="ais__card" data-animate>
+        <DocArt />
+        <p class="ais__kicker">{doc.kicker}</p>
+        <h3 class="ais__card-title">{doc.title}</h3>
+        <p class="ais__card-body">{doc.body}</p>
+      </article>
+
+      <article class="ais__card ais__card--wide" data-animate>
+        <VoiceArt />
+        <p class="ais__kicker">{voice.kicker}</p>
+        <h3 class="ais__card-title">{voice.title}</h3>
+        <p class="ais__card-body">{voice.body}</p>
+      </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ais {
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    overflow-x: clip;
+  }
+
+  .ais__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .ais__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .ais__head-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ais__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .ais__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-heading);
+    white-space: nowrap;
+  }
+
+  .ais__body {
+    width: 792px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* 708 + 508, then 508 + 708. */
+  .ais__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Grid tracks, not flex-grow: flex shares out the space left after each
+     card's 48px of padding, which made the "708" card 700. */
+  .ais__row {
+    display: grid;
+    grid-template-columns: 708fr 508fr;
+    gap: 24px;
+  }
+
+  .ais__row:nth-child(2) {
+    grid-template-columns: 508fr 708fr;
+  }
+
+  .ais__card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 24px;
+    /* Inside stroke: Figma's card is 471 tall with the ring included. */
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.24);
+    border-radius: 16px;
+    background: var(--c-surface);
+    min-width: 0;
+  }
+
+  .ais__card > :global(:first-child) {
+    width: 100%;
+  }
+
+
+  .ais__kicker {
+    font-weight: 500;
+    font-size: var(--fs-xxs);
+    line-height: normal;
+    letter-spacing: 0.6px;
+    color: var(--c-accent);
+  }
+
+  .ais__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: normal;
+    color: var(--c-ink);
+  }
+
+  .ais__card-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* --- narrower ---------------------------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .ais {
+      padding-block: 72px;
+    }
+
+    .ais__inner {
+      gap: 48px;
+      max-width: min(calc(100% - 2 * var(--gutter)), 720px);
+    }
+
+    .ais__title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    .ais__grid {
+      gap: 16px;
+    }
+
+    .ais__row,
+    .ais__row:nth-child(2) {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ais {
+      padding-block: 48px;
+    }
+
+    .ais__inner {
+      gap: 32px;
+    }
+
+    .ais__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .ais__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .ais__body,
+    .ais__card-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .ais__card {
+      gap: 10px;
+      padding: 0 16px 20px;
+      overflow: hidden;
+    }
+
+    /* The illustration to the card's edges; its own rounding gives way to
+       the card's. */
+    .ais__card > :global(:first-child) {
+      width: calc(100% + 32px);
+      margin: 0 -16px 8px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .ais__card-title {
+      font-size: 18px;
+      line-height: 24px;
+    }
+  }
+
+  /* The phone compositions are laid out for a 330 panel; narrower phones
+     zoom them as a whole rather than clip. */
+  @media (max-width: 374px) {
+    .ais__card :global(:is(.ag__row, .wf, .doc__block, .vo__block)) {
+      zoom: 0.86;
+    }
+  }
+</style>

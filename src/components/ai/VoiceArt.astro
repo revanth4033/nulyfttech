@@ -1,0 +1,492 @@
+---
+/**
+ * Voice & Conversational AI illustration — Figma 647:6588.
+ *
+ * Two channels (Voice Call, Chat) wired into an AI voice card with a
+ * waveform, which fans out to three outcomes. Static, it renders the frame.
+ * `ai-voice.ts` plays it as a live conversation: a channel lights and sends
+ * a pulse in, the waveform comes alive, "Understands, replies, records"
+ * steps word by word, then the outcomes tick in order. Channels alternate.
+ *
+ * Geometry is Figma's, in the 559 x 181 block the frame centres.
+ *
+ * A phone panel is ~340 wide and this flow needs 559 at a size its 10px
+ * text survives, so on a narrow panel (<= 700) the same flow turns 90
+ * degrees: the two channels side by side on top, wired down into the AI
+ * card, which fans out to the three outcomes in a row beneath. Its wires
+ * are a second path set (`data-vo-links="m"`), which ai-voice.ts uses
+ * there instead.
+ */
+import Icon from "../ui/Icon.astro";
+import { services } from "../../data/capAi";
+
+const v = services.voice;
+const [call, chat] = v.channels;
+
+// Channel -> card (left) and card -> outcome (right) connectors.
+// Phone set, in the 330 x 240 vertical block: channels at (90, 20) and
+// (240, 20) wire down into the card's top; the card's bottom (165, 183)
+// fans to the three pills, whose tops sit at y 210.
+const inPathsM = ["M110 20H139Q145 20 145 26V85", "M220 20H191Q185 20 185 26V85"];
+const outPathsM = [
+  "M165 183V190Q165 196 159 196H56Q50 196 50 202V210",
+  "M165 183V210",
+  "M165 183V190Q165 196 171 196H274Q280 196 280 202V210",
+];
+const inPaths = ["M44 43.3H84.18V74.3H164", "M40 143.3H80.18V112.3H160"];
+const outPaths = [
+  "M381 87.3H396.5C400.92 87.3 404.5 83.72 404.5 79.3V49.3C404.5 44.88 408.08 41.3 412.5 41.3H429",
+  "M381 87.3L430 87.8",
+  "M381 87.3H396.5C400.92 87.3 404.5 90.88 404.5 95.3V133.3C404.5 137.72 408.08 141.3 412.5 141.3H429",
+];
+---
+
+<div class="vo" data-voice>
+  <div class="vo__block">
+    <svg class="vo__links" viewBox="0 0 559 181" width="559" height="181" aria-hidden="true" data-vo-links="d">
+      {inPaths.map((p) => <path class="vo__link" d={p} data-vo-in />)}
+      {outPaths.map((p) => <path class="vo__link" d={p} data-vo-out />)}
+      {[...inPaths, ...outPaths].map(() => <circle class="vo__pulse" r="2.4" cx="0" cy="0" data-vo-pulse />)}
+    </svg>
+    <svg class="vo__links vo__links--m" viewBox="0 0 330 240" width="330" height="240" aria-hidden="true" data-vo-links="m">
+      {inPathsM.map((p) => <path class="vo__link" d={p} data-vo-in />)}
+      {outPathsM.map((p) => <path class="vo__link" d={p} data-vo-out />)}
+      {[...inPathsM, ...outPathsM].map(() => <circle class="vo__pulse" r="2.4" cx="0" cy="0" data-vo-pulse />)}
+    </svg>
+
+    <div class="vo__channels">
+      <div class="vo__ch vo__ch--top">
+        <span class="vo__icon" style="left:3px;top:0" data-vo-channel>
+          <Icon name={call.icon} size={20} />
+        </span>
+        <span class="vo__label" style="left:0;top:46px">{call.label}</span>
+      </div>
+      <div class="vo__ch vo__ch--bottom">
+        <span class="vo__stack">
+          <span class="vo__icon vo__icon--flow" data-vo-channel>
+            <Icon name={chat.icon} size={20} />
+          </span>
+          <span class="vo__label vo__label--flow">{chat.label}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="vo__card">
+      <div class="vo__head">
+        <span class="vo__chip"><Icon name="icons/ai/voice-ai" size={16} /></span>
+        <span class="vo__role">
+          <span class="vo__role-k">{v.role}</span>
+          <span class="vo__role-v">
+            {
+              v.actions.map((a, i) => (
+                <>
+                  <span class="vo__word" data-vo-word>
+                    {a}
+                  </span>
+                  {i < v.actions.length - 1 ? ", " : ""}
+                </>
+              ))
+            }
+          </span>
+        </span>
+      </div>
+      <div class="vo__wave" aria-hidden="true">
+        {v.bars.map((h) => <span class="vo__bar" style={`height:${Math.max(h, 1.2)}px`} data-vo-bar />)}
+      </div>
+    </div>
+
+    <ul class="vo__outcomes">
+      {
+        v.outcomes.map((o) => (
+          <li class="vo__out" data-vo-out-pill>
+            <span class="vo__check">
+              <Icon name="icons/ai/voice-check" size={16} />
+            </span>
+            <span>{o}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .vo {
+    position: relative;
+    height: 300px;
+    border-radius: var(--r-card);
+    background: var(--c-bg-light);
+    color: var(--c-accent);
+    overflow: hidden;
+  }
+
+  .vo__block {
+    position: absolute;
+    top: calc(50% + 0.5px);
+    left: calc(50% + 0.5px);
+    width: 559px;
+    height: 181px;
+    translate: -50% -50%;
+  }
+
+  .vo__links {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .vo__links--m {
+    display: none;
+  }
+
+  .vo__link {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 0.6;
+    stroke-dasharray: 3.9 3.9;
+    transition: opacity 0.4s var(--ease-out);
+  }
+
+  .vo__pulse {
+    fill: var(--c-accent);
+    opacity: 0;
+  }
+
+  /* --- channels ---------------------------------------------------------- */
+
+  .vo__channels {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 160px;
+  }
+
+  .vo__ch {
+    position: relative;
+    height: 58px;
+  }
+
+  .vo__ch--bottom {
+    height: 70px;
+  }
+
+  .vo__ch > *,
+  .vo__stack {
+    position: absolute;
+  }
+
+  .vo__stack {
+    top: 12px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .vo__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 0.6px rgba(131, 77, 251, 0);
+    line-height: 0;
+    isolation: isolate;
+    transition: box-shadow 0.5s var(--ease-out);
+  }
+
+  .vo__icon--flow {
+    position: relative;
+  }
+
+  /* Live channel: ring + a halo that grows in and breathes (as the agents). */
+  .vo__icon::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
+    border-radius: 50%;
+    background: rgba(131, 77, 251, 0.12);
+    opacity: 0;
+    scale: 0.7;
+    transition:
+      opacity 0.5s var(--ease-out),
+      scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .vo__icon.is-live {
+    box-shadow:
+      0 2px 2px rgba(0, 0, 0, 0),
+      inset 0 0 0 0.6px var(--c-accent);
+  }
+
+  .vo__icon.is-live::before {
+    opacity: 1;
+    scale: 1;
+    animation: vo-breathe 1.8s ease-in-out 0.6s infinite;
+  }
+
+  @keyframes vo-breathe {
+    50% {
+      scale: 1.14;
+      opacity: 0.55;
+    }
+  }
+
+  .vo__label {
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .vo__label--flow {
+    position: static;
+  }
+
+  /* --- AI card ------------------------------------------------------------ */
+
+  .vo__card {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 20.5px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px;
+    translate: -50% -50%;
+    border: 1px solid rgba(131, 77, 251, 0.16);
+    border-radius: var(--r-card);
+    background: #fff;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
+  }
+
+  .vo__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .vo__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: var(--c-accent);
+    line-height: 0;
+  }
+
+  .vo__role {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 500;
+  }
+
+  .vo__role-k {
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .vo__role-v {
+    font-size: var(--fs-xxs);
+    line-height: normal;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .vo__word {
+    transition: color 0.35s var(--ease-out);
+  }
+
+  .vo__word.is-on {
+    color: var(--c-accent);
+  }
+
+  /* The header sets the card's width; the 53 bars spread across it. Laid
+     out at a fixed gap they would push the card ~65px wider than Figma's. */
+  .vo__wave {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 0;
+    min-width: 100%;
+    height: 16px;
+  }
+
+  .vo__bar {
+    flex: none;
+    width: 1.2px;
+    border-radius: 1px;
+    background: var(--c-accent);
+    will-change: transform;
+  }
+
+  /* --- outcomes ---------------------------------------------------------- */
+
+  .vo__outcomes {
+    position: absolute;
+    top: 28px;
+    left: 424px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 135px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vo__out {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid rgba(131, 77, 251, 0.16);
+    border-radius: var(--r-pill);
+    background: #fff;
+    filter: drop-shadow(0 2px 3px rgba(131, 77, 251, 0.12));
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-ink);
+    white-space: nowrap;
+    transition:
+      border-color 0.4s var(--ease-out),
+      opacity 0.4s var(--ease-out);
+  }
+
+  .vo__check {
+    position: relative;
+    color: var(--c-accent);
+    width: 16px;
+    height: 16px;
+    flex: none;
+    line-height: 0;
+    transition:
+      opacity 0.3s var(--ease-out),
+      scale 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* With the script running, outcomes wait faded until the agent gets there. */
+  .vo.is-live .vo__out {
+    opacity: 0.45;
+  }
+
+  .vo.is-live .vo__check {
+    opacity: 0;
+    scale: 0.3;
+  }
+
+  .vo.is-live .vo__out.is-done {
+    border-color: rgba(131, 77, 251, 0.5);
+    opacity: 1;
+  }
+
+  .vo.is-live .vo__out.is-done .vo__check {
+    opacity: 1;
+    scale: 1;
+  }
+
+  /* --- narrow panel: the flow turned vertical ------------------------------ */
+
+  @media (max-width: 700px) {
+    .vo__block {
+      width: 330px;
+      height: 240px;
+    }
+
+    .vo__links:not(.vo__links--m) {
+      display: none;
+    }
+
+    .vo__links--m {
+      display: block;
+    }
+
+    /* Channels side by side, icons centred on x 90 and 240. */
+    .vo__channels {
+      top: 0;
+      bottom: auto;
+      display: block;
+      width: 100%;
+      height: 58px;
+    }
+
+    .vo__ch,
+    .vo__ch--bottom {
+      position: absolute;
+      top: 0;
+      width: 40px;
+      height: 58px;
+    }
+
+    .vo__ch--top {
+      left: 70px;
+    }
+
+    .vo__ch--bottom {
+      left: 220px;
+    }
+
+    .vo__ch--top .vo__icon {
+      left: 0 !important;
+    }
+
+    .vo__ch--top .vo__label {
+      left: 20px !important;
+      translate: -50% 0;
+    }
+
+    .vo__stack {
+      top: 0;
+    }
+
+    /* Card centred, its top at y 85 — where the channel wires land. */
+    .vo__card {
+      top: 134px;
+      left: 50%;
+    }
+
+    /* Outcomes in a row of three 100px pills, centres 50 / 165 / 280. */
+    .vo__outcomes {
+      top: 210px;
+      left: 0;
+      flex-direction: row;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .vo__out {
+      justify-content: center;
+      gap: 4px;
+      width: 100px;
+      padding: 7px 6px;
+    }
+
+    .vo__check {
+      width: 14px;
+      height: 14px;
+    }
+
+    .vo__check :global(svg) {
+      width: 14px;
+      height: 14px;
+    }
+  }
+</style>

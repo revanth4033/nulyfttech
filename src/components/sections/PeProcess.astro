@@ -1,0 +1,332 @@
+---
+/**
+ * Process — Figma 646:5874 (dark, 1109 tall).
+ *
+ * Five 1176-wide step boxes that alternate between the left edge and 64px
+ * in, overlapping the box above by a pixel. A 64 x 72 triangle outline
+ * joins each pair on the side the stagger opens: left under the inset
+ * boxes, right (the same art turned -90deg) under the flush ones. The boxes
+ * carry the section ground so they paint over the triangle ends.
+ *
+ * From 1280 to 1440 the boxes take the column less the 64px stagger rather
+ * than a fixed 1176. Below 1280 the ladder cannot keep its stagger and
+ * still leave the text room, so the steps stack in flow, joined by a line
+ * that runs through their icon chips — the elbows' job, done straight.
+ */
+import Icon from "../ui/Icon.astro";
+import { process } from "../../data/capProductEngineering";
+
+// Elbow outlines: [top, side]. Figma's exports overhang the 64 x 72 box by
+// 1.11 / 0.5px, so the art is offset by that much.
+const elbows = [
+  { top: 139, side: "left" },
+  { top: 278, side: "right" },
+  { top: 416, side: "left" },
+  { top: 554, side: "right" },
+] as const;
+---
+
+<section class="pep" data-section>
+  <div class="pep__inner">
+    <header class="pep__head">
+      <span class="pep__eyebrow" data-animate>{process.eyebrow}</span>
+      <div class="pep__head-copy">
+        <h2 class="pep__title" data-animate>{process.title}</h2>
+        <p class="pep__body" data-animate>{process.body}</p>
+      </div>
+    </header>
+
+    <div class="pep__stage">
+      {
+        elbows.map((e) => (
+          <span class:list={["pep__elbow", `pep__elbow--${e.side}`]} style={`top:${e.top}px`} aria-hidden="true">
+            <Icon name="brand/pe/step-elbow" width={65.61} height={73.82} />
+          </span>
+        ))
+      }
+
+      <ol class="pep__steps">
+        {
+          process.steps.map((s) => (
+            <li class:list={["pep__step", { "pep__step--inset": s.inset }]} style={`top:${s.top}px`} data-animate>
+              <span class="pep__chip">
+                <Icon name={s.icon} size={24} />
+              </span>
+              <span class="pep__text">
+                <span class="pep__step-title">{s.title}</span>
+                <span class="pep__step-body">{s.body}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pep {
+    padding-block: 100px;
+    background: var(--c-bg-dark);
+    /* Fixed Figma widths; never let them scroll the page sideways. */
+    overflow-x: clip;
+  }
+
+  .pep__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .pep__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .pep__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  /* Capped at the column: a centred column hugs the body's 677px and
+     would push both lines off a phone. */
+  .pep__head-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  /* Inter at 40/48 — this heading is not the IBM Plex section style. */
+  .pep__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: 48px;
+    color: #fff;
+  }
+
+  .pep__body {
+    width: 677px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  .pep__stage {
+    position: relative;
+    height: 693px;
+  }
+
+  .pep__elbow {
+    position: absolute;
+    line-height: 0;
+  }
+
+  .pep__elbow--left {
+    left: calc(1px - 1.11px);
+    margin-top: -0.5px;
+  }
+
+  /* The left art turned -90deg inside a 72 x 64 box flush right. */
+  .pep__elbow--right {
+    right: 0;
+    width: 72px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pep__elbow--right :global(.icon) {
+    rotate: -90deg;
+  }
+
+  .pep__steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pep__step {
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    width: calc(100% - 64px);
+    padding: 24px;
+    border: 1px solid var(--c-accent);
+    border-radius: 2px;
+    background: var(--c-bg-dark);
+  }
+
+  .pep__step--inset {
+    left: 64px;
+  }
+
+  .pep__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: var(--r-card);
+    background: #fff;
+    line-height: 0;
+  }
+
+  .pep__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pep__step-title {
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: 30px;
+    color: #fff;
+  }
+
+  .pep__step-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: rgba(245, 243, 255, 0.8);
+  }
+
+  /* --- narrower: a connected stack ---------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .pep {
+      padding-block: 72px;
+    }
+
+    .pep__inner {
+      gap: 48px;
+      max-width: min(calc(100% - 2 * var(--gutter)), 720px);
+    }
+
+    .pep__title {
+      font-size: 32px;
+      line-height: 40px;
+      text-wrap: balance;
+    }
+
+    .pep__stage {
+      height: auto;
+    }
+
+    .pep__elbow {
+      display: none;
+    }
+
+    .pep__steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pep__step {
+      position: relative;
+      top: auto !important;
+      left: auto;
+      width: auto;
+    }
+
+    /* The joining line: from under one chip to the next chip, across the
+       16px gap. 24 padding + half the 48 chip puts it at x = 48. */
+    .pep__step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 72px;
+      bottom: -41px;
+      left: 47.5px;
+      width: 1px;
+      background: linear-gradient(var(--c-accent), rgba(131, 77, 251, 0.35));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .pep {
+      padding-block: 48px;
+    }
+
+    .pep__inner {
+      gap: 32px;
+    }
+
+    .pep__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .pep__title {
+      font-size: 26px;
+      line-height: 32px;
+    }
+
+    .pep__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .pep__steps {
+      gap: 12px;
+    }
+
+    .pep__step {
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .pep__chip {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    .pep__chip :global(svg) {
+      width: 20px;
+      height: 20px;
+    }
+
+    .pep__text {
+      gap: 6px;
+    }
+
+    .pep__step-title {
+      font-size: 17px;
+      line-height: 24px;
+    }
+
+    .pep__step-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .pep__step:not(:last-child)::after {
+      top: 56px;
+      bottom: -29px;
+      left: 35.5px;
+    }
+  }
+</style>
