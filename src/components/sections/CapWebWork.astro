@@ -1,0 +1,196 @@
+---
+/**
+ * Websites Featured Work — Figma 637:3016 (964 tall).
+ *
+ * Two rows of 450 x 312 website cards that drift sideways in opposite
+ * directions, washed out at both edges of the screen — `scripts/cap-webwork.ts`.
+ *
+ * Each row is a track holding its card set four times over, so it can loop
+ * by exactly one set ("lap") with no seam at any screen width up to 2560.
+ * At rest the tracks are placed where Figma draws them: the top row's first
+ * card 216px left of the 1440 frame, the bottom row centred (first card at
+ * -437). The washes belong to the screen, not the frame, so they stay on
+ * the edges however wide the viewport is.
+ *
+ * Card size is a CSS variable so a phone can run smaller cards (280 x 194)
+ * with narrower washes; the lap is measured by the script, not baked in.
+ */
+import FigmaFill from "../cap/FigmaFill.astro";
+import { webWork } from "../../data/capProductDesign";
+
+const CARD = 450;
+const GAP = 16;
+const COPIES = 4;
+
+const rows = webWork.rows.map((cards, r) => {
+  // Figma's first-card offset from the frame's left edge, as a fraction of
+  // a card step so it holds at any card size.
+  const offset = r === 0 ? -216 : -(cards.length * (CARD + GAP) - GAP - 1440) / 2;
+  return { cards, n: cards.length, offset: offset / (CARD + GAP), dir: r === 0 ? "left" : "right" };
+});
+---
+
+<section class="ww" data-section>
+  <h2 class="ww__title" data-animate>{webWork.title}</h2>
+
+  <div class="ww__rows" data-animate>
+    {
+      rows.map((row) => (
+        <div class="ww__row">
+          <div
+            class="ww__track"
+            style={`--n:${row.n};--offset:${row.offset}`}
+            data-ww-track
+            data-dir={row.dir}
+            data-set={row.n}
+          >
+            {Array.from({ length: COPIES }, (_, c) =>
+              row.cards.map((shot) => (
+                <div class="ww__card" aria-hidden={c === 2 ? undefined : "true"}>
+                  <FigmaFill shot={shot} boxW={CARD} />
+                </div>
+              )),
+            )}
+          </div>
+        </div>
+      ))
+    }
+    <span class="ww__wash ww__wash--l" aria-hidden="true"></span>
+    <span class="ww__wash ww__wash--r" aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  .ww {
+    --card-w: 450px;
+    --card-h: 312px;
+    --gap: 16px;
+    --step: calc(var(--card-w) + var(--gap));
+    --wash: 300px;
+    position: relative;
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .ww__title {
+    margin-bottom: 64px;
+    padding-inline: var(--gutter);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-align: center;
+    text-transform: capitalize;
+    color: var(--c-heading);
+  }
+
+  .ww__rows {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ww__row {
+    position: relative;
+    height: var(--card-h);
+  }
+
+  /* Two sets sit left of the drawn position, so the row is covered on both
+     sides while it travels a full lap in either direction. */
+  /* --lap is declared here, not on .ww: --n is set on the track, and a
+     custom property resolves where it is declared. */
+  .ww__track {
+    --lap: calc(var(--n) * var(--step));
+    position: absolute;
+    top: 0;
+    left: calc(50% - 720px + var(--offset) * var(--step) - 2 * var(--lap));
+    display: flex;
+    gap: var(--gap);
+    will-change: transform;
+  }
+
+  .ww__card {
+    position: relative;
+    flex: none;
+    width: var(--card-w);
+    height: var(--card-h);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  /* Figma's 4px stroke sits inside the card, over the image fill. */
+  .ww__card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 4px solid #e3dcf8;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* 300px washes pinned to the screen edges (Figma draws them at the
+     frame's edges, which at 1440 are the same place). */
+  .ww__wash {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: var(--wash);
+    height: 100%;
+    background: linear-gradient(to right, var(--c-bg-light), rgba(245, 243, 255, 0));
+    pointer-events: none;
+  }
+
+  .ww__wash--l {
+    left: 0;
+  }
+
+  .ww__wash--r {
+    right: 0;
+    rotate: 180deg;
+  }
+
+  @media (max-width: 1279px) {
+    .ww {
+      --wash: 120px;
+      padding-block: 72px;
+    }
+
+    .ww__title {
+      margin-bottom: 48px;
+      font-size: 32px;
+      letter-spacing: -1px;
+      text-wrap: balance;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ww {
+      --card-w: 280px;
+      --card-h: 194px;
+      --gap: 12px;
+      --wash: 40px;
+      padding-block: 48px;
+    }
+
+    .ww__title {
+      margin-bottom: 32px;
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .ww__rows {
+      gap: 12px;
+    }
+
+    .ww__card {
+      border-radius: 16px;
+    }
+
+    .ww__card::after {
+      border-width: 3px;
+    }
+  }
+</style>

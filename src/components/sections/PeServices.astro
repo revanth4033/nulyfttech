@@ -1,0 +1,386 @@
+---
+/**
+ * What we do — Figma 646:5733 (817 tall). Header over three service cards.
+ *
+ * Each card carries a small browser frame, a title, a one-line tag strip
+ * washed out at both ends, and a description. Figma draws the middle card
+ * lifted (accent border + glow).
+ *
+ * Narrower: three columns hold down to 901. Between 900 and 561 a third
+ * card would sit alone in a 2-up grid, so each card turns sideways instead
+ * (screen left, copy right) and they stack. On a phone they stack upright.
+ * Below 1280 there is no hover to move the lift, so a tap does it
+ * (pe-services.ts) — nothing changes on its own.
+ */
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import FigmaFill from "../cap/FigmaFill.astro";
+import { services } from "../../data/capProductEngineering";
+
+// The tag strip loops: each copy ends in its own " · " so the seam reads as
+// one more separator. Figma's strings trail stray spaces; normalise them.
+const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
+---
+
+<section class="pes" data-section>
+  <div class="pes__inner">
+    <header class="pes__head">
+      <div class="pes__head-top">
+        <span class="pes__eyebrow" data-animate>{services.eyebrow}</span>
+        <h2 class="pes__title" data-animate>{services.title}</h2>
+      </div>
+      <p class="pes__body" data-animate>{services.body}</p>
+    </header>
+
+    <div class="pes__cards" data-pes-cards>
+      {
+        services.cards.map((c) => (
+          <article class:list={["pes__card", { "pes__card--featured": c.featured }]} data-animate data-pes-card>
+            <div class="pes__browser">
+              <div class="pes__bar">
+                <div class="pes__bar-inner">
+                  <BrowserChrome />
+                </div>
+              </div>
+              <div class="pes__shot">
+                <FigmaFill shot={c.shot} boxW={349} />
+              </div>
+            </div>
+            <div class="pes__copy">
+              <h3 class="pes__card-title">{c.title}</h3>
+              <p class="pes__tags">
+                <span class="pes__track">
+                  <span>{loop(c.tags)}</span>
+                  <span aria-hidden="true">{loop(c.tags)}</span>
+                </span>
+              </p>
+              <p class="pes__card-body">{c.body}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .pes {
+    padding-block: 100px;
+    background: var(--c-bg-light);
+    /* Fixed Figma widths; never let them scroll the page sideways. */
+    overflow-x: clip;
+  }
+
+  .pes__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  .pes__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .pes__head-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pes__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .pes__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-heading);
+    white-space: nowrap;
+  }
+
+  /* Figma's column is 788, but the browser's Inter sets this line a hair
+     wider and "right" drops to line two; 4px of slack keeps Figma's break. */
+  .pes__body {
+    width: 792px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .pes__cards {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .pes__card {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid rgba(131, 77, 251, 0.24);
+    border-radius: 16px;
+    background: var(--c-surface);
+    text-align: center;
+  }
+
+  /*
+   * Hover. Figma draws the middle card lifted; that is the resting state.
+   * Hovering any card lifts it instead and settles the others, and leaving
+   * the row restores the middle one — the same pattern as the Product
+   * Design outcome cards.
+   */
+  .pes__card {
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      filter var(--dur-fast) var(--ease-out),
+      translate var(--dur-fast) var(--ease-out);
+  }
+
+  .pes__cards:not(:has(.pes__card:hover)) .pes__card--featured,
+  .pes__card:hover {
+    border-color: var(--c-accent);
+    filter: drop-shadow(0 0 2px var(--c-accent));
+  }
+
+  .pes__browser {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border: 0.568px solid rgba(131, 77, 251, 0.24);
+    border-radius: 9.091px;
+    background: var(--c-surface);
+  }
+
+  /* BrowserChrome's 53.67 bar at 0.5682 is Figma's 30.49 here. */
+  .pes__bar {
+    flex: none;
+    height: 30.492px;
+    overflow: hidden;
+  }
+
+  .pes__bar-inner {
+    width: calc(100% / 0.5682);
+    transform: scale(0.5682);
+    transform-origin: 0 0;
+  }
+
+  .pes__shot {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Title, tags and body; `display: contents` on desktop so they stay
+     direct flex children of the card, spaced by its 16px gap. */
+  .pes__copy {
+    display: contents;
+  }
+
+  .pes__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: 24px;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-ink);
+  }
+
+  /* One line that runs past the card, washed out 51px in from each edge
+     (white from 24%, as Figma draws the two overlays). */
+  .pes__tags {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    font-weight: 500;
+    font-size: var(--fs-xxs);
+    line-height: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: pre;
+    color: var(--c-accent);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 12px, #000 51px, #000 calc(100% - 51px), transparent calc(100% - 12px));
+    mask-image: linear-gradient(to right, transparent 0, transparent 12px, #000 51px, #000 calc(100% - 51px), transparent calc(100% - 12px));
+  }
+
+  /* Two copies drift left by one copy's width, so the loop is seamless. */
+  .pes__track {
+    display: flex;
+    flex: none;
+    animation: pes-tags 14s linear infinite;
+  }
+
+  .pes__track > span {
+    flex: none;
+  }
+
+  @keyframes pes-tags {
+    to {
+      translate: -50% 0;
+    }
+  }
+
+  .pes__card-body {
+    font-size: var(--fs-sm);
+    line-height: 20px;
+    color: var(--c-muted);
+  }
+
+  /* --- narrower ------------------------------------------------------------ */
+
+  @media (max-width: 1279px) {
+    .pes {
+      padding-block: 72px;
+    }
+
+    .pes__inner {
+      gap: 48px;
+    }
+
+    .pes__title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    .pes__cards {
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    /* Tapped lift replaces the hover one (pe-services.ts adds .is-tap). */
+    .pes__cards.is-tap .pes__card:is(.pes__card, .pes__card--featured) {
+      border-color: rgba(131, 77, 251, 0.24);
+      filter: none;
+    }
+
+    .pes__cards.is-tap .pes__card.is-lit:is(.pes__card, .pes__card--featured) {
+      border-color: var(--c-accent);
+      filter: drop-shadow(0 0 2px var(--c-accent));
+    }
+
+    .pes__card[role="button"] {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pes__card[role="button"]:focus-visible {
+      outline: 2px solid var(--c-accent);
+      outline-offset: 4px;
+    }
+  }
+
+  /* Sideways cards: screen left, copy right, one per row. */
+  @media (max-width: 900px) {
+    .pes__cards {
+      flex-direction: column;
+    }
+
+    .pes__card {
+      flex: none;
+      flex-direction: row;
+      align-items: center;
+      gap: 24px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .pes__browser {
+      flex: none;
+      width: 46%;
+      height: 180px;
+    }
+
+    .pes__copy {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .pes__tags {
+      -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 40px), transparent);
+      mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 40px), transparent);
+    }
+  }
+
+  /* Phone: upright again, full width. */
+  @media (max-width: 560px) {
+    .pes {
+      padding-block: 48px;
+    }
+
+    .pes__inner {
+      gap: 32px;
+    }
+
+    .pes__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .pes__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .pes__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .pes__card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .pes__browser {
+      width: 100%;
+      height: 190px;
+    }
+
+    .pes__copy {
+      align-items: center;
+    }
+
+    .pes__card-title {
+      font-size: 18px;
+    }
+
+    .pes__tags {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent);
+      mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent);
+    }
+  }
+</style>

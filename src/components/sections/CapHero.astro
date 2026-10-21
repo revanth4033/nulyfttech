@@ -1,0 +1,550 @@
+---
+/**
+ * Capability-page hero — Figma 637:2094 (Product Design).
+ *
+ * A placed composition, not a flow layout: every piece sits at its frame
+ * coordinate inside a centred 1440 box, measured from the hero's top edge
+ * (the 83px nav overlays it). Things on the left are anchored to the left
+ * edge and things on the right to the right, so the composition opens and
+ * closes symmetrically as the viewport narrows.
+ *
+ * Below 1280 there is no room for the corners, so the hero becomes a flow
+ * layout in reading order: hub, headline, call to action, the four industry
+ * pills as one centred row, then the tools and screens as a single picture.
+ * The pills and the picture are grouped in wrappers that are
+ * `display: contents` on desktop, so there the children still place
+ * themselves against the frame.
+ */
+import { Image } from "astro:assets";
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import type { HeroPill, HeroScreen, HeroTool } from "../../data/capProductDesign";
+
+import band1 from "../../assets/brand/cap/band-1.svg?url";
+import band2 from "../../assets/brand/cap/band-2.svg?url";
+import band3 from "../../assets/brand/cap/band-3.svg?url";
+import band4 from "../../assets/brand/cap/band-4.svg?url";
+import band5 from "../../assets/brand/cap/band-5.svg?url";
+import band6 from "../../assets/brand/cap/band-6.svg?url";
+import band7 from "../../assets/brand/cap/band-7.svg?url";
+
+interface Props {
+  hero: {
+    height: number;
+    title: string;
+    emphasis: string;
+    body: string;
+    cta: { label: string; href: string };
+    pills: HeroPill[];
+    tools: HeroTool[];
+    screensLeft: HeroScreen[];
+    screensRight: HeroScreen[];
+  };
+}
+
+const { hero } = Astro.props;
+
+// Seven dotted bands that together draw the branching X behind the hub.
+// They are separate layers in Figma and stay separate here.
+// Served as files rather than inlined: together they are ~240KB of dots.
+const bands = [band1, band2, band3, band4, band5, band6, band7].map((src, i) => ({
+  src,
+  w: i === 1 ? 1431.26 : 1440,
+}));
+
+// The card is 300 x 187.234, rotated inside a 327.955 x 236.484 wrapper;
+// Figma reports the wrapper, so centre the card in it.
+const CARD_W = 300;
+const CARD_H = 187.234;
+const WRAP_W = 327.955;
+const WRAP_H = 236.484;
+// The image area is the card minus its 1px border.
+const IMG_BOX_W = CARD_W - 2;
+
+const screenStyle = (s: HeroScreen) =>
+  `left:${s.x + (WRAP_W - CARD_W) / 2}px;top:${s.y + (WRAP_H - CARD_H) / 2}px;--rot:${s.rotate}deg`;
+
+const cropStyle = (s: HeroScreen) =>
+  s.crop === "cover"
+    ? "inset:0;width:100%;height:100%;object-fit:cover"
+    : `width:${s.crop.w}%;height:${s.crop.h}%;left:${s.crop.left}%;top:${s.crop.top}%`;
+
+const renderW = (s: HeroScreen) =>
+  Math.round(IMG_BOX_W * (s.crop === "cover" ? 1 : s.crop.w / 100));
+---
+
+<section class="chero" data-section style={`--chero-h:${hero.height}px`}>
+  <div class="chero__frame">
+    <div class="chero__bands" aria-hidden="true">
+      {bands.map((b) => <img class="chero__band" src={b.src} width={b.w} height="443.42" alt="" />)}
+    </div>
+
+    <div class="chero__hub" aria-hidden="true">
+      <Icon name="brand/cap/hub-avatar" size={40} class="chero__avatar" />
+    </div>
+
+    <div class="chero__pills">
+    {
+      hero.pills.map((p) => (
+        <div
+          class:list={["chero__pill", `chero__pill--${p.side}`]}
+          style={`top:${p.top}px;${p.w ? `width:${p.w}px` : ""}`}
+          data-animate
+        >
+          <span class="chero__pill-icon">
+            <Icon name={p.icon} size={18} />
+          </span>
+          <span class="chero__pill-label">{p.label}</span>
+        </div>
+      ))
+    }
+    </div>
+
+    <div class="chero__copy">
+      <div class="chero__intro">
+        <h1 class="chero__title" data-animate>
+          {hero.title} <em>{hero.emphasis}</em>
+        </h1>
+        <p class="chero__body" data-animate>{hero.body}</p>
+      </div>
+      <div class="chero__actions" data-animate>
+        <PillButton href={hero.cta.href} arrow={20} flat>{hero.cta.label}</PillButton>
+      </div>
+    </div>
+
+    <div class="chero__visual">
+    <ul class="chero__tools" aria-label="Tools we design with">
+      {
+        hero.tools.map((t) => (
+          <li class="chero__tool" style={`left:calc(50% + ${t.dx}px);top:${t.top}px;--rot:${t.rotate}deg`} data-animate>
+            <span class="chero__tool-chip">
+              <Icon name={t.icon} size={32} />
+            </span>
+            <span class="visually-hidden">{t.name}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      [
+        { side: "left", list: hero.screensLeft },
+        { side: "right", list: hero.screensRight },
+      ].map((g) => (
+        <div class:list={["chero__screens", `chero__screens--${g.side}`]} aria-hidden="true">
+          {g.list.map((s) => (
+            <div class="chero__screen" style={screenStyle(s)} data-animate>
+              <Image
+                src={s.src}
+                alt={s.alt}
+                width={renderW(s)}
+                widths={[renderW(s), renderW(s) * 2]}
+                sizes={`${renderW(s)}px`}
+                class="chero__shot"
+                style={cropStyle(s)}
+                loading="eager"
+              />
+            </div>
+          ))}
+        </div>
+      ))
+    }
+    </div>
+  </div>
+</section>
+
+<style>
+  .chero {
+    position: relative;
+    height: var(--chero-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .chero__frame {
+    position: relative;
+    max-width: var(--frame-w);
+    height: 100%;
+    margin-inline: auto;
+  }
+
+  /* --- background: dotted bands + hub ----------------------------------- */
+
+  .chero__bands {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    width: var(--frame-w);
+    height: 443.42px;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .chero__band {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+  }
+
+  .chero__hub {
+    position: absolute;
+    top: 228px; /* 100 + 128 inside the band frame */
+    left: calc(50% - 4px);
+    translate: -50% 0;
+    display: flex;
+    padding: 20px;
+    border-radius: var(--r-pill);
+    background: var(--c-surface);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.16);
+  }
+
+  .chero__hub :global(.chero__avatar) {
+    display: block;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  /* --- industry pills --------------------------------------------------- */
+
+  .chero__pill {
+    position: absolute;
+    z-index: var(--z-content);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px 6px 6px;
+    border-radius: 12px;
+    background: var(--c-surface);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12));
+  }
+
+  .chero__pill--left {
+    left: var(--gutter);
+  }
+
+  .chero__pill--right {
+    right: var(--gutter);
+  }
+
+  /* Figma strokes this chip on the inside — it is 28 square, ring included.
+     As a border Chrome rounds 0.4px up to 1px outside the box and the chip
+     comes out 30, pushing every label 2px right. */
+  .chero__pill-icon {
+    display: flex;
+    padding: 5px;
+    border-radius: 9px;
+    box-shadow: inset 0 0 0 0.4px rgba(131, 77, 251, 0.32);
+    background: rgba(131, 77, 251, 0.15);
+    line-height: 0;
+  }
+
+  .chero__pill-label {
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* --- copy ------------------------------------------------------------- */
+
+  .chero__copy {
+    position: absolute;
+    top: 349px;
+    left: 50%;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    width: 654px;
+    translate: -50% 0;
+    text-align: center;
+  }
+
+  .chero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Figma sets this headline in Inter, not the IBM Plex every other hero
+     uses — confirmed off the render, not just the reported font name. */
+  .chero__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: 58px; /* the text node is 116 for two lines */
+    letter-spacing: var(--tr-h2-tight);
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  .chero__title em {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  /* Figma flows the tilted pill as its rotated bounding box (250.76 x
+     50.85), not its own 48px height, which sits it 1.4px lower. */
+  .chero__actions {
+    display: flex;
+    align-items: center;
+    height: 50.85px;
+  }
+
+  .chero__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* --- tools ------------------------------------------------------------ */
+
+  .chero__tools {
+    position: absolute;
+    top: 712px;
+    left: 50%;
+    width: 476px;
+    height: 119px;
+    translate: -50% 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 75.908 is the 64px chip's bounding box at 12 degrees. */
+  .chero__tool {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 75.908px;
+    height: 75.908px;
+    translate: -50% 0;
+  }
+
+  .chero__tool-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 1px solid rgba(131, 77, 251, 0.2);
+    border-radius: var(--r-card);
+    background: var(--c-surface);
+    box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.12);
+    rotate: var(--rot);
+    line-height: 0;
+  }
+
+  /* --- product screens -------------------------------------------------- */
+
+  .chero__screens {
+    position: absolute;
+    top: 558px;
+    height: 356px;
+  }
+
+  .chero__screens--left {
+    left: -78px;
+    width: 492px;
+  }
+
+  .chero__screens--right {
+    right: -79px;
+    width: 493px;
+    height: 355px;
+  }
+
+  .chero__screen {
+    position: absolute;
+    width: 300px;
+    height: 187.234px;
+    border: 1px solid rgba(131, 77, 251, 0.12);
+    border-radius: 8.511px;
+    background: var(--c-surface);
+    box-shadow: 6px 6px 64px rgba(0, 0, 0, 0.16);
+    overflow: hidden;
+    rotate: var(--rot);
+  }
+
+  .chero__screen :global(.chero__shot) {
+    position: absolute;
+    max-width: none;
+  }
+
+  .chero__pills,
+  .chero__visual {
+    display: contents;
+  }
+
+  /* --- tablet + phone: a flow layout ------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .chero {
+      --pad-top: calc(var(--nav-h) + 40px);
+      height: auto;
+    }
+
+    .chero__frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--pad-top) var(--gutter) 64px;
+    }
+
+    /* The X still centres on the hub: the hub sits 128px into the bands. */
+    .chero__bands {
+      top: calc(var(--pad-top) - 128px);
+    }
+
+    .chero__hub {
+      position: relative;
+      top: auto;
+      left: auto;
+      translate: none;
+      margin-bottom: 40px;
+    }
+
+    .chero__copy {
+      position: static;
+      width: min(654px, 100%);
+      translate: none;
+      gap: 32px;
+    }
+
+    .chero__title {
+      font-size: 44px;
+      line-height: 1.2;
+      letter-spacing: -2px;
+    }
+
+    /* After the call to action, not above the headline where the DOM has
+       them: the headline should be the first thing under the hub. */
+    .chero__pills {
+      order: 1;
+      position: relative;
+      z-index: var(--z-content);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      max-width: 560px;
+      margin-top: 40px;
+    }
+
+    .chero__pill {
+      position: static;
+      width: auto !important;
+    }
+
+    /* The two screen fans peeking in from the edges, then the tool row
+       under them — not over them, where the chips covered the screens.
+       --vs scales the fans, --ts the tool row. */
+    .chero__visual {
+      --vs: 0.8;
+      --ts: 0.8;
+      --gap: 24px;
+      order: 2;
+      position: relative;
+      display: block;
+      width: 100vw;
+      height: calc(356px * var(--vs) + var(--gap) + 119px * var(--ts));
+      margin-top: 48px;
+    }
+
+    .chero__screens {
+      top: 0;
+      scale: var(--vs);
+    }
+
+    .chero__screens--left {
+      left: calc(-78px * var(--vs));
+      transform-origin: 0 0;
+    }
+
+    .chero__screens--right {
+      right: calc(-79px * var(--vs));
+      transform-origin: 100% 0;
+    }
+
+    .chero__tools {
+      top: calc(356px * var(--vs) + var(--gap));
+      scale: var(--ts);
+      transform-origin: 50% 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .chero {
+      --pad-top: calc(var(--nav-h) + 24px);
+    }
+
+    .chero__frame {
+      padding-bottom: 48px;
+    }
+
+    .chero__hub {
+      padding: 14px;
+      margin-bottom: 28px;
+    }
+
+    .chero__hub :global(.chero__avatar) {
+      width: 32px;
+      height: 32px;
+    }
+
+    .chero__copy {
+      gap: 24px;
+    }
+
+    .chero__intro {
+      gap: 12px;
+    }
+
+    .chero__title {
+      font-size: 32px;
+      line-height: 40px;
+      letter-spacing: -1px;
+    }
+
+    .chero__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .chero__pills {
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .chero__pill {
+      gap: 6px;
+      padding: 4px 12px 4px 4px;
+      border-radius: 10px;
+    }
+
+    .chero__pill-icon {
+      padding: 4px;
+      border-radius: 7px;
+    }
+
+    .chero__pill-icon :global(svg) {
+      width: 14px;
+      height: 14px;
+    }
+
+    .chero__pill-label {
+      font-size: 13px;
+    }
+
+    .chero__visual {
+      --vs: 0.52;
+      --ts: 0.68;
+      --gap: 16px;
+      margin-top: 36px;
+    }
+  }
+</style>

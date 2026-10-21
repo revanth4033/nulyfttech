@@ -1,0 +1,110 @@
+---
+/**
+ * A product screen in a browser frame, set at Figma's slight tilt.
+ *
+ * Every browser card on the capability pages shares one transform —
+ * rotate(-1.2deg) skewX(-1.6deg) — with the chrome counter-transformed back
+ * to square inside it, so the bar reads level while the card leans. Figma
+ * places the chrome 2.25px left and 2.09px up from the card's corner and a
+ * few pixels narrower than it; that is reproduced rather than tidied.
+ */
+import BrowserChrome from "../ui/BrowserChrome.astro";
+import FigmaFill from "./FigmaFill.astro";
+import type { Shot } from "../../data/capProductDesign";
+
+interface Props {
+  /** One screen, or several stacked for a panel that swaps between them. */
+  shot: Shot | Shot[];
+  /** The card's own size, before the tilt. */
+  w: number;
+  h: number;
+  /** The tilted card's bounding box, which is what the layout reserves. */
+  boxW: number;
+  boxH: number;
+  shadow: string;
+  /** Figma's chrome wrapper and chrome widths — not derivable from the card:
+      575 / 567.23 / 565.84 on the intro rows, 602.87 / 604.51 / 603.12 on
+      the feature panels. */
+  chromeWrapW: number;
+  chromeW: number;
+  /** How far the screenshot overhangs the card's right inner edge. */
+  shotRight: number;
+}
+
+const { shot, w, h, boxW, boxH, shadow, chromeWrapW, chromeW, shotRight } = Astro.props;
+const BORDER = 1.358;
+const inner = w - BORDER * 2;
+const shotW = inner + 0.04 + shotRight;
+const shots = Array.isArray(shot) ? shot : [shot];
+---
+
+<div class="bcard" style={`width:${boxW}px;height:${boxH}px`}>
+  <div class="bcard__card" style={`width:${w}px;height:${h}px;box-shadow:${shadow}`}>
+    <div class="bcard__shot" style={`width:${shotW}px`}>
+      {
+        shots.map((sh, i) => (
+          <div class:list={["bcard__layer", { "is-on": i === 0 }]} data-feat-shot>
+            <FigmaFill shot={sh} boxW={shotW} />
+          </div>
+        ))
+      }
+    </div>
+    <div class="bcard__chrome" style={`width:${chromeWrapW}px`}>
+      <div class="bcard__chrome-inner" style={`width:${chromeW}px`}>
+        <BrowserChrome />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bcard {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bcard__card {
+    position: relative;
+    flex: none;
+    overflow: hidden;
+    border: 1.358px solid var(--c-card-border);
+    border-radius: 20px;
+    background: var(--c-surface);
+    transform: rotate(-1.2deg) skewX(-1.6deg);
+  }
+
+  .bcard__shot {
+    position: absolute;
+    top: 54.48px;
+    left: -0.04px;
+    aspect-ratio: 564.82 / 338.41;
+    overflow: hidden;
+  }
+
+  /* Stacked screens cross-fade; only the active one is visible. */
+  .bcard__layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .bcard__layer.is-on {
+    opacity: 1;
+  }
+
+  .bcard__chrome {
+    position: absolute;
+    top: -2.09px;
+    left: -2.25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 55.24px;
+  }
+
+  .bcard__chrome-inner {
+    transform: rotate(0.16deg) skewX(1.6deg);
+  }
+</style>

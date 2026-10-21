@@ -1,0 +1,1184 @@
+---
+/**
+ * One project showcase on a capability page — three Figma frames stacked:
+ * the intro row ("Featured Work"), Key Features and Product Outcomes.
+ * Asterdata 637:2261, Skill Wagon 637:2490 (dark), Automotive 637:2699.
+ *
+ * The three projects share every measurement; only copy, media and theme
+ * change, so one component takes the project as data.
+ *
+ * Below 1280 each frame reflows rather than shrinking:
+ *   - intro: copy over media, the media scaled as one picture (fit.ts)
+ *   - features: no pin (cap-features.ts) — screen on top, the tab list under
+ *     it, and a tap on a row selects it
+ *   - outcomes: the four cards as a 2 x 2 grid (one column on a phone) in
+ *     the desktop's reading order, no hub or connectors, and a tap lights a
+ *     card (cap-outcomes.ts), since a touch screen cannot hover
+ */
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import BrowserCard from "../cap/BrowserCard.astro";
+import FigmaFill from "../cap/FigmaFill.astro";
+import islandSrc from "../../assets/images/cap-design/auto-island.png";
+import { Image } from "astro:assets";
+import type { Project } from "../../data/capProductDesign";
+
+interface Props {
+  project: Project;
+}
+
+const { project: p } = Astro.props;
+const dark = p.theme === "dark";
+const [activeFeature, ...restFeatures] = p.features.items;
+const features = [activeFeature, ...restFeatures];
+
+// Product Outcomes: four cards round a hub, clockwise from the top right.
+// The top-right card is the highlighted one in every frame.
+const OUTCOME_SLOTS = [
+  { x: 808, y: 0 },
+  { x: 808, y: 312 },
+  { x: 0, y: 312 },
+  { x: 0, y: 5 },
+];
+
+// Connector art is drawn for the top-right card and mirrored for the rest.
+// Drawn sizes of the intro media, for fitting it to a narrow column.
+const MEDIA =
+  p.media.kind === "browser" ? { w: 577.577, h: 406.748 } : { w: 575, h: 348 };
+
+const CONNECTORS = [
+  { idle: [655, 79], lit: [655, 77], flip: "" },
+  { idle: [655, 275], lit: [655, 275], flip: "scale:1 -1" },
+  { idle: [430, 275], lit: [428, 275], flip: "rotate:180deg" },
+  { idle: [430, 79], lit: [428, 77], flip: "scale:-1 1" },
+];
+---
+
+<div class:list={["proj", `proj--${p.theme}`]} id={p.id}>
+  {/* --- intro row ---------------------------------------------------- */}
+  <section class:list={["proj__intro", { "proj__intro--lead": p.lead }]} data-section>
+    <div class="proj__inner">
+      {
+        p.lead && (
+          <header class="proj__lead">
+            <div class="proj__lead-head">
+              <span class="proj__eyebrow" data-animate>
+                {p.lead.eyebrow}
+              </span>
+              <h2 class="proj__lead-title" data-animate>
+                {p.lead.title}
+              </h2>
+            </div>
+            <p class="proj__lead-body" data-animate>
+              {p.lead.body}
+            </p>
+          </header>
+        )
+      }
+
+      <div class="proj__row">
+        <div class="proj__copy" data-animate>
+          <div class="proj__about">
+            <h3 class="proj__name">{p.name}</h3>
+            <p class="proj__body">{p.body}</p>
+          </div>
+
+          <dl class="proj__facts">
+            {
+              p.facts.map((f, i) => (
+                <div class:list={["proj__fact", `proj__fact--${i}`]}>
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          <div class="proj__cta">
+            <PillButton
+              href={p.href}
+              variant="outline"
+              arrow={20}
+              arrowIcon={dark ? "icons/cap/arrow-circle-20-outline-white" : "icons/arrow-circle-20-outline"}
+              class="proj__btn"
+            >
+              Full Case Study
+            </PillButton>
+          </div>
+        </div>
+
+        <div class="proj__media" style={`--media-w:${MEDIA.w}px`} data-animate>
+          <div class="fit" data-fit={MEDIA.w} style={`--fit-w:${MEDIA.w};--fit-h:${MEDIA.h}`}>
+          <div class="fit__inner">
+          {
+            p.media.kind === "browser" && (
+              <BrowserCard
+                shot={p.media.shot}
+                w={575}
+                h={394.672}
+                boxW={577.577}
+                boxH={406.748}
+                chromeWrapW={567.23}
+                chromeW={565.84}
+                shotRight={1.5}
+                shadow="0 48px 86px -43px rgba(131, 77, 251, 0.16)"
+              />
+            )
+          }
+          {
+            p.media.kind === "phones" && (
+              <div class="proj__phones">
+                {p.media.phones.map((ph) => (
+                  <div class:list={["phone", { "phone--dim": ph.dim, "phone--lit": !ph.dim }]}>
+                    <FigmaFill shot={ph} boxW={168} />
+                    <Image src={islandSrc} alt="" width={79} widths={[79, 158]} sizes="79px" class="phone__island" />
+                  </div>
+                ))}
+              </div>
+            )
+          }
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* --- key features ------------------------------------------------- */}
+  {/* Pinned by scripts/cap-features.ts: each scroll step lights the next tab. */}
+  <section class="proj__features" data-features>
+    <div class="proj__inner">
+      <header class="proj__head">
+        <span class="proj__kicker">Key Features</span>
+        <h2 class="proj__title">{p.features.title}</h2>
+      </header>
+
+      <div class="feat">
+        <div class="feat__left">
+          <ul class="feat__list" style={`width:${p.features.listW}px`}>
+            {
+              features.map((f, i) => (
+                <li class:list={["feat__item", { "is-on": i === 0 }]} data-feat-row>
+                  <span class="feat__icon">
+                    <Icon name={f.icon} size={28} />
+                  </span>
+                  <span class="feat__text">
+                    <span class="feat__title">{f.title}</span>
+                    <span class="feat__sub">{f.sub}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+          <span class="feat__rail" aria-hidden="true">
+            <span class="feat__bar" data-feat-bar></span>
+          </span>
+        </div>
+
+        <div class:list={["feat__right", { "feat__right--phone": p.features.kind === "phone" }]}>
+          {
+            p.features.kind === "browser" && (
+              <div class="fit" data-fit="602.867" style="--fit-w:602.867;--fit-h:396.286">
+              <div class="fit__inner">
+              <BrowserCard
+                shot={features.map((f) => f.shot)}
+                w={602.867}
+                h={383.623}
+                boxW={602.867}
+                boxH={396.286}
+                chromeWrapW={604.51}
+                chromeW={603.117}
+                shotRight={1.63}
+                shadow="0 32px 122px -61.128px rgba(0, 0, 0, 0.25)"
+              />
+              </div>
+              </div>
+            )
+          }
+          {
+            p.features.kind === "phone" && (
+              <div class="phone phone--feature">
+                {features.map((f, i) => (
+                  <div class:list={["feat__layer", { "is-on": i === 0 }]} data-feat-shot>
+                    <FigmaFill shot={f.shot} boxW={194} />
+                  </div>
+                ))}
+                <Image src={islandSrc} alt="" width={79} widths={[79, 158]} sizes="79px" class="phone__island" />
+              </div>
+            )
+          }
+          <div class="feat__captions">
+            {
+              features.map((f, i) => (
+                <p class:list={["feat__caption", { "is-on": i === 0 }]} data-feat-cap>
+                  {f.caption}
+                </p>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* --- product outcomes --------------------------------------------- */}
+  <section class="proj__outcomes" data-section>
+    <div class="proj__inner">
+      <header class="proj__head">
+        <span class="proj__kicker" data-animate>Product Outcomes</span>
+        <div class="proj__head-copy">
+          <h2 class="proj__title" data-animate>{p.outcomes.title}</h2>
+          <p class="proj__head-body" style={`width:${p.outcomes.bodyW}px`} data-animate>
+            {p.outcomes.body}
+          </p>
+        </div>
+      </header>
+
+      <div class="out" data-animate data-outcomes>
+        <span class="out__hub" aria-hidden="true">
+          <Icon name={p.outcomes.hub.icon} width={p.outcomes.hub.w} height={p.outcomes.hub.h} />
+        </span>
+
+        {/* One idle and one lit connector per card, lit in step with the
+            card it leads to. The lit art carries a glowing dot, so its box
+            is 155 x 130 against the idle 153 x 128 — placed so the line
+            itself lands where the idle one is. */}
+        {
+          CONNECTORS.map((c, i) => (
+            <>
+              <span
+                class={`out__conn out__conn--idle out__conn--${i}`}
+                style={`left:${c.idle[0]}px;top:${c.idle[1]}px;${c.flip}`}
+                aria-hidden="true"
+              >
+                <Icon name={`brand/cap/conn-${p.theme}-idle`} width={153} height={128} />
+              </span>
+              <span
+                class={`out__conn out__conn--lit out__conn--${i}`}
+                style={`left:${c.lit[0]}px;top:${c.lit[1]}px;${c.flip}`}
+                aria-hidden="true"
+              >
+                <Icon name="brand/cap/conn-active" width={155} height={130} />
+              </span>
+            </>
+          ))
+        }
+
+        {
+          p.outcomes.items.map((o, i) => (
+            <article
+              class:list={["out__card", `out__card--${i}`]}
+              data-out-card
+              style={`left:${OUTCOME_SLOTS[i].x}px;top:${OUTCOME_SLOTS[i].y}px`}
+            >
+              <div class="out__card-head">
+                <span class="out__icon">
+                  <Icon name={o.icon} size={24} />
+                </span>
+                <h3 class="out__card-title">{o.title}</h3>
+              </div>
+              <p class="out__card-body">{o.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .proj {
+    --proj-bg: var(--c-bg-light);
+    --proj-title: var(--c-accent);
+    --proj-heading: var(--c-ink);
+    --proj-text: var(--c-muted);
+    --proj-strong: var(--c-ink);
+    --proj-value: var(--c-accent);
+    --proj-chip: var(--c-surface);
+    --proj-rail: #ebebeb;
+    --proj-card: var(--c-surface);
+    --proj-card-icon: var(--c-accent-tint);
+    --proj-kicker: var(--c-accent);
+    --proj-kicker-bg: var(--c-case-eyebrow-bg);
+    --proj-out-title: #000;
+
+    background: var(--proj-bg);
+    /* The rows are fixed Figma widths; below 1440 they must not scroll the
+       page sideways. `clip`, not `hidden`, so no scroll container is made. */
+    overflow-x: clip;
+  }
+
+  .proj--dark {
+    --proj-bg: var(--c-bg-dark);
+    --proj-title: #fff;
+    --proj-heading: #fff;
+    --proj-text: rgba(245, 243, 255, 0.8);
+    --proj-strong: #fff;
+    --proj-value: #fff;
+    --proj-chip: #21163b;
+    --proj-rail: #21163b;
+    --proj-card: #21163b;
+    --proj-card-icon: var(--c-bg-dark);
+    --proj-kicker: #fff;
+    --proj-kicker-bg: transparent;
+    --proj-out-title: #fff;
+  }
+
+  .proj__inner {
+    width: var(--content-w);
+    max-width: calc(100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  /* --- intro row -------------------------------------------------------- */
+
+  .proj__intro {
+    padding-block: 100px;
+  }
+
+  .proj__intro--lead .proj__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  .proj__lead {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .proj__lead-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .proj__eyebrow {
+    padding: 8px 16px;
+    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15); /* inside stroke: the pill is 32 tall */
+    border-radius: var(--r-eyebrow);
+    background: rgba(131, 77, 251, 0.08);
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow);
+    color: var(--c-accent);
+  }
+
+  .proj__lead-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .proj__lead-body {
+    width: 788px;
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .proj__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 406.748px;
+  }
+
+  /* Shrinks below 1440 so the media keeps its drawn size beside it. */
+  .proj__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 0 1 601px;
+    min-width: 0;
+    margin-right: 40px;
+  }
+
+  .proj__about {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .proj__name {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: normal;
+    color: var(--proj-title);
+  }
+
+  .proj__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--proj-text);
+  }
+
+  .proj__facts {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .proj__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .proj__fact--0 {
+    width: 125.008px;
+  }
+
+  /* Each label sits in an 18.4px box, tilted with the pills. */
+  .proj__fact dt {
+    display: flex;
+    align-items: center;
+    height: 18.45px;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-nav);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--proj-text);
+    rotate: var(--tilt);
+  }
+
+  .proj__fact dd {
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: 2.016px;
+    text-transform: capitalize;
+    white-space: nowrap;
+    color: var(--proj-value);
+  }
+
+  /* Figma flows the tilted pill as its 50.06 rotated box. */
+  .proj__cta {
+    display: flex;
+    align-items: center;
+    height: 50.06px;
+  }
+
+  .proj--dark .proj__cta :global(.proj__btn) {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .proj--dark .proj__cta :global(.proj__btn:hover) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .proj__media {
+    flex: none;
+    width: var(--media-w);
+  }
+
+  /* Three phones, 173.67 each with a 24 gap, in a 575 x 348 row. */
+  .proj__phones {
+    display: flex;
+    gap: 24px;
+    width: 575px;
+    height: 348px;
+    padding: 3px;
+  }
+
+  .phone {
+    position: relative;
+    border: 3px solid #010101;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #010101;
+  }
+
+  .proj__phones .phone {
+    flex: 1 1 0;
+  }
+
+  .phone--dim {
+    opacity: 0.4;
+  }
+
+  .phone--lit {
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.24);
+  }
+
+  .phone :global(.fill) {
+    border-radius: 13px;
+  }
+
+  .phone :global(.phone__island) {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 79px;
+    height: 22px;
+    translate: -50% 0;
+    border-radius: 0 0 13.327px 13.327px;
+  }
+
+  /* --- section headers (features + outcomes) ---------------------------- */
+
+  .proj__features,
+  .proj__outcomes {
+    padding-block: 100px;
+  }
+
+  .proj__features .proj__inner,
+  .proj__outcomes .proj__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  .proj__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .proj__kicker {
+    padding-block: 8px;
+    border-radius: 88px;
+    background: var(--proj-kicker-bg);
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    letter-spacing: var(--tr-eyebrow-lg);
+    text-transform: uppercase;
+    color: var(--proj-kicker);
+  }
+
+  .proj__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 32px;
+    color: var(--proj-heading);
+  }
+
+  /* Capped at the column: the body's drawn width arrives inline, and a
+     centred column would otherwise hug it and overflow a phone. */
+  .proj__head-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  .proj__head-body {
+    max-width: 100%;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--proj-text);
+  }
+
+  /* --- key features ----------------------------------------------------- */
+
+  .feat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .feat__left {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .feat__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 476px;
+  }
+
+  .feat__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0.48;
+    color: #979797;
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      color var(--dur-base) var(--ease-out);
+  }
+
+  .feat__item.is-on {
+    opacity: 1;
+    color: var(--c-accent);
+  }
+
+  .feat__icon {
+    display: flex;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--proj-chip);
+    line-height: 0;
+  }
+
+  /* Figma's active chip is 58 against the others' 56 — a real 1px border.
+     It is an outset ring here instead, so lighting a tab never reflows the
+     list mid-scroll; the ring paints exactly where the border would. */
+  .feat__icon {
+    box-shadow: 0 0 0 0 transparent;
+    transition: box-shadow var(--dur-base) var(--ease-out);
+  }
+
+  .feat__item.is-on .feat__icon {
+    box-shadow:
+      0 0 0 1px var(--c-accent),
+      0 5px 4px rgba(131, 77, 251, 0.12);
+  }
+
+  .feat__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .feat__title {
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: var(--lh-card);
+    color: var(--proj-strong);
+    white-space: nowrap;
+  }
+
+  .feat__sub {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--proj-text);
+    white-space: nowrap;
+  }
+
+  .feat__rail {
+    position: relative;
+    width: 2.6px;
+    height: 476px;
+    border-radius: var(--r-pill);
+    background: var(--proj-rail);
+    overflow: hidden;
+  }
+
+  /* A progress fill: 106.57 per state, the whole 476 on the last. */
+  .feat__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 106.57px;
+    will-change: height;
+    border-radius: 99px;
+    background: var(--c-accent);
+    box-shadow: 0 0 4px rgba(131, 77, 251, 0.4);
+  }
+
+  .feat__right {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 0 1 602.867px;
+    min-width: 0;
+  }
+
+  .feat__right--phone {
+    align-items: center;
+  }
+
+  /* Captions share one grid cell, so the column is as tall as the longest. */
+  .feat__captions {
+    display: grid;
+  }
+
+  .feat__caption {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--proj-text);
+  }
+
+  .feat__caption.is-on {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .feat__layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .feat__layer.is-on {
+    opacity: 1;
+  }
+
+  .phone--feature {
+    width: 200px;
+    height: 383px;
+    flex: none;
+    box-shadow: 0 0 32px rgba(131, 77, 251, 0.12);
+  }
+
+  /* --- product outcomes ------------------------------------------------- */
+
+  .out {
+    position: relative;
+    height: 476px;
+  }
+
+  .out__hub {
+    position: absolute;
+    top: 190px;
+    left: calc(50% - 1px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    translate: -50% 0;
+    border-radius: 100px;
+    background: var(--c-surface);
+    filter: drop-shadow(0 -2.667px 4px rgba(0, 0, 0, 0.12)) drop-shadow(0 2.667px 4px rgba(0, 0, 0, 0.12));
+  }
+
+  .out__conn {
+    position: absolute;
+    display: block;
+    line-height: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  /*
+   * Hover. The top-right card is lit by default; hovering any card lights it
+   * and returns the others to rest, and leaving the stage restores the
+   * default. Driven by :has() so it needs no script.
+   */
+  .out .out__conn--lit,
+  .out:has(.out__card:hover) .out__conn--0.out__conn--lit {
+    opacity: 0;
+  }
+
+  .out .out__conn--0.out__conn--lit,
+  .out:has(.out__card--0:hover) .out__conn--0.out__conn--lit,
+  .out:has(.out__card--1:hover) .out__conn--1.out__conn--lit,
+  .out:has(.out__card--2:hover) .out__conn--2.out__conn--lit,
+  .out:has(.out__card--3:hover) .out__conn--3.out__conn--lit {
+    opacity: 1;
+  }
+
+  /* 430 wide at 1440; narrower columns keep the 188px each side of the hub
+     that the connectors span, and the right-hand pair anchors right. */
+  .out__card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(430px, calc(50% - 190px));
+    padding: 20px;
+    border-radius: var(--r-card);
+    opacity: 0.6;
+    color: #979797;
+    transition:
+      opacity var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  /* Lit: the default card, unless another is hovered; or the hovered one.
+     The ring is inset rather than a border so a card never shifts as it
+     lights. */
+  .out:not(:has(.out__card:hover)) .out__card--0,
+  .out__card:hover {
+    opacity: 1;
+    background: var(--proj-card);
+    box-shadow: inset 0 0 0 1px var(--c-accent);
+    color: var(--c-accent);
+  }
+
+  .out__card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .out__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 12px;
+    line-height: 0;
+  }
+
+  .out__icon {
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .out:not(:has(.out__card:hover)) .out__card--0 .out__icon,
+  .out__card:hover .out__icon {
+    background: var(--proj-card-icon);
+  }
+
+  .out__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+    color: var(--proj-out-title);
+  }
+
+  .out__card-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--proj-text);
+  }
+
+  /* Right-hand cards and connectors measured from the centre / right edge
+     rather than Figma's left offsets, which only hold at 1240. */
+  /* 188 right of centre is Figma's 808 at 1240; the card then ends 2px
+     short of the column, as drawn. */
+  .out__card--0,
+  .out__card--1 {
+    left: calc(50% + 188px) !important;
+  }
+
+  .out__conn--0,
+  .out__conn--1 {
+    left: calc(50% + 35px) !important;
+  }
+
+  .out__conn--2,
+  .out__conn--3 {
+    left: calc(50% - 190px) !important;
+  }
+
+  /* The lit art is 2px wider, carrying its glow dot on the card side. */
+  .out__conn--lit.out__conn--2,
+  .out__conn--lit.out__conn--3 {
+    left: calc(50% - 192px) !important;
+  }
+
+  /* ======================================================================
+     Tablet + phone
+     ====================================================================== */
+
+  @media (max-width: 1279px) {
+    .proj__intro,
+    .proj__features,
+    .proj__outcomes {
+      padding-block: 72px;
+    }
+
+    .proj__intro--lead .proj__inner,
+    .proj__features .proj__inner,
+    .proj__outcomes .proj__inner {
+      gap: 48px;
+    }
+
+    .proj__lead-title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    /* --- intro: copy over media --- */
+
+    .proj__row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 48px;
+      height: auto;
+      max-width: 720px;
+      margin-inline: auto;
+    }
+
+    .proj__copy {
+      flex: none;
+      margin-right: 0;
+    }
+
+    .proj__name {
+      font-size: 28px;
+    }
+
+    .proj__media {
+      width: 100%;
+    }
+
+    /* --- features: screen, then the tab list --- */
+
+    .feat {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 40px;
+      max-width: 720px;
+      margin-inline: auto;
+    }
+
+    .feat__right {
+      order: -1;
+      flex: none;
+      gap: 20px;
+    }
+
+    .feat__left {
+      align-items: stretch;
+      gap: 24px;
+    }
+
+    /* The list's drawn width comes in inline; here it takes the column. */
+    .feat__list {
+      order: 1;
+      flex: 1;
+      width: auto !important;
+      height: auto;
+      gap: 20px;
+    }
+
+    .feat__rail {
+      height: auto;
+    }
+
+    .feat__title,
+    .feat__sub {
+      white-space: normal;
+    }
+
+    /* The rows are buttons here (cap-features.ts). */
+    .feat__item[role="button"],
+    .out__card[role="button"] {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .feat__item[role="button"]:focus-visible,
+    .out__card[role="button"]:focus-visible {
+      outline: 2px solid var(--c-accent);
+      outline-offset: 4px;
+      border-radius: 12px;
+    }
+
+    /* --- outcomes: a grid in reading order --- */
+
+    .out {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      height: auto;
+    }
+
+    .out__hub,
+    .out__conn {
+      display: none;
+    }
+
+    .out__card {
+      position: static;
+      width: auto;
+    }
+
+    /* Desktop reads top-left, top-right, bottom-left, bottom-right — Figma's
+       cards run clockwise from the top right. */
+    .out__card--3 { order: 0; }
+    .out__card--0 { order: 1; }
+    .out__card--2 { order: 2; }
+    .out__card--1 { order: 3; }
+
+    /* With cap-outcomes.ts running the highlight belongs to whichever card
+       was tapped, not to the top-right default. Raised specificity to beat
+       the desktop's :has() rules. */
+    .out.is-tap .out__card:is(.out__card--0, .out__card--1, .out__card--2, .out__card--3):not(.is-lit) {
+      opacity: 0.7;
+      background: transparent;
+      box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.12);
+      color: #979797;
+    }
+
+    .out.is-tap .out__card.is-lit:is(.out__card--0, .out__card--1, .out__card--2, .out__card--3) {
+      opacity: 1;
+      background: var(--proj-card);
+      box-shadow: inset 0 0 0 1px var(--c-accent);
+      color: var(--c-accent);
+    }
+
+    .out.is-tap .out__card:is(.out__card--0, .out__card--1, .out__card--2, .out__card--3):not(.is-lit) .out__icon {
+      background: transparent;
+    }
+
+    .out.is-tap .out__card.is-lit .out__icon {
+      background: var(--proj-card-icon);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .proj__intro,
+    .proj__features,
+    .proj__outcomes {
+      padding-block: 48px;
+    }
+
+    .proj__intro--lead .proj__inner,
+    .proj__features .proj__inner,
+    .proj__outcomes .proj__inner {
+      gap: 32px;
+    }
+
+    .proj__eyebrow {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .proj__lead-title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .proj__lead-body,
+    .proj__body,
+    .proj__head-body,
+    .feat__caption,
+    .out__card-body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .proj__row {
+      gap: 36px;
+    }
+
+    .proj__copy {
+      gap: 20px;
+    }
+
+    .proj__about {
+      gap: 12px;
+    }
+
+    .proj__name {
+      font-size: 24px;
+    }
+
+    /* Three facts across a 361 column: smaller, tighter labels, and the
+       desktop's nowrap dropped so a long value can take two lines. */
+    .proj__facts {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      justify-content: start;
+      gap: 20px;
+    }
+
+    .proj__fact--0 {
+      width: auto;
+    }
+
+    .proj__fact dt {
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .proj__fact dd {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.4px;
+      white-space: normal;
+    }
+
+    .proj__kicker {
+      padding-block: 4px;
+      font-size: 12px;
+      letter-spacing: 1.8px;
+    }
+
+    .proj__title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .feat {
+      gap: 32px;
+    }
+
+    .feat__left {
+      gap: 16px;
+    }
+
+    .feat__list {
+      gap: 16px;
+    }
+
+    .feat__item {
+      gap: 12px;
+    }
+
+    .feat__icon {
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .feat__icon :global(svg) {
+      width: 22px;
+      height: 22px;
+    }
+
+    .feat__title {
+      font-size: 16px;
+      line-height: 22px;
+    }
+
+    .feat__sub {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .phone--feature {
+      width: 170px;
+      height: 325.5px;
+    }
+
+    .out {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .out__card {
+      padding: 16px;
+    }
+
+    .out__icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .out__card-title {
+      font-size: 16px;
+    }
+  }
+</style>

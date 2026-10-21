@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import CapHero from "../components/sections/CapHero.astro";
+import CapApproach from "../components/sections/CapApproach.astro";
+import CapProject from "../components/sections/CapProject.astro";
+import CapWebsites from "../components/sections/CapWebsites.astro";
+import CapWebWork from "../components/sections/CapWebWork.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { hero, projects } from "../data/capProductDesign";
+---
+
+<BaseLayout
+  title="Product Design — nuLyft"
+  description="We design products around how people actually work — turning business goals, user behaviour and product complexity into clear, purposeful digital experiences."
+>
+  <Nav slot="overlay" />
+
+  <CapHero hero={hero} />
+  <CapApproach />
+  {projects.map((project) => <CapProject project={project} />)}
+  <CapWebsites />
+  <CapWebWork />
+  <CtaFooter />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/fit.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+  import "../scripts/cap-features.ts";
+  import "../scripts/cap-outcomes.ts";
+  import "../scripts/cap-webwork.ts";
+</script>

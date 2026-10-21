@@ -1,0 +1,438 @@
+---
+/**
+ * AI Agents illustration — Figma 647:6398, states 647:7514.
+ *
+ * Four tools wired to an agent card. In state k (1-4) tool k is working:
+ * its line runs dashed and it carries a ring; tasks 1..k show, the last
+ * one still open. State 5 has every task ticked and no tool lit. The page
+ * frame draws state 4, so that is what renders here; `ai-agents.ts`
+ * steps through the rest by toggling `data-state` and the classes below.
+ *
+ * The layout follows Figma's flex: tool column / card / tool column,
+ * centred, with each tool's icon, label and elbow line placed inside its
+ * own block exactly as the frame places them.
+ *
+ * On a narrow panel (<= 700) the same picture is re-proportioned rather
+ * than scaled — the card's 10-12px text would not survive a scale: the
+ * elbows shorten from 120 to 24 (they stretch, `preserveAspectRatio:
+ * none`, with a non-scaling stroke so the line weight holds), and the
+ * right-hand tools and labels come in with them.
+ */
+import Icon from "../ui/Icon.astro";
+import { services } from "../../data/capAi";
+
+const a = services.agents;
+const state = a.restState;
+const [crm, email, calendar, sheets] = a.tools;
+
+// Elbow: 120 x 31.6, flipped per corner so it always runs tool -> card.
+const LINE = "M0 0.3H40.18V31.3H120";
+const lineFor = (i: number) => (i === state - 1 ? "is-live" : "");
+const toolFor = (i: number) => (i === state - 1 ? "is-live" : "");
+---
+
+<div class="ag" data-agents data-state={state}>
+  <div class="ag__row">
+    <div class="ag__col ag__col--left">
+      <div class="ag__block ag__block--top">
+        <span class:list={["ag__tool", toolFor(0)]} style="left:0;top:0" data-ag-tool>
+          <Icon name={crm.icon} size={20} />
+        </span>
+        <svg class:list={["ag__line", lineFor(0)]} style="left:40px;top:19.7px" viewBox="0 0 120 31.6" width="120" height="31.6" preserveAspectRatio="none" data-ag-line>
+          <path class="ag__base" d={LINE} />
+          <path class="ag__flow" d={LINE} />
+        </svg>
+        <span class="ag__label" style="left:9px;top:46px">{crm.label}</span>
+      </div>
+      <div class="ag__block ag__block--bottom">
+        <svg class:list={["ag__line", lineFor(1)]} style="left:40px;top:0.7px;transform:scaleY(-1)" viewBox="0 0 120 31.6" width="120" height="31.6" preserveAspectRatio="none" data-ag-line>
+          <path class="ag__base" d={LINE} />
+          <path class="ag__flow" d={LINE} />
+        </svg>
+        <span class="ag__stack" style="left:0;top:12px">
+          <span class:list={["ag__tool", "ag__tool--flow", toolFor(1)]} data-ag-tool>
+            <Icon name={email.icon} size={20} />
+          </span>
+          <span class="ag__label ag__label--flow">{email.label}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="ag__card">
+      <div class="ag__card-head">
+        <span class="ag__chip"><Icon name="icons/ai/agent" size={16} /></span>
+        <span class="ag__role">
+          <span class="ag__role-k">Agent Role</span>
+          <span class="ag__role-v">{a.role}</span>
+        </span>
+      </div>
+      <div class="ag__goal">
+        <span class="ag__goal-k">Goal</span>
+        <span class="ag__goal-v">{a.goal}</span>
+      </div>
+      <ul class="ag__tasks">
+        {
+          a.tasks.map((t, i) => (
+            <li
+              class:list={["ag__task", { "is-shown": i < state, "is-done": i < state - 1 }]}
+              data-ag-task
+            >
+              <span class="ag__tick">
+                <Icon name="icons/ai/check-filled" size={12} class="ag__tick-done" />
+                <Icon name="icons/ai/check-empty" size={12} class="ag__tick-open" />
+              </span>
+              <span>{t}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="ag__col ag__col--right">
+      <div class="ag__block ag__block--top">
+        <span class:list={["ag__tool", toolFor(2)]} style="left:120px;top:0" data-ag-tool>
+          <Icon name={calendar.icon} size={20} />
+        </span>
+        <svg class:list={["ag__line", lineFor(2)]} style="left:0;top:19.7px;transform:scaleX(-1)" viewBox="0 0 120 31.6" width="120" height="31.6" preserveAspectRatio="none" data-ag-line>
+          <path class="ag__base" d={LINE} />
+          <path class="ag__flow" d={LINE} />
+        </svg>
+        <span class="ag__label" style="left:119px;top:46px">{calendar.label}</span>
+      </div>
+      <div class="ag__block ag__block--bottom">
+        <svg class:list={["ag__line", lineFor(3)]} style="left:0;top:0.7px;transform:rotate(180deg)" viewBox="0 0 120 31.6" width="120" height="31.6" preserveAspectRatio="none" data-ag-line>
+          <path class="ag__base" d={LINE} />
+          <path class="ag__flow" d={LINE} />
+        </svg>
+        <span class:list={["ag__tool", toolFor(3)]} style="left:120px;top:12px" data-ag-tool>
+          <Icon name={sheets.icon} size={20} />
+        </span>
+        <span class="ag__label" style="left:124px;top:58px">{sheets.label}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ag {
+    position: relative;
+    height: 300px;
+    border-radius: var(--r-card);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .ag__row {
+    position: absolute;
+    top: 45px;
+    left: calc(50% + 0.5px);
+    display: flex;
+    align-items: center;
+    translate: -50% 0;
+  }
+
+  .ag__col {
+    display: flex;
+    flex-direction: column;
+    gap: 53px;
+    width: 160px;
+  }
+
+  .ag__col--right {
+    width: 164px;
+  }
+
+  .ag__block {
+    position: relative;
+    height: 58px;
+  }
+
+  .ag__block--bottom {
+    height: 70px;
+  }
+
+  .ag__block > *,
+  .ag__stack {
+    position: absolute;
+  }
+
+  .ag__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ag__tool--flow {
+    position: relative;
+  }
+
+  /* A tool at rest: a white disc. Working: a 0.6px accent ring and a 48px
+     tint behind it (Figma draws the tint as its own disc, 4px out). The
+     tint grows in rather than popping, then breathes while the tool works. */
+  .ag__tool {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 0.6px rgba(131, 77, 251, 0);
+    line-height: 0;
+    transition: box-shadow 0.5s var(--ease-out);
+    isolation: isolate;
+  }
+
+  .ag__tool::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
+    border-radius: 50%;
+    background: rgba(131, 77, 251, 0.12);
+    opacity: 0;
+    scale: 0.7;
+    transition:
+      opacity 0.5s var(--ease-out),
+      scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .ag__tool.is-live {
+    box-shadow:
+      0 2px 2px rgba(0, 0, 0, 0),
+      inset 0 0 0 0.6px var(--c-accent);
+  }
+
+  .ag__tool.is-live::before {
+    opacity: 1;
+    scale: 1;
+    animation: ag-breathe 1.8s ease-in-out 0.6s infinite;
+  }
+
+  @keyframes ag-breathe {
+    50% {
+      scale: 1.14;
+      opacity: 0.55;
+    }
+  }
+
+  .ag__label {
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .ag__label--flow {
+    position: static;
+  }
+
+  .ag__line {
+    overflow: visible;
+  }
+
+  /* Two strokes on one path: the solid rest line and a dashed copy that
+     flows tool -> card. Lighting a tool cross-fades between them. Every
+     line's path starts at its tool end (the right-hand ones are mirrored),
+     so a negative dash offset always runs towards the card. */
+  .ag__line path {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 0.6;
+    transition: opacity 0.5s var(--ease-out);
+  }
+
+  .ag__flow {
+    stroke-dasharray: 4 4;
+    opacity: 0;
+    animation: ag-march 0.9s linear infinite;
+  }
+
+  .ag__line.is-live .ag__base {
+    opacity: 0;
+  }
+
+  .ag__line.is-live .ag__flow {
+    opacity: 1;
+  }
+
+  @keyframes ag-march {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+
+  /* --- agent card -------------------------------------------------------- */
+
+  .ag__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid rgba(131, 77, 251, 0.16);
+    border-radius: var(--r-card);
+    background: #fff;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
+  }
+
+  .ag__card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ag__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: var(--c-accent);
+    line-height: 0;
+  }
+
+  .ag__role {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 115px;
+    font-weight: 500;
+  }
+
+  .ag__role-k {
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .ag__role-v {
+    font-size: var(--fs-xxs);
+    line-height: normal;
+    color: var(--c-ink);
+  }
+
+  .ag__goal {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .ag__goal-k {
+    line-height: normal;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .ag__goal-v {
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .ag__tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 132px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Tasks not reached yet keep their space, so the card never resizes. */
+  .ag__task {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    color: var(--c-ink);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 6px;
+    transition:
+      opacity 0.5s var(--ease-out),
+      translate 0.6s var(--ease-out),
+      visibility 0.5s;
+  }
+
+  .ag__task.is-shown {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+  }
+
+  .ag__tick {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    line-height: 0;
+  }
+
+  .ag__tick :global(.icon) {
+    position: absolute;
+    inset: 0;
+    transition:
+      opacity 0.3s var(--ease-out),
+      scale 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .ag__task :global(.ag__tick-done) {
+    opacity: 0;
+    scale: 0.4;
+  }
+
+  .ag__task.is-done :global(.ag__tick-open) {
+    opacity: 0;
+  }
+
+  .ag__task.is-done :global(.ag__tick-done) {
+    opacity: 1;
+    scale: 1;
+  }
+
+  /* --- narrow panel: shorter elbows ---------------------------------------- */
+
+  @media (max-width: 700px) {
+    .ag__col,
+    .ag__col--right {
+      width: 64px;
+    }
+
+    .ag__line {
+      width: 24px;
+    }
+
+    .ag__line path {
+      vector-effect: non-scaling-stroke;
+    }
+
+    .ag__col--right .ag__tool:not(.ag__tool--flow) {
+      left: 24px !important;
+    }
+
+    /* Labels centred under their tool, wherever it now sits. */
+    .ag__col--left .ag__block--top .ag__label {
+      left: 20px !important;
+      translate: -50% 0;
+    }
+
+    .ag__col--right .ag__label {
+      left: 44px !important;
+      translate: -50% 0;
+    }
+  }
+</style>

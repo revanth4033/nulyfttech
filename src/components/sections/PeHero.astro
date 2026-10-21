@@ -1,0 +1,606 @@
+---
+/**
+ * Product Engineering hero — Figma 646:5615 (931 tall).
+ *
+ * Copy on the left, vertically centred; on the right a 690 x 545 diagram:
+ * the "engineering layer" hub inside four rings, five capability cards
+ * wired to it by elbow lines. Every diagram piece is placed at its Figma
+ * coordinate inside that box (rule 1 in CLAUDE.md — a placed composition,
+ * not a layout).
+ *
+ * Narrower screens:
+ *   - 1280-1439: the diagram anchors to the right edge of the column and
+ *     scales to the room the copy leaves (fit.ts) — it is a picture.
+ *   - tablet: copy, then the diagram below at its drawn size (scaled only
+ *     if the column is narrower than 690).
+ *   - phone: scaled to a phone the card text would be 6px, so the same
+ *     composition is re-proportioned to the column instead: a smaller hub,
+ *     the five cards in their desktop places as compact title-only cards,
+ *     and elbow wires drawn in code (Figma's connector art only fits the
+ *     desktop positions) carrying the same pulses — see pe-hero.ts.
+ */
+import { Image } from "astro:assets";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import dashedRing from "../../assets/images/cap-design/pe-ring-dashed.png";
+import { hero } from "../../data/capProductEngineering";
+---
+
+<section class="peh" data-section style={`--peh-h:${hero.height}px`}>
+  <div class="peh__frame">
+    <div class="peh__copy">
+      <div class="peh__intro">
+        <div class="peh__head">
+          <EyebrowBadge variant="studio" data-animate>{hero.eyebrow}</EyebrowBadge>
+          <h1 class="peh__title" data-animate>
+            {hero.title} <em>{hero.emphasis}</em>
+          </h1>
+        </div>
+        <p class="peh__body" data-animate>{hero.body}</p>
+      </div>
+
+      <div class="peh__actions" data-animate>
+        <PillButton href={hero.primary.href} arrow={20} flat>{hero.primary.label}</PillButton>
+        <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>
+      </div>
+    </div>
+
+    <div class="peh__fit fit" data-fit="690" style="--fit-w:690;--fit-h:545" data-animate>
+    <div class="peh__diagram fit__inner" aria-hidden="true" data-pe-diagram>
+      <span class="peh__ring peh__ring--459"></span>
+      <span class="peh__ring peh__ring--410"></span>
+      <span class="peh__ring peh__ring--350"></span>
+      <Image src={dashedRing} alt="" width={300} widths={[300, 600]} sizes="300px" class="peh__dashed" />
+
+      <span class="peh__hub-halo">
+        <span class="peh__hub">
+          <span class="peh__hub-title">{hero.hub.title}</span>
+          <Icon name="brand/pe/hub-line" width={48} height={0.6} class="peh__hub-rule" />
+          <span class="peh__hub-flow">{hero.hub.flow}</span>
+        </span>
+      </span>
+
+      {hero.dots.map((d) => <span class="peh__dot" style={`left:${d.x}px;top:${d.y}px;background:${d.c}`} />)}
+
+      {/* Phone wiring, drawn by pe-hero.ts from the laid-out positions. */}
+      <svg class="peh__wires" data-pe-wires></svg>
+
+      {
+        hero.connectors.map((c) => (
+          <span class="peh__conn" style={`left:${c.x}px;top:${c.y}px`} data-pe-conn>
+            <Icon name={c.src} width={c.w} height={c.h} />
+          </span>
+        ))
+      }
+
+      {
+        hero.cards.map((c, i) => (
+          <div class={`peh__card peh__card--${i}`} style={`left:${c.x}px;top:${c.y}px`} data-pe-card>
+            <span class="peh__chip" data-pe-chip>
+              <Icon name={c.icon} size={18} />
+            </span>
+            <span class="peh__card-text">
+              <span class="peh__card-title">{c.title}</span>
+              <span class="peh__card-sub">{c.sub}</span>
+            </span>
+          </div>
+        ))
+      }
+    </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .peh {
+    position: relative;
+    height: var(--peh-h);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .peh__frame {
+    position: relative;
+    max-width: var(--frame-w);
+    height: 100%;
+    margin-inline: auto;
+  }
+
+  /* --- copy -------------------------------------------------------------- */
+
+  /* Figma centres this 481-wide column on (340.5, 465). */
+  .peh__copy {
+    position: absolute;
+    top: 50%;
+    left: var(--gutter);
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 481px;
+    translate: 0 calc(-50% - 0.5px);
+  }
+
+  .peh__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .peh__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Inter, like the Product Design hero — not the IBM Plex the other
+     heroes use. The italic is the Inter 3.19 face (see fonts.css). */
+  .peh__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: 58px;
+    letter-spacing: var(--tr-h2-tight);
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  .peh__title em {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .peh__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* Figma flows the tilted pills as their rotated boxes (50.76 tall). */
+  .peh__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 50.76px;
+  }
+
+  /* --- diagram ------------------------------------------------------------ */
+
+  /* 690 x 545 at (650, 179) — right-anchored, so at 1440 it ends on the
+     column edge exactly as drawn. Below 1440 it takes what the copy leaves. */
+  .peh__fit {
+    position: absolute;
+    top: 179px;
+    right: var(--gutter);
+    width: min(690px, calc(100% - 2 * var(--gutter) - 481px - 40px));
+    margin: 0;
+  }
+
+  .peh__diagram > *,
+  .peh__diagram :global(.peh__dashed) {
+    position: absolute;
+  }
+
+  .peh__ring {
+    border-radius: 50%;
+  }
+
+  .peh__ring--459 {
+    top: 82px;
+    left: 146px;
+    width: 459px;
+    height: 459px;
+    border: 0.6px solid rgba(131, 77, 251, 0.12);
+  }
+
+  .peh__ring--410 {
+    top: 107px;
+    left: 171px;
+    width: 410px;
+    height: 410px;
+    border: 0.6px solid rgba(131, 77, 251, 0.16);
+  }
+
+  .peh__ring--350 {
+    top: 137px;
+    left: 201px;
+    width: 350px;
+    height: 350px;
+    border: 0.8px solid rgba(131, 77, 251, 0.2);
+  }
+
+  .peh__diagram :global(.peh__dashed) {
+    top: 162px;
+    left: 225px;
+    width: 300px;
+    height: 300px;
+    animation: peh-turn 80s linear infinite;
+  }
+
+  /* The dashed ring drifts round, slow enough to read as alive, not busy. */
+  @keyframes peh-turn {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* 225 tinted disc with the 200 white hub inside it. */
+  .peh__hub-halo {
+    top: 199px;
+    left: 263px;
+    width: 225px;
+    height: 225px;
+    border: 1px solid var(--c-accent);
+    border-radius: 50%;
+    background: rgba(131, 77, 251, 0.16);
+  }
+
+  .peh__hub {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 200px;
+    height: 200px;
+    border: 1px solid var(--c-accent);
+    border-radius: 50%;
+    background: var(--c-surface);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.32);
+    text-align: center;
+  }
+
+  .peh__hub-title {
+    width: 106px;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    line-height: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .peh__hub-flow {
+    font-weight: 500;
+    font-size: 9px;
+    line-height: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--c-ink);
+  }
+
+  .peh__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .peh__conn {
+    line-height: 0;
+  }
+
+  .peh__conn :global(svg) {
+    overflow: visible;
+  }
+
+  .peh__wires {
+    display: none;
+  }
+
+  .peh__card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 227px;
+    padding: 12px;
+    border: 1px solid rgba(131, 77, 251, 0.24);
+    border-radius: var(--r-card);
+    background: var(--c-surface);
+  }
+
+  .peh__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: 12px;
+    background: rgba(131, 77, 251, 0.16);
+    /* --glow (0..1) is driven by pe-hero.ts as a pulse lands on the card. */
+    box-shadow:
+      0 4px 8px rgba(131, 77, 251, 0.12),
+      0 0 calc(14px * var(--glow, 0)) calc(2px * var(--glow, 0)) rgba(131, 77, 251, calc(0.45 * var(--glow, 0)));
+    line-height: 0;
+  }
+
+  .peh__card-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .peh__card-title {
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: normal;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .peh__card-sub {
+    font-size: var(--fs-xxs);
+    line-height: 16px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* --- tablet: copy over the diagram -------------------------------------- */
+
+  @media (max-width: 1279px) {
+    .peh {
+      height: auto;
+    }
+
+    .peh__frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 56px;
+      padding: calc(var(--nav-h) + 56px) var(--gutter) 72px;
+    }
+
+    .peh__copy {
+      position: static;
+      align-items: center;
+      width: min(600px, 100%);
+      translate: none;
+      gap: 32px;
+      text-align: center;
+    }
+
+    .peh__head {
+      align-items: center;
+    }
+
+    .peh__actions {
+      justify-content: center;
+    }
+
+    .peh__fit {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: min(690px, 100%);
+      margin-inline: auto;
+    }
+  }
+
+  /* --- phone: emblem + capability grid -------------------------------------- */
+
+  @media (max-width: 560px) {
+    .peh__frame {
+      gap: 40px;
+      padding: calc(var(--nav-h) + 40px) var(--gutter) 56px;
+    }
+
+    .peh__copy {
+      gap: 28px;
+    }
+
+    .peh__intro {
+      gap: 12px;
+    }
+
+    /* 35 characters of tracked capitals: at the desktop 14/2.4 the badge
+       breaks onto two lines; 10.5/0.8 keeps it one hugging pill. */
+    .peh__head :global(.eyebrow) {
+      gap: 8px;
+      padding: 5px 12px 5px 5px;
+      font-size: 10.5px;
+      letter-spacing: 0.8px;
+    }
+
+    .peh__head :global(.eyebrow__avatar) {
+      width: 20px;
+      height: 20px;
+    }
+
+    .peh__title {
+      font-size: 34px;
+      line-height: 42px;
+      letter-spacing: -1.2px;
+    }
+
+    .peh__body {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    /* Two buttons side by side do not fit a 361 column: stack them, full
+       width, and let the rotated-box height Figma reserves go. */
+    .peh__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      height: auto;
+    }
+
+    .peh__actions :global(.pill) {
+      justify-content: center;
+    }
+
+    /* The fit box stops being a scaled picture: the diagram is laid out
+       afresh at the column's width, 400 tall, hub centred at (50%, 200). */
+    .peh__fit {
+      width: 100%;
+      aspect-ratio: auto;
+    }
+
+    .peh__diagram {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      transform: none;
+    }
+
+    .peh__ring,
+    .peh__diagram :global(.peh__dashed),
+    .peh__hub-halo {
+      top: 200px !important;
+      left: 50% !important;
+      translate: -50% -50%;
+    }
+
+    .peh__ring--459 { width: 290px; height: 290px; }
+    .peh__ring--410 { width: 258px; height: 258px; }
+    .peh__ring--350 { width: 220px; height: 220px; }
+
+    .peh__diagram :global(.peh__dashed) {
+      width: 188px;
+      height: 188px;
+    }
+
+    .peh__hub-halo {
+      width: 150px;
+      height: 150px;
+    }
+
+    .peh__hub {
+      top: 8px;
+      left: 8px;
+      gap: 8px;
+      width: 132px;
+      height: 132px;
+    }
+
+    .peh__hub-title {
+      width: 96px;
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .peh__hub-flow {
+      font-size: 7.5px;
+      letter-spacing: 0.2px;
+    }
+
+    .peh__hub :global(.peh__hub-rule) {
+      width: 36px;
+    }
+
+    .peh__dot,
+    .peh__conn {
+      display: none;
+    }
+
+    .peh__wires {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* The desktop connectors' weight and tint, drawn to the new places. */
+    .peh__wires :global(.peh__wire) {
+      fill: none;
+      stroke: var(--c-accent);
+      stroke-width: 1;
+      stroke-opacity: 0.55;
+    }
+
+    .peh__wires :global(.peh__wire-end) {
+      fill: var(--c-accent);
+    }
+
+    /* Compact cards — icon and title; the subtitle has no room at a size
+       anyone could read. Placed where desktop puts them, the 545 tall
+       frame's tops scaled into 400: left cards anchored left, right cards
+       anchored right. */
+    .peh__diagram > .peh__card {
+      z-index: 1;
+      align-items: center;
+      gap: 8px;
+      width: auto;
+      padding: 7px 12px 7px 7px;
+      border-radius: 10px;
+    }
+
+    .peh__diagram > .peh__card--0 { left: auto !important; right: 0; top: 0 !important; }
+    .peh__diagram > .peh__card--1 { left: 0 !important; top: 81px !important; }
+    .peh__diagram > .peh__card--2 { left: auto !important; right: 0; top: 90px !important; }
+    .peh__diagram > .peh__card--3 { left: 0 !important; top: 296px !important; }
+    .peh__diagram > .peh__card--4 { left: auto !important; right: 0; top: 352px !important; }
+
+    .peh__chip {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+    }
+
+    .peh__chip :global(svg) {
+      width: 15px;
+      height: 15px;
+    }
+
+    .peh__card-title {
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .peh__card-sub {
+      display: none;
+    }
+  }
+
+  /* Narrowest phones (column under ~330): the right-hand cards come within
+     reach of the halo, so the hub steps down and Infrastructure rides up
+     clear of it rather than overlapping. */
+  @media (max-width: 360px) {
+    .peh__ring--459 { width: 262px; height: 262px; }
+    .peh__ring--410 { width: 234px; height: 234px; }
+    .peh__ring--350 { width: 200px; height: 200px; }
+
+    .peh__diagram :global(.peh__dashed) {
+      width: 170px;
+      height: 170px;
+    }
+
+    .peh__hub-halo {
+      width: 136px;
+      height: 136px;
+    }
+
+    .peh__hub {
+      top: 7px;
+      left: 7px;
+      width: 120px;
+      height: 120px;
+    }
+
+    .peh__hub-title {
+      font-size: 10px;
+      line-height: 14px;
+    }
+
+    .peh__hub-flow {
+      font-size: 6.5px;
+    }
+
+    .peh__diagram > .peh__card--2 {
+      top: 86px !important;
+    }
+  }
+</style>

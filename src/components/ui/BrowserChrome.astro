@@ -47,7 +47,7 @@ const {
 
     <div class="chrome__url">
       <Icon name="browser/lock" width={8} height={8} />
-      <span>{url}</span>
+      <span class="chrome__url-text">{url}</span>
       <Icon name="browser/star" width={10.7} height={10.7} class="chrome__star" />
     </div>
 
@@ -131,7 +131,9 @@ const {
     border-radius: var(--url-r);
   }
 
-  .chrome__url span {
+  /* A class, not a bare `span`: <Icon> renders a span too, and the bare
+     selector gave the lock icon `flex: 1`, pushing the URL to the middle. */
+  .chrome__url-text {
     flex: 1;
     overflow: hidden;
     font-size: 9.4px;

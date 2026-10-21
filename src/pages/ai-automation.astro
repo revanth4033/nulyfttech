@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import AiHero from "../components/sections/AiHero.astro";
+import AiServices from "../components/sections/AiServices.astro";
+import AiProjects from "../components/sections/AiProjects.astro";
+import AiIndustries from "../components/sections/AiIndustries.astro";
+import AiEngineer from "../components/sections/AiEngineer.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { cta } from "../data/capAi";
+---
+
+<BaseLayout
+  title="AI & Automation — nuLyft"
+  description="We engineer AI agents, intelligent workflows, and connected automation that take work beyond experimentation into systems your teams can actually use."
+>
+  <Nav slot="overlay" />
+
+  <AiHero />
+  <AiServices />
+  <AiProjects />
+  <AiIndustries />
+  <AiEngineer />
+  <CtaFooter title={cta.title} body={cta.body} copyWidth={642} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/fit.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+  import "../scripts/ai-hero.ts";
+  import "../scripts/ai-agents.ts";
+  import "../scripts/ai-workflow.ts";
+  import "../scripts/ai-doc.ts";
+  import "../scripts/ai-voice.ts";
+  import "../scripts/ai-industries.ts";
+</script>

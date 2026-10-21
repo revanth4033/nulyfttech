@@ -1,0 +1,280 @@
+---
+/**
+ * Intelligent Workflow illustration — Figma 647:6476, states 647:7155.
+ *
+ * Four step cards. Manual (the page frame): scattered, tilted, a dashed
+ * hand-off loop and a "30 min per invoice" pill. Automated: the same cards
+ * stacked in one column on a spine, then completed one by one — the icon
+ * chip fills, the time becomes a tick, a dot marks the hand-off.
+ *
+ * Cards are placed by centre + rotation from `capAi.ts`, so the script can
+ * move the same elements between the two layouts. This renders Manual.
+ *
+ * Every x is Figma's, measured from the 460 panel's left edge; `--ox`
+ * re-centres them on whatever panel they are in (0 at 460), so on a phone
+ * the same composition sits in the middle at full size.
+ */
+import Icon from "../ui/Icon.astro";
+import { services } from "../../data/capAi";
+
+const w = services.workflow;
+const place = (p: { x: number; y: number; r: number }) =>
+  `--x:${p.x}px;--y:${p.y}px;--r:${p.r}deg`;
+---
+
+<div class="wf" data-workflow data-mode="manual">
+  <div class="wf__bar">
+    <div class="wf__toggle" role="presentation" data-wf-toggle>
+      <span class="wf__thumb" aria-hidden="true" data-wf-thumb></span>
+      <span class="wf__opt is-on" data-wf-opt="manual">Manual</span>
+      <span class="wf__opt" data-wf-opt="automated">Automated</span>
+    </div>
+    <span class="wf__pill" data-wf-pill>{w.perInvoice}</span>
+  </div>
+
+  <span class="wf__spine" aria-hidden="true" data-wf-spine></span>
+  <span class="wf__runner" aria-hidden="true" data-wf-runner></span>
+  <svg class="wf__loop" viewBox="0 0 128.6 28.6" width="128.6" height="28.6" aria-hidden="true" data-wf-loop>
+    <path d="M0.3 18.8V20.3C0.3 24.72 3.88 28.3 8.3 28.3H120.3C124.72 28.3 128.3 24.72 128.3 20.3V8.3C128.3 3.88 124.72 0.3 120.3 0.3H111.8" />
+  </svg>
+
+  {
+    w.steps.map((s, i) => (
+      <div class="wf__card" style={place(w.manual[i])} data-wf-card>
+        <span class="wf__chip">
+          <Icon name={s.icon} size={12} />
+        </span>
+        <span class="wf__text">
+          <span class="wf__row">
+            <span class="wf__title">{s.title}</span>
+            <span class="wf__time" data-wf-time>{s.time}</span>
+            <Icon name="icons/ai/check-filled" size={10} class="wf__done" />
+          </span>
+          <span class="wf__kind">{s.kind}</span>
+        </span>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .wf {
+    --ox: calc(50% - 230px);
+    position: relative;
+    height: 300px;
+    border-radius: var(--r-card);
+    background: var(--c-bg-light);
+    overflow: hidden;
+  }
+
+  .wf__bar {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 48px);
+  }
+
+  .wf__toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 4px;
+    border: 1px solid rgba(131, 77, 251, 0.12);
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  .wf__opt {
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: #5f6368;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  .wf__opt {
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf__opt.is-on {
+    background: var(--c-accent);
+    color: #fff;
+  }
+
+  /* With the script running, one thumb slides between the options instead
+     of each option swapping its own fill. */
+  .wf__thumb {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 0;
+    width: 0;
+    border-radius: 4px;
+    background: var(--c-accent);
+    opacity: 0;
+  }
+
+  .wf.has-thumb .wf__thumb {
+    opacity: 1;
+  }
+
+  .wf.has-thumb .wf__opt.is-on {
+    background: transparent;
+  }
+
+  .wf__pill {
+    padding: 6px 12px;
+    border: 1px solid rgba(131, 77, 251, 0.12);
+    border-radius: var(--r-pill);
+    background: #fff;
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: var(--tr-body);
+    color: #5f6368;
+  }
+
+  /* Automated only: one 1px rule behind the column, centre to centre. */
+  .wf__spine {
+    position: absolute;
+    top: 101.25px;
+    left: calc(var(--ox) + 225.5px);
+    width: 1px;
+    height: 152.25px;
+    background: rgba(131, 77, 251, 0.24);
+    transform-origin: 50% 0;
+    opacity: 0;
+  }
+
+  /* One hand-off marker that travels down the spine as steps complete. */
+  .wf__runner {
+    position: absolute;
+    top: 0;
+    left: calc(var(--ox) + 223px);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(131, 77, 251, 0.16);
+    opacity: 0;
+  }
+
+  /* Manual only: the dashed hand-off from "Extract the fields". */
+  .wf__loop {
+    position: absolute;
+    top: 144.7px;
+    left: calc(var(--ox) + 273.7px);
+    overflow: visible;
+  }
+
+  .wf__loop path {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 0.6;
+    stroke-dasharray: 4 4;
+  }
+
+  /* Placed by centre and tilt so manual <-> automated is one move. */
+  .wf__card {
+    position: absolute;
+    top: 0;
+    left: var(--ox);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 275px;
+    padding: 4px 8px;
+    border: 1px solid rgba(131, 77, 251, 0.16);
+    border-radius: var(--r-card);
+    background: #fff;
+    filter: drop-shadow(0 2px 3px rgba(131, 77, 251, 0.12));
+    transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%)) rotate(var(--r));
+  }
+
+  .wf__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 4px;
+    background: rgba(131, 77, 251, 0.16);
+    color: var(--c-accent);
+    line-height: 0;
+    transition:
+      background-color 0.4s var(--ease-out),
+      color 0.4s var(--ease-out);
+  }
+
+  .wf__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .wf__row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    letter-spacing: var(--tr-body);
+    white-space: nowrap;
+  }
+
+  .wf__title {
+    font-size: 10px;
+    line-height: 12px;
+    color: var(--c-ink);
+  }
+
+  .wf__time {
+    transition: opacity 0.25s var(--ease-out);
+    font-size: 8px;
+    line-height: 10px;
+    color: var(--c-muted);
+  }
+
+  .wf__row :global(.wf__done) {
+    position: absolute;
+    right: 0;
+    opacity: 0;
+    scale: 0.3;
+    transition:
+      opacity 0.3s var(--ease-out),
+      scale 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .wf__kind {
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: 0.6px;
+    color: var(--c-muted);
+  }
+
+  /* Completed step: filled chip, the time swaps for a tick. */
+  .wf__card.is-done .wf__chip {
+    background: var(--c-accent);
+    color: #fff;
+  }
+
+  .wf__card.is-done .wf__time {
+    opacity: 0;
+  }
+
+  .wf__card.is-done :global(.wf__done) {
+    opacity: 1;
+    scale: 1;
+  }
+
+</style>
