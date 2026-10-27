@@ -281,8 +281,9 @@ const renderW = (s: HeroScreen) =>
   }
 
   .chero__title em {
-    font-weight: 500;
-    font-style: italic;
+    /* Set upright at full weight, like the rest of the headline (by
+       request — the frame sets this tail italic). */
+    font-style: normal;
   }
 
   /* Figma flows the tilted pill as its rotated bounding box (250.76 x

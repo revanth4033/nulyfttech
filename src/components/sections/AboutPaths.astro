@@ -13,13 +13,30 @@ import { starts, branches, trunk, pathDots, routes, nextStep, PATHS_STAGE } from
  * Motion (`scripts/about-paths.ts`): each dot travels its line into the mark
  * and the mark glows as it lands. With JS off, or reduced motion, the dots
  * rest where Figma draws them.
+ *
+ * Narrower than the design:
+ * - 1181-1439 the stage scales as one picture (`fit.ts`, >= 0.79, so the
+ *   bodies stay above 12px). At 1440 the scale is switched off.
+ * - At 1180 and below the same composition is rebuilt in flow (`.flow`):
+ *   the three starting points stacked, their lines converging on the mark —
+ *   beside them on a tablet, below them on a phone, where the lines run
+ *   right into one trunk that drops into the mark. Text cannot be scaled to
+ *   fit there (it would be ~10px), and its wrapping decides where each line
+ *   starts, so the lines are drawn from the laid-out positions by the
+ *   script, and redrawn on resize. The two layouts are both in the markup;
+ *   one is always `display: none`.
  */
 const px = (n: number) => `${n}px`;
 ---
 
 <section class="paths" data-section="about-paths">
   <div class="container">
-    <div class="paths__stage" style={`height:${px(PATHS_STAGE.h)}`}>
+    <div
+      class="fit paths__fit"
+      data-fit={PATHS_STAGE.w}
+      style={`--fit-w:${PATHS_STAGE.w};--fit-h:${PATHS_STAGE.h}`}
+    >
+    <div class="fit__inner paths__stage">
       {
         branches.map((b) => (
           <span
@@ -79,6 +96,45 @@ const px = (n: number) => `${n}px`;
         </span>
       </div>
     </div>
+    </div>
+
+    <div class="flow" data-flow>
+      <ul class="flow__starts">
+        {
+          starts.map((s) => (
+            <li class="flow__start" data-flow-start data-animate>
+              <span class="paths__chip">
+                <Icon name="icons/about/check-circle" size={24} uid="flow" />
+              </span>
+              <span class="paths__text">
+                <h3 class="paths__title">{s.title}</h3>
+                <p class="paths__body">{s.body}</p>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="flow__goal" data-animate>
+        <span class="paths__mark flow__mark" aria-hidden="true" data-flow-mark>
+          <span class="paths__pulse" data-flow-pulse></span>
+          <Icon name="brand/about/next-mark" size={40} uid="flow" />
+        </span>
+        <p class="paths__goal-label">{nextStep.label}</p>
+      </div>
+
+      <svg class="flow__lines" aria-hidden="true" focusable="false" fill="none" data-flow-lines>
+        <defs>
+          <linearGradient id="flow-line" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0" data-flow-grad>
+            <stop stop-color="#834DFB" stop-opacity="0" />
+            <stop offset="0.5" stop-color="#834DFB" />
+          </linearGradient>
+        </defs>
+        {starts.map(() => <path stroke="url(#flow-line)" stroke-width="1.2" data-flow-route />)}
+      </svg>
+
+      {starts.map(() => <span class="paths__dot flow__dot" aria-hidden="true" data-flow-dot />)}
+    </div>
   </div>
 </section>
 
@@ -88,8 +144,14 @@ const px = (n: number) => `${n}px`;
     padding-block: 100px;
   }
 
-  .paths__stage {
-    position: relative;
+  /* The stage is the fit wrapper's 1240 x 504 inner box; a position here
+     would outrank `.fit__inner`'s and leave the wrapper too tall. At 1440
+     the scale is exactly 1, and a scale(1) transform still re-rasterises
+     the text, so it is switched off there. */
+  @media (min-width: 1440px) {
+    .paths__stage.fit__inner {
+      transform: none;
+    }
   }
 
   /* Flex, not block: the inlined <Icon> otherwise sits on a text baseline,
@@ -229,5 +291,155 @@ const px = (n: number) => `${n}px`;
     position: absolute;
     top: -1px;
     left: 0;
+  }
+
+  /* --- the flow version (1180 and below) --------------------------------- */
+
+  .flow {
+    display: none;
+  }
+
+  @media (max-width: 1180px) {
+    .paths__fit {
+      display: none;
+    }
+
+    /* Tablet: the starting points in a column on the left, the mark on the
+       right at their middle, the lines converging across the gap between —
+       the desktop composition, laid out rather than placed. */
+    .flow {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 380px) minmax(120px, 1fr) auto;
+      align-items: center;
+    }
+
+    .flow__starts {
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+      list-style: none;
+    }
+
+    .flow__start {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flow__goal {
+      position: relative;
+      z-index: 1;
+      grid-column: 3;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      /* Room for the mark's 20px ring on the left. */
+      padding-left: 20px;
+    }
+
+    .flow__mark {
+      position: relative;
+    }
+
+    .flow__lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* Placed by the script; nothing to show until it has drawn the lines,
+       and nothing at all without motion. */
+    .flow__dot {
+      left: 0;
+      top: 0;
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .paths {
+      padding-block: 64px;
+    }
+
+    .flow {
+      grid-template-columns: minmax(0, 320px) minmax(96px, 1fr) auto;
+    }
+
+    .flow__starts {
+      gap: 40px;
+    }
+
+    .paths__text {
+      gap: 8px;
+    }
+  }
+
+  /* Phone: the starting points take the column, less a 92px lane on the
+     right. Each line runs out into that lane, down one shared trunk, and into
+     the mark at its foot, labelled on its left. */
+  @media (max-width: 700px) {
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+
+    .flow__starts {
+      padding-right: 92px;
+      gap: 32px;
+    }
+
+    .flow__start {
+      align-items: flex-start;
+    }
+
+    .flow__goal {
+      grid-column: 1;
+      justify-self: end;
+      flex-direction: row-reverse;
+      gap: 16px;
+      padding: 0 20px 0 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .paths {
+      padding-block: 40px;
+    }
+
+    .paths__chip {
+      width: 40px;
+      height: 40px;
+    }
+
+    .paths__chip :global(svg) {
+      width: 20px;
+      height: 20px;
+    }
+
+    .paths__title {
+      font-size: var(--fs-body);
+      line-height: 22px;
+    }
+
+    .paths__body {
+      font-size: var(--fs-sm);
+      line-height: 20px;
+    }
+
+    .paths__text {
+      gap: 4px;
+    }
+
+    .paths__goal-label {
+      font-size: var(--fs-sm);
+      line-height: 20px;
+    }
   }
 </style>

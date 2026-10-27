@@ -490,8 +490,25 @@ const CONNECTORS = [
     color: #fff;
   }
 
-  .proj--dark .proj__cta :global(.proj__btn:hover) {
-    background: rgba(255, 255, 255, 0.08);
+  /* On the dark card the outline pill's lavender state layer and deeper
+     purple label would read as a light patch; here the states are white
+     washes over the dark, and the label stays white. */
+  .proj--dark .proj__cta :global(.proj__btn::before) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .proj--dark .proj__cta :global(.proj__btn:hover),
+  .proj--dark .proj__cta :global(.proj__btn:active) {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .proj--dark .proj__cta :global(.proj__btn:active::before) {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .proj--dark .proj__cta :global(.proj__btn:focus-visible) {
+    outline-color: #fff;
   }
 
   .proj__media {
@@ -566,7 +583,7 @@ const CONNECTORS = [
 
   .proj__kicker {
     padding-block: 8px;
-    border-radius: 88px;
+    border-radius: var(--r-eyebrow);
     background: var(--proj-kicker-bg);
     font-weight: 500;
     font-size: var(--fs-sm);

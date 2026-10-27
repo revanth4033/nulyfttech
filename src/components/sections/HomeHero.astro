@@ -90,7 +90,7 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
               aria-hidden={i === 0 ? undefined : "true"}
               style={sl.photoPosition ? `object-position:${sl.photoPosition}` : undefined}
               widths={[1240, 2000]}
-              sizes="(max-width: 1440px) calc(100vw - 2 * var(--gutter)), 1240px"
+              sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 900px) calc(100vw - 64px), (max-width: 1440px) calc(100vw - 200px), 1240px"
               loading="eager"
               fetchpriority={i === 0 ? "high" : "low"}
             />
@@ -203,8 +203,9 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
   }
 
   .hhero__title em {
-    font-weight: 500;
-    font-style: italic;
+    /* Set upright at full weight, like the rest of the headline (by
+       request — the frame sets this tail italic). */
+    font-style: normal;
   }
 
   .hhero__body {
@@ -320,6 +321,117 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
     align-items: center;
     justify-content: center;
     min-width: 224.76px;
+  }
+
+  /* --- tablet ------------------------------------------------------------ */
+
+  /* The section stops being a fixed 894 and sizes to its content; the copy
+     stacks over the photo. The notched card keeps its shape — at tablet
+     width the 320px notch is under half the photo, as on desktop. */
+  @media (max-width: 900px) {
+    .hhero {
+      height: auto;
+      padding-bottom: 64px;
+    }
+
+    .hhero__inner {
+      gap: 32px;
+      padding-top: calc(var(--nav-top) + var(--nav-card-h) + 56px);
+    }
+
+    .hhero__head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .hhero__stack--title,
+    .hhero__stack--body {
+      flex: none;
+      align-items: start;
+    }
+
+    .hhero__title {
+      font-size: 34px;
+      line-height: 1.2;
+      letter-spacing: -1px;
+    }
+
+    .hhero__body {
+      max-width: 560px;
+    }
+
+    .hhero__media {
+      height: auto;
+      aspect-ratio: 704 / 420;
+    }
+
+    .hhero__dots {
+      top: auto;
+      bottom: 32px;
+    }
+  }
+
+  /* --- phone ------------------------------------------------------------- */
+
+  /* A 320px notch would take nearly the whole width of a phone photo, so the
+     card is a plain rounded photo here and the button moves up under the
+     copy — headline, line, button, then the picture. The dots stay on the
+     photo. */
+  @media (max-width: 560px) {
+    .hhero {
+      padding-bottom: 40px;
+    }
+
+    .hhero__inner {
+      gap: 20px;
+      padding-top: calc(var(--nav-top) + var(--nav-card-h) + 36px);
+    }
+
+    .hhero__head {
+      gap: 12px;
+    }
+
+    .hhero__title {
+      font-size: 28px;
+      letter-spacing: -0.6px;
+    }
+
+    .hhero__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .hhero__media {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      aspect-ratio: auto;
+    }
+
+    .hhero__photo {
+      position: relative;
+      inset: auto;
+      aspect-ratio: 343 / 280;
+      border-radius: 20px;
+      mask-image: none;
+    }
+
+    .hhero__cta {
+      position: static;
+      order: -1;
+      justify-items: start;
+      height: auto;
+    }
+
+    .hhero__cta > .hhero__slide {
+      min-width: 0;
+    }
+
+    .hhero__dots {
+      left: 20px;
+      bottom: 20px;
+    }
   }
 </style>
 

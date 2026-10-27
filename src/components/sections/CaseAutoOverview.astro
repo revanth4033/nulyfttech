@@ -1,6 +1,7 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 import { Image } from "astro:assets";
-import { overview, challenge } from "../../data/caseAuto";
+import { overview } from "../../data/caseAuto";
 
 /**
  * Overview and Challenge — Figma 510:5776 and 510:5815.
@@ -8,10 +9,9 @@ import { overview, challenge } from "../../data/caseAuto";
  * Both are a copy column beside media inside a 1240 container inset 100 from
  * the frame, so they share a file the way the LMS pair does.
  *
- * One difference worth not "fixing": Overview's eyebrow is bare text (a 17px
- * box) while the Challenge's sits in a 33px pill. That is what the frames
- * draw — the pill is the `Frame 2147240500` wrapper, and Overview's eyebrow
- * has no such wrapper.
+ * Both eyebrows are the site's shared `EyebrowBadge` (by request). The
+ * frames draw Overview's as bare text and the Challenge's as a pale pill;
+ * every case-study eyebrow now matches the rest of the site instead.
  */
 /**
  * Figma insets the 1240 container 100 from the frame on every side, and that
@@ -22,7 +22,6 @@ import { overview, challenge } from "../../data/caseAuto";
 const INSET = 100;
 
 const ov = overview;
-const ch = challenge;
 ---
 
 <section class="aov" data-section>
@@ -30,7 +29,7 @@ const ch = challenge;
     <span class="aglow" style="left:749px;top:148px;width:400px;height:400px" aria-hidden="true"></span>
 
     <div class="aov__copy">
-      <p class="aov__eyebrow" data-animate>{ov.eyebrow}</p>
+      <EyebrowBadge class="case-eyebrow" data-animate>{ov.eyebrow}</EyebrowBadge>
       <h2 class="aov__title" data-animate>{ov.title}</h2>
       <p class="aov__body" data-animate>{ov.body}</p>
 
@@ -70,52 +69,21 @@ const ch = challenge;
   </div>
 </section>
 
-<section class="ach" data-section>
-  <div class="ach__frame">
-    <span class="aglow" style="left:771px;top:185px;width:400px;height:400px" aria-hidden="true"></span>
-
-    <div class="ach__copy">
-      <p class="ach__eyebrow" data-animate>{ch.eyebrow}</p>
-      <h2 class="aov__title" data-animate>{ch.title}</h2>
-      <p class="aov__body" data-animate>{ch.body}</p>
-
-      <ul class="ach__points">
-        {
-          ch.points.map((p) => (
-            <li data-animate>
-              <span class="ach__x" aria-hidden="true">
-                &#10005;
-              </span>
-              {p}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <Image
-      src={ch.photos.src}
-      alt="Dealers struggling with paperwork, scattered social tools, and phone enquiries"
-      width={ch.photos.w * 2}
-      widths={[ch.photos.w, ch.photos.w * 2]}
-      sizes={`${ch.photos.w}px`}
-      class="ach__photos"
-      style={`left:${ch.photos.x}px;top:${ch.photos.y + INSET}px;width:${ch.photos.w}px`}
-      data-animate
-    />
-  </div>
-</section>
-
 <style>
-  .aov,
-  .ach {
+  /* The shared section eyebrow (by request — the case studies had their own
+     pale, untracked-padding pill). It is inline-flex, so in these column
+     layouts it would stretch the full width without this. */
+  :global(.case-eyebrow) {
+    align-self: flex-start;
+  }
+
+  .aov {
     position: relative;
     background: var(--c-bg-light);
   }
 
   /* Figma insets a 1240 container by 100 on every side. */
-  .aov__frame,
-  .ach__frame {
+  .aov__frame {
     position: relative;
     width: 100%;
     max-width: 1240px;
@@ -127,12 +95,7 @@ const ch = challenge;
     height: 698px;
   }
 
-  .ach__frame {
-    height: 677px;
-  }
-
-  .aov__copy,
-  .ach__copy {
+  .aov__copy {
     position: absolute;
     top: 100px;
     left: 0;
@@ -143,28 +106,6 @@ const ch = challenge;
 
   .aov__copy {
     width: 606px;
-  }
-
-  .ach__copy {
-    width: 541px;
-  }
-
-  /* Bare text in Overview — no pill wrapper in the frame. */
-  .aov__eyebrow,
-  .ach__eyebrow {
-    font-weight: 600;
-    font-size: var(--fs-sm);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--c-accent);
-  }
-
-  /* The Challenge's does have one: a 33px pill against the eyebrow's 17. */
-  .ach__eyebrow {
-    padding-block: 8px;
-    background: var(--c-case-eyebrow-bg);
-    border-radius: 88px;
   }
 
   .aov__title {
@@ -237,47 +178,15 @@ const ch = challenge;
     white-space: nowrap;
   }
 
-  .aov__phone,
-  .ach__photos {
+  .aov__phone {
     position: absolute;
     display: block;
     height: auto;
     max-width: none;
   }
 
-  /* --- challenge ----------------------------------------------------------- */
-
-  .ach__points {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 24px;
-  }
-
-  .ach__points li {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding-block: 24px;
-    border-bottom: 1px solid var(--c-card-border);
-    font-weight: 500;
-    font-size: var(--fs-sm);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--c-danger);
-  }
-
   /* Figma gives the first row no top padding — it sits straight under the
      paragraph and only the rule below it separates the four. */
-  .ach__points li:first-child {
-    padding-top: 0;
-  }
-
-  .ach__x {
-    font-size: 14px;
-    line-height: 1;
-  }
 
   /* The soft lavender disc behind the media. Faint on purpose: measured on
      the frame it bottoms out 5-6 levels under the ground. */
@@ -291,21 +200,18 @@ const ch = challenge;
   }
 
   @media (max-width: 1280px) {
-    .aov__frame,
-    .ach__frame {
+    .aov__frame {
       height: auto;
       padding-inline: var(--gutter);
     }
 
-    .aov__copy,
-    .ach__copy {
+    .aov__copy {
       position: static;
       width: 100%;
       max-width: 606px;
     }
 
-    .aov__phone,
-    .ach__photos {
+    .aov__phone {
       position: static;
       width: 100% !important;
       max-width: 651px;
@@ -321,8 +227,7 @@ const ch = challenge;
   }
 
   @media (max-width: 900px) {
-    .aov__frame,
-    .ach__frame {
+    .aov__frame {
       padding-block: 64px;
     }
 
@@ -339,8 +244,7 @@ const ch = challenge;
 
   /* Mobile */
   @media (max-width: 560px) {
-    .aov__frame,
-    .ach__frame {
+    .aov__frame {
       padding-block: 40px;
     }
 
@@ -352,12 +256,6 @@ const ch = challenge;
     .aov__body {
       font-size: 14px;
       line-height: 22px;
-    }
-
-    .aov__eyebrow,
-    .ach__eyebrow {
-      font-size: 11px;
-      letter-spacing: 1.6px;
     }
 
     /* A 32px flex row of four facts cannot hold a 341 column. */
@@ -381,7 +279,6 @@ const ch = challenge;
       white-space: normal;
     }
 
-
     .aov__facts dd {
       font-size: 16px;
       line-height: 24px;
@@ -392,15 +289,5 @@ const ch = challenge;
     }
 
     /* At 15/2.4 the longest point wrapped and closed the gap to its rule. */
-    .ach__points li {
-      gap: 8px;
-      padding-block: 14px;
-      font-size: 12px;
-      letter-spacing: 1.2px;
-    }
-
-    .ach__x {
-      font-size: 12px;
-    }
   }
 </style>

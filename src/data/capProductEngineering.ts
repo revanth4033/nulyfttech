@@ -167,7 +167,7 @@ export const proof = {
     },
     {
       name: "Motorcycle Discovery Platform",
-      href: "/work/automotive-marketplace",
+      href: "/work/nxtdealer",
       items: [
         { label: "Structured Vehicle Listings", text: "Organizes vehicle details, specifications, images, and listing information." },
         { label: "AI-Powered Reel Creation", text: "Uses vehicle images and details to generate promotional reels." },

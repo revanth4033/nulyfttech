@@ -75,32 +75,31 @@ export const shafts = [
   { x: 1059, y: -141, w: 320.183, h: 490.273, barW: 50.094, rotate: -149.18, flip: true },
 ];
 
-/* --- A little about nuLyft (664:3024) ------------------------------------- */
+/* --- A little about nuLyft ------------------------------------------------- */
 
+/**
+ * The home page's one-section answer to "what is nuLyft". Figma's version
+ * (664:3024, three idea / challenge / direction cards) was replaced at the
+ * user's request, and so was a first rebuild that set the About page's two
+ * sections side by side — the brief is the About page's *idea* in one simple
+ * section, not its layout. The words are the About page's own (its hero and
+ * its partner pitch), condensed:
+ *
+ *   every business reaches a point where it needs to move forward —
+ *   a new idea, a challenge, a new direction — and nuLyft is the partner
+ *   that helps it take that next step, starting from understanding.
+ */
 export const about = {
-  title: "A Little About nuLyft",
-  body: "Every business reaches a point where moving forward means something different.",
+  eyebrow: "About nuLyft",
+  title: {
+    lead: "Every business reaches a point where it needs to move forward. ",
+    em: "We help you take that next step.",
+  },
+  lede: "More than a project, a technology partner. We work closely with our clients to understand what they need, explore the options, and develop solutions that fit their business.",
   cta: { label: "Get To Know Us", href: "/about" },
-  cards: [
-    {
-      icon: "icons/home/idea",
-      title: "An idea to explore",
-      body: "Every new idea opens a door to possibility. The interesting part is discovering where it could lead.",
-    },
-    {
-      icon: "icons/home/quiz",
-      title: "A challenge to solve",
-      body: "Sometimes, moving forward means looking at familiar problems differently. A new perspective can change what’s possible.",
-      /** Figma draws this one lit: a solid accent ring with a 2px glow. */
-      lit: true,
-    },
-    {
-      icon: "icons/home/curvy-right",
-      title: "A direction to take",
-      // The double space is Figma's, and harmless — HTML collapses it.
-      body: "When the next step is not obvious, the right questions can make the path ahead  and much clearer.",
-    },
-  ],
+  /** The three starting points the About page draws, leading to the mark. */
+  starts: ["A new idea to explore", "A challenge to overcome", "A new direction to take"],
+  goal: "The next step",
 };
 
 /* --- Great products don't happen by accident (664:3065) ------------------- */
@@ -140,7 +139,9 @@ export const craft = {
 /* --- Why businesses choose nuLyft (664:3136) ------------------------------ */
 
 export const why = {
-  eyebrow: "Why businesses choose NuLyft",
+  // The uppercase pill hid the casing; the index shows it, so the brand
+  // is spelt as it is everywhere else.
+  eyebrow: "Why businesses choose nuLyft",
   title: "More than a technology partner. A partner invested in the outcome",
   body: "We look beyond the brief to understand the business, make informed decisions, and drive meaningful change.",
 };

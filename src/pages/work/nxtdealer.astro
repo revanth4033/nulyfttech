@@ -7,16 +7,19 @@ import CaseAutoApproach from "../../components/sections/CaseAutoApproach.astro";
 import CaseAutoSystem from "../../components/sections/CaseAutoSystem.astro";
 import CaseAutoScreens from "../../components/sections/CaseAutoScreens.astro";
 import CtaFooter from "../../components/sections/CtaFooter.astro";
+import CaseChallenge from "../../components/case/CaseChallenge.astro";
+import { challenge } from "../../data/caseAuto";
 ---
 
 <BaseLayout
-  title="Automotive Marketplace — nuLyft"
+  title="NxtDealer — nuLyft"
   description="A mobile marketplace that helps bike dealers manage stock, create AI-powered listings, and connect directly with buyers."
 >
   <Nav slot="overlay" />
 
   <CaseAutoHero />
   <CaseAutoOverview />
+  <CaseChallenge {...challenge} />
   <CaseAutoApproach />
   <CaseAutoSystem />
   <CaseAutoScreens />

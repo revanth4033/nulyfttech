@@ -14,6 +14,17 @@ import { why, whyCards, whyLinks, whyPlatform, whyMark, WHY_STAGE } from "../../
  * a flat 2px #834dfb: measured off the render, each fades to nothing on the
  * side facing away from the mark — left on the two left cards, right on the
  * two right ones.
+ *
+ * Narrower than the design:
+ * - 1241-1439 the diagram scales as one picture (`fit.ts`, ~0.84 at worst,
+ *   so card text stays above 13px). At 1440 the scale is pinned off, so the
+ *   frame renders untouched.
+ * - At 1240 and below it is re-proportioned rather than shrunk: the same
+ *   four cards wired into the same mark on the same platform, stacked in a
+ *   column with a line running down through them into the mark. Each ring
+ *   now fades from the top, so every card brightens towards the mark below
+ *   it, as the desktop's fade towards the mark across. The two layouts are
+ *   both in the markup; one is always `display: none`.
  */
 const px = (n: number) => `${n}px`;
 ---
@@ -28,7 +39,12 @@ const px = (n: number) => `${n}px`;
       <p class="hwhy__body" data-animate>{why.body}</p>
     </header>
 
-    <div class="hwhy__stage" style={`--stage-h:${px(WHY_STAGE.h)}`} data-animate>
+    <div
+      class="fit hwhy__fit"
+      data-fit={WHY_STAGE.w}
+      style={`--fit-w:${WHY_STAGE.w};--fit-h:${WHY_STAGE.h}`}
+    >
+    <div class="fit__inner hwhy__stage" style={`--stage-h:${px(WHY_STAGE.h)}`}>
       <span
         class="hwhy__piece hwhy__platform"
         style={`left:${px(whyPlatform.x)};top:${px(whyPlatform.y)}`}
@@ -39,18 +55,25 @@ const px = (n: number) => `${n}px`;
 
       {
         whyLinks.map((l) => (
-          <span class="hwhy__piece" style={`left:${px(l.x)};top:${px(l.y)}`} aria-hidden="true">
+          <span class="hwhy__piece" style={`left:${px(l.x)};top:${px(l.y)}`} aria-hidden="true" data-why-link>
             <Icon name={`brand/home/${l.name}`} width={l.w} height={l.h} />
           </span>
         ))
       }
 
       <span
-        class="hwhy__piece hwhy__mark"
+        class="hwhy__piece hwhy__riser"
         style={`left:${px(whyMark.x)};top:${px(whyMark.y)};--mark:${px(whyMark.size)}`}
         aria-hidden="true"
+        data-why-riser
       >
-        <Icon name="brand/home/why-mark" size={40} />
+        <span class="hwhy__hole" data-why-hole></span>
+        <span class="hwhy__flare" data-why-flare></span>
+        <span class="hwhy__lift" data-why-lift>
+          <span class="hwhy__mark" data-why-mark>
+            <Icon name="brand/home/why-mark" size={40} />
+          </span>
+        </span>
       </span>
 
       <ul class="hwhy__cards">
@@ -59,6 +82,7 @@ const px = (n: number) => `${n}px`;
             <li
               class:list={["hwhy__card", `hwhy__card--${c.side}`]}
               style={`left:${px(c.x)};top:${px(c.y)};width:${px(c.w)}`}
+              data-why-card
             >
               <h3 class="hwhy__card-title">{c.title}</h3>
               <p class="hwhy__card-body" style={"bodyW" in c ? `width:${px(c.bodyW)}` : undefined}>
@@ -68,6 +92,47 @@ const px = (n: number) => `${n}px`;
           ))
         }
       </ul>
+    </div>
+    </div>
+
+    <div class="hwhy__stack">
+      <span class="hwhy__runner" aria-hidden="true" data-why-runner></span>
+      <ul class="hwhy__stack-cards">
+        {
+          whyCards.map((c) => (
+            <li class="hwhy__card hwhy__card--stack" data-animate data-why-stack-card>
+              <h3 class="hwhy__card-title">{c.title}</h3>
+              <p class="hwhy__card-body">{c.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <div
+        class="fit hwhy__base"
+        data-fit={whyPlatform.w}
+        style={`--fit-w:${whyPlatform.w};--fit-h:${whyPlatform.h}`}
+        aria-hidden="true"
+        data-why-base
+      >
+        <div class="fit__inner">
+          <span class="hwhy__piece" style="left:0;top:0">
+            <Icon name="brand/home/platform" width={whyPlatform.w} height={whyPlatform.h} uid="stack" />
+          </span>
+          <span
+            class="hwhy__piece hwhy__riser"
+            style={`left:${px(whyMark.x - whyPlatform.x)};top:${px(whyMark.y - whyPlatform.y)};--mark:${px(whyMark.size)}`}
+            data-why-riser
+          >
+            <span class="hwhy__hole" data-why-hole></span>
+            <span class="hwhy__flare" data-why-flare></span>
+            <span class="hwhy__lift" data-why-lift>
+              <span class="hwhy__mark" data-why-mark>
+                <Icon name="brand/home/why-mark" size={40} uid="stack" />
+              </span>
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -121,10 +186,8 @@ const px = (n: number) => `${n}px`;
 
   /* --- diagram ----------------------------------------------------------- */
 
-  .hwhy__stage {
-    position: relative;
-    height: var(--stage-h);
-  }
+  /* Placed and sized by the fit wrapper (`.fit__inner` is the 1240 x 635
+     box); a position here would outrank it and leave the wrapper tall. */
 
   .hwhy__piece {
     position: absolute;
@@ -132,7 +195,54 @@ const px = (n: number) => `${n}px`;
     line-height: 0;
   }
 
+  /* --- the mark, and the hole it rises from ------------------------------ */
+
+  /* The riser holds the mark's 80 x 80 box. Inside it: the hole (an ellipse
+     on the platform's top, centred under the mark's foot, in the platform's
+     own perspective — ry/rx 0.38), a flare for the landing, and the lift,
+     which is the clip the mark rises through. The clip is set by the script
+     only while the mark is in flight, so at rest the mark's shadow is whole. */
+  .hwhy__riser {
+    width: var(--mark);
+    height: var(--mark);
+  }
+
+  .hwhy__hole,
+  .hwhy__flare,
+  .hwhy__lift {
+    position: absolute;
+  }
+
+  .hwhy__hole {
+    left: -6px;
+    top: 63px;
+    width: 92px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #0d0420 0%, #14013c 55%, rgba(20, 1, 60, 0.55) 82%, rgba(20, 1, 60, 0));
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.45);
+    /* `transform`, not the `scale` property: GSAP's scale writes transform,
+       and a CSS `scale: 0` beside it kept the hole shut for good. */
+    transform: scale(0);
+  }
+
+  .hwhy__flare {
+    left: -70px;
+    top: 40px;
+    width: 220px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(214, 196, 255, 0.85), rgba(160, 120, 255, 0.35) 55%, rgba(160, 120, 255, 0));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hwhy__lift {
+    inset: 0;
+  }
+
   .hwhy__mark {
+    position: relative;
     display: grid;
     place-items: center;
     width: var(--mark);
@@ -186,4 +296,357 @@ const px = (n: number) => `${n}px`;
     line-height: var(--lh-body);
     color: var(--c-eyebrow-text-dark);
   }
+
+  /* --- narrower than the design ------------------------------------------ */
+
+  /* The fit wrapper is the stage's box; at 1440 its scale is exactly 1, and
+     a scale(1) transform still re-rasterises the text, so it is switched
+     off there. */
+  @media (min-width: 1440px) {
+    .hwhy__stage.fit__inner {
+      transform: none;
+    }
+  }
+
+  .hwhy__stack {
+    display: none;
+  }
+
+  @media (max-width: 1439px) {
+    .hwhy__head {
+      min-height: 0;
+    }
+  }
+
+  /* The diagram re-proportioned: cards in a column joined by a line that
+     runs down into the mark on the platform. */
+  @media (max-width: 1240px) {
+    .hwhy__fit {
+      display: none;
+    }
+
+    .hwhy__stack {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* The cards sit over the runner, so its glow shows only in the gaps
+       between them, along the line. */
+    .hwhy__card--stack {
+      z-index: 2;
+    }
+
+    /* The glow that climbs the line from the mark to the top card. Placed by
+       the script; hidden until it runs. */
+    .hwhy__runner {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: calc(50% - 1px);
+      width: 2px;
+      height: 90px;
+      border-radius: 2px;
+      background: linear-gradient(rgba(214, 196, 255, 0), #e3d7fe 50%, rgba(214, 196, 255, 0));
+      box-shadow: 0 0 10px 2px rgba(160, 120, 255, 0.55);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hwhy__stack-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      width: min(100%, 560px);
+      list-style: none;
+    }
+
+    .hwhy__card--stack {
+      position: relative;
+      --ring-dir: 180deg;
+    }
+
+    /* The link from each card to the next, and from the last into the mark. */
+    .hwhy__card--stack::after {
+      content: "";
+      position: absolute;
+      top: calc(100% + 2px);
+      left: calc(50% - 0.6px);
+      width: 1.2px;
+      height: 32px;
+      background: linear-gradient(var(--c-accent), rgba(131, 77, 251, 0.35));
+    }
+
+    .hwhy__card--stack:last-child::after {
+      display: none;
+    }
+
+    /* The platform with the mark on it, as one picture: 610 wide drawn, at
+       most 420 here. */
+    .hwhy__base {
+      --gap: 40px;
+      width: min(100%, 420px);
+      margin-top: var(--gap);
+    }
+
+    /* The last link, from the bottom card down onto the mark's top edge
+       (26.6 into the drawn platform, at the centre of the mark) — drawn here
+       because only this element knows the scale. */
+    .hwhy__base::before {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: calc(49.68% - 0.6px);
+      width: 1.2px;
+      height: calc(var(--gap) - 2px);
+      background: linear-gradient(rgba(131, 77, 251, 0.35), var(--c-accent));
+    }
+
+    .hwhy__base::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: calc(49.68% - 0.6px);
+      width: 1.2px;
+      height: calc(26.6px * var(--fit, 1));
+      background: var(--c-accent);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hwhy {
+      padding-block: 64px;
+    }
+
+    .hwhy__inner {
+      gap: 40px;
+    }
+
+    .hwhy__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .hwhy__lead,
+    .hwhy__body {
+      flex: none;
+    }
+
+    .hwhy__lead {
+      max-width: 640px;
+    }
+
+    .hwhy__title {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hwhy {
+      padding-block: 40px;
+    }
+
+    .hwhy__inner {
+      gap: 32px;
+    }
+
+    .hwhy__title {
+      font-size: 24px;
+      letter-spacing: -0.6px;
+    }
+
+    .hwhy__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .hwhy__stack-cards {
+      gap: 24px;
+    }
+
+    .hwhy__card--stack::after {
+      height: 24px;
+    }
+
+    .hwhy__base {
+      --gap: 32px;
+    }
+
+    .hwhy__card {
+      padding: 14px 16px;
+    }
+
+    .hwhy__card-title {
+      font-size: var(--fs-body);
+    }
+
+    .hwhy__card-body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+  }
 </style>
+
+<script>
+  /**
+   * The entrance, once, on first sight (approved by the user):
+   *
+   * Desktop — the nuLyft mark rises out of a hole in the platform; then the
+   * connectors grow out of it, inner pair first (Clear thinking, Quality),
+   * then the outer pair, and each card appears as its line reaches it.
+   *
+   * Tablet and phone — the cards are stacked above the platform and the
+   * reader has already scrolled past them, so they are never hidden. When the
+   * platform comes into view the mark rises the same way, then a glow climbs
+   * the line from the mark to the top card, each card lighting as it passes.
+   *
+   * Every hidden starting state is set here, so with JS off — or under
+   * reduced motion, where `registerSection` skips this — the finished
+   * diagram simply shows.
+   */
+  import { gsap, ScrollTrigger, registerSection } from "../../scripts/gsap";
+
+  /** How far the mark starts below its resting place: past the hole's lip. */
+  const DROP = 100;
+  /** The lift's clip: everything above the hole's front (lower) arc — an
+      ellipse 92 x 34 centred on the mark's foot, in the riser's own box. */
+  const THROUGH_HOLE = 'path("M-60 -240H140V80H86A46 17 0 0 1 -6 80H-60Z")';
+
+  /** Hole opens, mark rises through it and lands with a flare, hole closes. */
+  function rise(tl: gsap.core.Timeline, riser: Element) {
+    const hole = riser.querySelector("[data-why-hole]");
+    const flare = riser.querySelector("[data-why-flare]");
+    const lift = riser.querySelector<HTMLElement>("[data-why-lift]");
+    const mark = riser.querySelector("[data-why-mark]");
+    if (!hole || !flare || !lift || !mark) return;
+
+    gsap.set(lift, { clipPath: THROUGH_HOLE });
+    gsap.set(mark, { y: DROP });
+    gsap.set(hole, { scale: 0 });
+
+    tl.to(hole, { scale: 1, duration: 0.35, ease: "power2.out" }, 0)
+      .to(mark, { y: 0, duration: 0.8, ease: "back.out(1.3)" }, 0.2)
+      // Unclip once it is clear of the lip, so its drop shadow lands whole.
+      .set(lift, { clipPath: "none" }, 1.0)
+      .to(flare, { opacity: 1, duration: 0.18, ease: "power2.out" }, 0.78)
+      .to(flare, { opacity: 0, duration: 0.6, ease: "power2.in" }, 0.96)
+      .to(hole, { scale: 0, duration: 0.3, ease: "power2.in" }, 0.85)
+      // Back to the stylesheet's own resting state, nothing inline.
+      .set([hole, flare, lift, mark], { clearProps: "all" }, 1.6);
+  }
+
+  registerSection(".hwhy", ({ root }) => {
+    const mm = gsap.matchMedia();
+
+    /* --- desktop: the lines grow out to the cards ---------------------- */
+    mm.add("(min-width: 1241px)", () => {
+      const stage = root.querySelector<HTMLElement>(".hwhy__fit");
+      const riser = stage?.querySelector("[data-why-riser]");
+      const lines = Array.from(root.querySelectorAll<SVGPathElement>("[data-why-link] path"));
+      const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-why-card]"));
+      if (!stage || !riser || lines.length !== 4 || cards.length !== 4) return;
+
+      const tl = gsap.timeline({ paused: true });
+      rise(tl, riser);
+
+      // Each export runs card -> mark, so the dash is pulled in from the far
+      // end: offset -L is hidden, 0 is drawn, and in between it grows from
+      // the mark towards the card.
+      const lengths = lines.map((p) => {
+        try {
+          return p.getTotalLength();
+        } catch {
+          return 0;
+        }
+      });
+      lines.forEach((p, i) => {
+        const L = lengths[i];
+        if (L > 0) gsap.set(p, { strokeDasharray: `${L} ${L}`, strokeDashoffset: -L });
+      });
+      gsap.set(cards, { autoAlpha: 0, y: 10 });
+
+      // Inner pair (Clear thinking, Quality) then the outer pair.
+      const order: [number[], number][] = [
+        [[1, 2], 1.0],
+        [[0, 3], 1.35],
+      ];
+      for (const [pair, at] of order) {
+        for (const i of pair) {
+          tl.to(lines[i], { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, at);
+          tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out" }, at + 0.55);
+        }
+      }
+      // Hand everything back as plain markup: undashed strokes, and no
+      // leftover transforms (a `translate(0, 0)` still re-rasterises text).
+      tl.set(lines, { clearProps: "strokeDasharray,strokeDashoffset" });
+      tl.set(cards, { clearProps: "transform,opacity,visibility" });
+      tl.set(riser.querySelector("[data-why-mark]"), { clearProps: "transform" });
+
+      ScrollTrigger.create({ trigger: stage, start: "top 70%", once: true, onEnter: () => tl.play() });
+    });
+
+    /* --- tablet and phone: a glow climbs the line ---------------------- */
+    mm.add("(max-width: 1240px)", () => {
+      const base = root.querySelector<HTMLElement>("[data-why-base]");
+      const riser = base?.querySelector("[data-why-riser]");
+      const runner = root.querySelector<HTMLElement>("[data-why-runner]");
+      const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-why-stack-card]"));
+      if (!base || !riser || !runner || !cards.length) return;
+
+      const tl = gsap.timeline({ paused: true });
+      rise(tl, riser);
+
+      // Measured when it plays, with the platform on screen: offsets, which
+      // ignore the cards' reveal transforms. The cards' list is static, so
+      // cards, base and runner all measure from `.hwhy__stack`.
+      const climb = () => {
+        const fit = base.offsetWidth / Number(base.dataset.fit);
+        const markTop = base.offsetTop + 26.6 * fit;
+        const topCard = cards[0].offsetTop;
+        const H = runner.offsetHeight;
+        // The bar's top starts at the mark and its bottom ends at the top card's top.
+        const from = markTop - H;
+        const to = topCard - H;
+        const dur = Math.min(1.8, Math.max(0.9, (from - to) / 650));
+        const sub = gsap.timeline();
+        sub.set(runner, { y: from, opacity: 0 })
+          .to(runner, { opacity: 1, duration: 0.15 }, 0)
+          .to(runner, { y: to, duration: dur, ease: "sine.inOut" }, 0)
+          .to(runner, { opacity: 0, duration: 0.3 }, dur - 0.2);
+        // Light each card as the glow's middle passes its lower edge.
+        cards.forEach((c) => {
+          const edge = c.offsetTop + c.offsetHeight;
+          const p = (from + H / 2 - edge) / (from - to);
+          if (p < 0 || p > 1) return;
+          // sine.inOut position -> time: invert y = (1 - cos(pi t)) / 2.
+          const t = (Math.acos(1 - 2 * p) / Math.PI) * dur;
+          sub.to(c, { boxShadow: "0 0 26px 2px rgba(131, 77, 251, 0.55)", duration: 0.22, ease: "power2.out" }, t)
+            .to(c, { boxShadow: "0 0 0px 0px rgba(131, 77, 251, 0)", duration: 0.6, ease: "power2.in" }, t + 0.22);
+        });
+        sub.set(cards, { clearProps: "boxShadow" });
+        sub.set(runner, { clearProps: "transform,opacity" });
+        return sub;
+      };
+
+      ScrollTrigger.create({
+        trigger: base,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          tl.add(climb(), 1.0);
+          tl.play();
+        },
+      });
+
+      // Only the glow is ours to undo on the cards — their opacity and
+      // transform belong to the scroll reveal.
+      return () => {
+        gsap.set(runner, { clearProps: "transform,opacity" });
+        gsap.set(cards, { clearProps: "boxShadow" });
+      };
+    });
+  });
+</script>

@@ -1,11 +1,9 @@
 import type { ImageMetadata } from "astro";
+import type { ChallengeCard } from "../components/case/challenge-art";
 
 import heroCard1 from "../assets/images/case-lms/hero-card-1.png";
 import screenBooking from "../assets/images/case-lms/overview-screen-booking.png";
 import screenLeads from "../assets/images/case-lms/overview-screen-leads.png";
-import problem1 from "../assets/images/case-lms/problem-1.jpg";
-import problem2 from "../assets/images/case-lms/problem-2.jpg";
-import problem3 from "../assets/images/case-lms/problem-3.jpg";
 import approachP02 from "../assets/images/case-lms/approach-p02.jpg";
 import approachP03 from "../assets/images/case-lms/approach-p03.jpg";
 import typoTable from "../assets/images/case-lms/typo-table.png";
@@ -85,17 +83,17 @@ export const challenge = {
   eyebrow: "The Challenge",
   title: "Learning was happening everywhere - except in one connected place.",
   body: "Skill Wagon was designed to address the growing complexity of managing learning, learners, and training operations in a single ecosystem.",
-  points: [
-    "Fragmented Learning Experience",
-    "Complex Management",
-    "Limited Insights",
-    "Scaling Challenges",
-  ],
-  photos: [
-    { src: problem1, alt: "A learner overwhelmed by scattered tools" },
-    { src: problem2, alt: "An administrator buried in paperwork" },
-    { src: problem3, alt: "An analyst reading disconnected dashboards" },
-  ],
+  /**
+   * The four challenges as cards (`CaseChallenge`), each with a small UI
+   * picture and what it cost the team. Replaces the frame's red ✕ list and
+   * AI-generated photos (user's request). The `body` lines are ours.
+   */
+  cards: [
+    { art: "tabs", title: "Fragmented learning experience", body: "Courses, quizzes and materials sat in different tools." },
+    { art: "approvals", title: "Complex management", body: "Learners, batches and instructors were managed by hand." },
+    { art: "insights", title: "Limited insights", body: "Progress and completion were hard to see or measure." },
+    { art: "capacity", title: "Scaling challenges", body: "Every new course or batch added more manual work." },
+  ] satisfies ChallengeCard[],
 };
 
 /**

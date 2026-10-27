@@ -232,6 +232,96 @@ const f = form.fields;
     align-items: center;
     height: 49.97px;
   }
+
+  /* --- narrower than the design ------------------------------------------ */
+
+  /* The heading is `nowrap` for one line at 48px; anywhere narrower it ran
+     off the screen, so it may wrap. The form keeps its full column down to
+     tablet, then the two-up row stacks on a phone. Inputs stay at 16px at
+     every width: iOS zooms the page into any field set smaller. */
+  @media (max-width: 1180px) {
+    .cform__title {
+      font-size: 40px;
+      letter-spacing: -1.4px;
+      white-space: normal;
+      text-wrap: balance;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cform {
+      padding-top: 64px;
+    }
+
+    .cform__inner {
+      gap: 40px;
+    }
+
+    .cform__title {
+      font-size: 34px;
+      letter-spacing: -1px;
+    }
+
+    .cform__fields {
+      gap: 28px;
+    }
+
+    .cform__form {
+      gap: 40px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .cform {
+      padding-top: 40px;
+    }
+
+    .cform__inner {
+      gap: 32px;
+    }
+
+    .cform__head {
+      gap: 12px;
+    }
+
+    .cform__title {
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.6px;
+    }
+
+    .cform__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .cform__row {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .cform__fields {
+      gap: 20px;
+    }
+
+    .cform__label {
+      font-size: var(--fs-sm);
+      line-height: 20px;
+    }
+
+    .cform__input--area {
+      height: 180px;
+    }
+
+    .cform__form {
+      gap: 32px;
+    }
+
+    /* The status line's -24 margins are tuned to the desktop's 48 gap. */
+    .cform__status {
+      margin-block: -16px;
+    }
+  }
 </style>
 
 <script>

@@ -1,9 +1,9 @@
 import type { ImageMetadata } from "astro";
+import type { ChallengeCard } from "../components/case/challenge-art";
 
 import heroCard from "../assets/images/case-rec/hero-card.png";
 import overviewReq from "../assets/images/case-rec/overview-req.png";
 import overviewCand from "../assets/images/case-rec/overview-cand.png";
-import problemPhotos from "../assets/images/case-rec/problem-photos.png";
 import approachP02 from "../assets/images/case-rec/approach-p02.png";
 import approachP03 from "../assets/images/case-rec/approach-p03.png";
 import typographyFigure from "../assets/images/case-rec/typography.png";
@@ -70,17 +70,26 @@ export const overview = {
 
 export const challenge = {
   eyebrow: "The Challenge",
-  /** Figma's own text, a stray paste from the LMS frame. Flagged, not fixed. */
-  title: "Learning was happening everywhere - except in one connected place.",
+  /**
+   * Figma still carries the LMS frame's line here ("Learning was happening
+   * everywhere - except in one connected place."), a stray paste. Rewritten
+   * at the user's request for this product: it names the two pains listed
+   * below it (scattered spreadsheets, no visibility) and echoes the hero's
+   * "Every Requirement. Every Candidate."
+   */
+  title: "Every requirement had its own spreadsheet. No one had the full picture.",
   body: "Managing client requirements, candidates, follow-ups, and hiring progress across different workflows made it harder for teams to stay aligned and keep track of what was happening.",
-  points: [
-    "Scattered Excel Tracking",
-    "Manual Candidate Updates",
-    "Manual Follow-ups",
-    "Limited Hiring Visibility",
-  ],
-  /** All three photos in one 651x461 export, no bleed. */
-  photos: { src: problemPhotos, alt: "Recruiters tracking candidates across spreadsheets and email" },
+  /**
+   * The four challenges as cards (`CaseChallenge`), each with a small UI
+   * picture and what it cost the team. Replaces the frame's red ✕ list and
+   * AI-generated photo collage (user's request). The `body` lines are ours.
+   */
+  cards: [
+    { art: "files", title: "Scattered Excel tracking", body: "Each client's requirements lived in a separate spreadsheet." },
+    { art: "status", title: "Manual candidate updates", body: "Every status change had to be typed in by hand, one by one." },
+    { art: "followups", title: "Manual follow-ups", body: "Reminders depended on someone remembering to send them." },
+    { art: "pipeline", title: "Limited hiring visibility", body: "No single view of where each role and candidate stood." },
+  ] satisfies ChallengeCard[],
 };
 
 export interface Phase {

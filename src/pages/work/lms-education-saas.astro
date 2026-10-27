@@ -7,6 +7,8 @@ import CaseLmsApproach from "../../components/sections/CaseLmsApproach.astro";
 import CaseLmsSystem from "../../components/sections/CaseLmsSystem.astro";
 import CaseLmsScreens from "../../components/sections/CaseLmsScreens.astro";
 import CtaFooter from "../../components/sections/CtaFooter.astro";
+import CaseChallenge from "../../components/case/CaseChallenge.astro";
+import { challenge } from "../../data/caseLms";
 ---
 
 <BaseLayout
@@ -17,6 +19,7 @@ import CtaFooter from "../../components/sections/CtaFooter.astro";
 
   <CaseLmsHero />
   <CaseLmsOverview />
+  <CaseChallenge {...challenge} />
   <CaseLmsApproach />
   <CaseLmsSystem />
   <CaseLmsScreens />

@@ -97,8 +97,8 @@
   /* --- Radius & elevation ----------------------------------------------- */
   --r-card: 8px;
   --r-chip: 4px;
-  --r-eyebrow: 20px;
-  --r-eyebrow-sm: 30px;
+  --r-eyebrow: 8px;         /* every eyebrow badge: 8px corners, not Figma's pill (by request) */
+  --r-eyebrow-sm: 8px;
   --r-browser: 20px;
   --r-pill: 999px;
   --r-nav: 14px;

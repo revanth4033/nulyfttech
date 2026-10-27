@@ -118,6 +118,31 @@ import { craft } from "../../data/home";
     padding: 20px;
   }
 
+  /* Hover (by request): the card takes a light brand tint. It has to be a
+     step deeper than the section's own #f5f3ff ground or the card would melt
+     into it, so the border deepens with it; the icon chip — itself a tint —
+     turns white to keep the icon standing off the card. Fine pointers only,
+     so a tap never leaves a card tinted. */
+  /* 0.6s on an even ease-in-out: the site's --ease-out front-loads the
+     change (60% of it in the first 50ms), which read as an instant snap. */
+  .craft__card,
+  .craft__chip {
+    transition:
+      background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .craft__card:hover {
+      background-color: #efe8ff;
+      border-color: rgba(131, 77, 251, 0.45);
+    }
+
+    .craft__card:hover .craft__chip {
+      background-color: var(--c-surface);
+    }
+  }
+
   .craft__card-title {
     font-family: var(--font-sans);
     font-weight: 500;
@@ -269,5 +294,193 @@ import { craft } from "../../data/home";
     align-self: flex-start;
     height: auto;
     padding-block: 12px;
+  }
+
+  /* --- narrower than the design ------------------------------------------ */
+
+  /* 1181-1439: both columns give way rather than overflow. The caption was
+     placed 357 from the photo's left, which only holds while the photo is
+     702 wide — at 1280 it ran off the card — so it anchors right instead;
+     the belief title may wrap. */
+  @media (max-width: 1439px) {
+    .craft__services {
+      flex: 0 1 509px;
+      min-width: 0;
+    }
+
+    .craft__belief .craft__card-title {
+      white-space: normal;
+    }
+
+    .craft__caption {
+      left: auto;
+      right: 24px;
+    }
+  }
+
+  /* --- tablet ------------------------------------------------------------ */
+
+  /* The two columns stack: the three services become a row of three upright
+     cards (icon over text), then the belief card, then the photo — with its
+     caption still over the photo's right side, as drawn, since a tablet
+     photo has the room. */
+  @media (max-width: 1180px) {
+    .craft__grid {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 24px;
+    }
+
+    .craft__services {
+      flex: none;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .craft__service {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .craft__service-text {
+      flex: none;
+    }
+
+    .craft__card-title {
+      white-space: normal;
+    }
+
+    .craft__side {
+      flex: none;
+      height: auto;
+    }
+
+    .craft__photo {
+      flex: none;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .craft {
+      padding-block: 64px;
+    }
+
+    .craft__inner {
+      gap: 32px;
+    }
+
+    .craft__title {
+      font-size: 28px;
+      letter-spacing: -1px;
+    }
+
+    /* One service per row, icon beside the text: three upright cards in a
+       768 column were 210 wide with seven-line bodies. */
+    .craft__services {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .craft__service {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .craft__service-text {
+      flex: 1 0 0;
+      min-width: 0;
+      gap: 6px;
+    }
+
+    .craft__chip {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+    }
+
+    .craft__chip :global(svg) {
+      width: 26px;
+      height: 26px;
+    }
+
+    .craft__card-title {
+      font-size: var(--fs-body);
+      line-height: 22px;
+    }
+
+    .craft__card-body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+  }
+
+  /* --- phone ------------------------------------------------------------- */
+
+  /* The caption leaves the photo:
+     on a 343px picture a 177-tall frosted card would cover most of it, so
+     it becomes the photo's own footer — same copy and button, no overlap. */
+  @media (max-width: 700px) {
+    .craft__belief {
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .craft__points {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .craft__photo {
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: auto;
+      background: var(--c-surface);
+      border: 1px solid rgba(131, 77, 251, 0.24);
+    }
+
+    .craft__photo :global(img) {
+      height: auto;
+      aspect-ratio: 4 / 3;
+    }
+
+    .craft__caption {
+      position: static;
+      translate: none;
+      height: auto;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 0;
+      background: none;
+      backdrop-filter: none;
+    }
+
+    .craft__caption-copy {
+      gap: 6px;
+      white-space: normal;
+    }
+
+    .craft__eyebrow {
+      font-size: var(--fs-xs);
+    }
+
+    .craft__caption-title {
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .craft {
+      padding-block: 40px;
+    }
+
+    .craft__title {
+      font-size: 24px;
+      letter-spacing: -0.6px;
+    }
   }
 </style>

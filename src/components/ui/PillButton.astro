@@ -55,6 +55,10 @@ const iconName =
 
 <style>
   .pill {
+    position: relative;
+    /* The state layer below sits behind the label but over the pill's own
+       fill; isolation keeps its z-index: -1 inside the pill. */
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -68,9 +72,110 @@ const iconName =
     white-space: nowrap;
     rotate: var(--tilt);
     transition:
-      transform var(--dur-fast) var(--ease-out),
-      background-color var(--dur-fast) var(--ease-out),
+      scale 0.15s var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
       color var(--dur-fast) var(--ease-out);
+  }
+
+  /* --- states -------------------------------------------------------------
+     Brand purples only: #834dfb (accent) -> #7437fb -> #6624fa -> #4e05ef,
+     and the lavender tints for the outline. A gradient cannot transition,
+     so each state's fill is a layer under the label that fades in.
+
+     hover    solid: a deeper gradient + a soft purple glow; outline: the
+              lavender tint, border and label deepen; the arrow steps right
+     pressed  solid: the darkest purple, the glow gone and the inset shadow
+              deeper — pressed in; outline: a stronger tint; both shrink 3%
+     focus    a 2px accent ring, keyboard only
+
+     Hover is fine-pointer only, so a tap never leaves a phone button stuck
+     in its hover colour. */
+  .pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  .pill--solid::before {
+    background: linear-gradient(100.43deg, #7437fb 0%, #6624fa 55%, #5a14f4 100%);
+  }
+
+  .pill--flat::before {
+    background: #6c2cfa;
+  }
+
+  /* The chip tint, not the eyebrow's #f3eeff — that is two levels off the
+     page's lavender ground and barely showed. */
+  .pill--outline::before {
+    background: var(--c-accent-tint);
+  }
+
+  .pill :global(.pill__arrow) {
+    transition: translate var(--dur-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pill:hover::before {
+      opacity: 1;
+    }
+
+    .pill--solid:hover {
+      box-shadow:
+        var(--sh-button-inset),
+        0 10px 22px -8px rgba(102, 36, 250, 0.6);
+    }
+
+    .pill--outline:hover {
+      border-color: #6624fa;
+      color: #6624fa;
+    }
+
+    .pill:hover :global(.pill__arrow) {
+      translate: 3px 0;
+    }
+  }
+
+  /* `scale`, not `transform`: a pill that carries a scroll reveal keeps an
+     inline transform afterwards, which would silently win over this. */
+  .pill:active {
+    scale: 0.97;
+  }
+
+  .pill:active::before {
+    opacity: 1;
+    transition-duration: 0.08s;
+  }
+
+  .pill--solid:active::before {
+    background: linear-gradient(100.43deg, #6624fa 0%, #5a14f4 55%, #4e05ef 100%);
+  }
+
+  .pill--flat:active::before {
+    background: #5a14f4;
+  }
+
+  .pill--solid:active {
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.38);
+  }
+
+  .pill--outline:active::before {
+    background: #dccdfe;
+  }
+
+  .pill--outline:active {
+    border-color: #4e05ef;
+    color: #4e05ef;
+  }
+
+  .pill:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
   }
 
   .pill--sm {
@@ -111,22 +216,14 @@ const iconName =
     background: transparent;
   }
 
-  .pill:hover {
-    transform: translateY(-2px);
-  }
-
-  .pill--outline:hover {
-    background: var(--c-eyebrow-bg);
-  }
-
-  .pill:active {
-    transform: translateY(0) scale(0.98);
-  }
-
+  /* Colour still answers the pointer under reduced motion; nothing moves. */
   @media (prefers-reduced-motion: reduce) {
-    .pill:hover,
     .pill:active {
-      transform: none;
+      scale: none;
+    }
+
+    .pill:hover :global(.pill__arrow) {
+      translate: none;
     }
   }
 </style>
