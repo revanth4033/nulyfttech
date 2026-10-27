@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
-import PageHero from "../components/PageHero.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
 import CareersPerks from "../components/sections/CareersPerks.astro";
 import CareersJobs from "../components/sections/CareersJobs.astro";
 import CtaFooter from "../components/sections/CtaFooter.astro";
@@ -13,13 +13,10 @@ import CtaFooter from "../components/sections/CtaFooter.astro";
 >
   <Nav slot="overlay" />
 
-  <PageHero
+  <CentredHero
     eyebrow="Join Our Journey"
-    title="Shape Your Future with"
-    emphasis="nuLyft"
-    emphasisTone="ink"
-    body="Join a team that values product thinking, real-world impact, and continuous growth."
-    height={605}
+    title={{ lead: "Shape Your Future with ", em: "nuLyft" }}
+    body={["Join a team that values product thinking, real-world impact, and continuous growth."]}
   />
   <CareersPerks />
   <CareersJobs />

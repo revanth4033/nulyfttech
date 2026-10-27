@@ -1,0 +1,233 @@
+---
+import Icon from "../ui/Icon.astro";
+import { starts, branches, trunk, pathDots, routes, nextStep, PATHS_STAGE } from "../../data/about";
+
+/**
+ * "The next step" — Figma 669:3634, 1440 x 704.
+ *
+ * Three starting points on the left whose lines converge on the nuLyft mark
+ * at the right. Figma places every piece absolutely inside a 1240 x 504 box,
+ * so it is reproduced as placed. The two curved branches are the same export,
+ * the lower one flipped; each line fades in from nothing on its left half.
+ *
+ * Motion (`scripts/about-paths.ts`): each dot travels its line into the mark
+ * and the mark glows as it lands. With JS off, or reduced motion, the dots
+ * rest where Figma draws them.
+ */
+const px = (n: number) => `${n}px`;
+---
+
+<section class="paths" data-section="about-paths">
+  <div class="container">
+    <div class="paths__stage" style={`height:${px(PATHS_STAGE.h)}`}>
+      {
+        branches.map((b) => (
+          <span
+            class:list={["paths__line", { "paths__line--flip": b.flip }]}
+            style={`left:${px(b.x)};top:${px(b.y)}`}
+            aria-hidden="true"
+          >
+            <Icon name="brand/about/branch" width={631} height={204.2} />
+          </span>
+        ))
+      }
+      <span class="paths__line" style={`left:${px(trunk.x)};top:${px(trunk.y)}`} aria-hidden="true">
+        <Icon name="brand/about/trunk" width={695.012} height={1.2} />
+      </span>
+
+      {/* The routes the dots travel, for measuring only — never painted. */}
+      <svg class="paths__routes" width="0" height="0" fill="none" aria-hidden="true" focusable="false">
+        {routes.map((r) => <path d={r.d} data-route />)}
+      </svg>
+
+      {
+        pathDots.map((d) => (
+          <span class="paths__dot" style={`left:${px(d.x)};top:${px(d.y)}`} aria-hidden="true" data-dot />
+        ))
+      }
+
+      <ul class="paths__starts">
+        {
+          starts.map((s) => (
+            <li class="paths__start" style={`left:${px(s.x)};top:${px(s.y)}`} data-animate>
+              <span class="paths__chip">
+                <Icon name="icons/about/check-circle" size={24} />
+              </span>
+              <span class="paths__text">
+                <h3 class="paths__title">{s.title}</h3>
+                <p class="paths__body">{s.body}</p>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <span
+        class="paths__mark"
+        style={`left:${px(nextStep.markX)};top:${px(nextStep.markY)}`}
+        aria-hidden="true"
+        data-mark
+      >
+        <span class="paths__pulse" data-pulse></span>
+        <Icon name="brand/about/next-mark" size={40} />
+      </span>
+
+      <div class="paths__goal" style={`left:${px(nextStep.labelX)};top:${px(nextStep.labelY)}`} data-animate>
+        <p class="paths__goal-label">{nextStep.label}</p>
+        <span class="paths__underline" aria-hidden="true">
+          <Icon name="brand/about/underline" width={134} height={1} />
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .paths {
+    background: var(--c-bg-light);
+    padding-block: 100px;
+  }
+
+  .paths__stage {
+    position: relative;
+  }
+
+  /* Flex, not block: the inlined <Icon> otherwise sits on a text baseline,
+     which dropped the 1.2px trunk 4.8px inside a 6px box and smeared it grey
+     across two pixel rows. */
+  .paths__line {
+    position: absolute;
+    display: flex;
+  }
+
+  .paths__line--flip {
+    scale: 1 -1;
+  }
+
+  .paths__dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--r-pill);
+    background: var(--c-accent);
+  }
+
+  /* --- starting points --------------------------------------------------- */
+
+  .paths__starts {
+    list-style: none;
+  }
+
+  .paths__start {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 350px;
+  }
+
+  .paths__chip {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-pill);
+    background: var(--c-accent-tint);
+    color: var(--c-accent);
+    line-height: 0;
+  }
+
+  .paths__text {
+    flex: 1 0 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .paths__title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: 24px;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-ink);
+  }
+
+  .paths__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- the next step ----------------------------------------------------- */
+
+  /* A 40px disc in a 20px ring of tinted accent — Figma's outside stroke. */
+  .paths__mark {
+    position: absolute;
+    display: flex;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 20px rgba(131, 77, 251, 0.12);
+    line-height: 0;
+  }
+
+  /* The glow the mark gives off as a dot lands: a brighter, slightly larger
+     copy of its ring, hidden at rest. Sits over the ring, under the disc. */
+  .paths__pulse {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: rgba(131, 77, 251, 0.2);
+    box-shadow: 0 0 28px 6px rgba(131, 77, 251, 0.32);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .paths__mark :global(.icon) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .paths__routes {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .paths__goal {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 134px;
+  }
+
+  .paths__goal-label {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: var(--tr-project-title);
+    text-transform: uppercase;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  /* The rule is a 0-high node whose 1px art sits just above it. */
+  .paths__underline {
+    position: relative;
+    display: block;
+    height: 0;
+    line-height: 0;
+  }
+
+  .paths__underline :global(svg) {
+    position: absolute;
+    top: -1px;
+    left: 0;
+  }
+</style>

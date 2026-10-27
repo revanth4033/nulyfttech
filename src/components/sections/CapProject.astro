@@ -80,6 +80,7 @@ const CONNECTORS = [
         <div class="proj__copy" data-animate>
           <div class="proj__about">
             <h3 class="proj__name">{p.name}</h3>
+            {p.tagline && <p class="proj__tagline">{p.tagline}</p>}
             <p class="proj__body">{p.body}</p>
           </div>
 
@@ -375,13 +376,14 @@ const CONNECTORS = [
     font-size: var(--fs-h2);
     line-height: normal;
     letter-spacing: var(--tr-h2);
-    text-transform: capitalize;
     color: var(--c-ink);
     white-space: nowrap;
   }
 
+  /* 964 since the copy update (673:4149) — the longer body sets in two
+     lines there; at the old 788 it took three. */
   .proj__lead-body {
-    width: 788px;
+    width: 964px;
     max-width: 100%;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
@@ -416,6 +418,16 @@ const CONNECTORS = [
     font-weight: 600;
     font-size: var(--fs-h3);
     line-height: normal;
+    color: var(--proj-title);
+  }
+
+  /* Figma sets it 8 under the name and 16 over the body; the column's gap
+     is 16, so it takes 8 back. */
+  .proj__tagline {
+    margin-top: -8px;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 22px;
     color: var(--proj-title);
   }
 

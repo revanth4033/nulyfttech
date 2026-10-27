@@ -10,17 +10,23 @@
 interface Props {
   /** Figma frame x positions. */
   columns?: number[];
+  /** Rule colour; the home page's craft band draws them darker than the hero's. */
+  stroke?: string;
   class?: string;
 }
 
-const { columns = [120, 360, 600, 840, 1080, 1320], class: className } = Astro.props;
+const {
+  columns = [120, 360, 600, 840, 1080, 1320],
+  stroke = "var(--c-rule)",
+  class: className,
+} = Astro.props;
 ---
 
 <div class:list={["lines", className]} aria-hidden="true">
   <svg preserveAspectRatio="none" viewBox="0 0 1440 100" fill="none">
     {
       columns.map((x) => (
-        <line x1={x + 0.5} y1="0" x2={x + 0.5} y2="100" stroke="var(--c-rule)" vector-effect="non-scaling-stroke" />
+        <line x1={x + 0.5} y1="0" x2={x + 0.5} y2="100" stroke={stroke} vector-effect="non-scaling-stroke" />
       ))
     }
   </svg>

@@ -88,7 +88,7 @@ const cardStyle = (p: ReturnType<typeof cardPose>) =>
           <div class:list={["appr__step", { "is-on": i === 0 }]} aria-hidden={i === 0 ? undefined : "true"} data-step>
             <span class="appr__step-n" aria-hidden="true">{step.n}</span>
             <h3 class="appr__step-title">{step.title}</h3>
-            <p class="appr__step-tags">{step.tags}</p>
+            {"tags" in step && step.tags && <p class="appr__step-tags">{step.tags}</p>}
             <p class="appr__step-body">{step.body}</p>
           </div>
         ))

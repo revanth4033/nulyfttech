@@ -1,24 +1,19 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
-import PageHero from "../components/PageHero.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
 import StudioProjects from "../components/sections/StudioProjects.astro";
 import CtaFooter from "../components/sections/CtaFooter.astro";
+import { hero } from "../data/studio";
 ---
 
 <BaseLayout
-  title="Studio — nuLyft"
-  description="Design that thinks, feels, and responds. Selected product design, automation, and narrative work from the nuLyft design studio."
+  title="Our Work — nuLyft"
+  description="Turning business needs into solutions. Selected case studies in product design and engineering from nuLyft."
 >
   <Nav slot="overlay" />
 
-  <PageHero
-    eyebrow="nuLyft Design Studio"
-    title="Design That Thinks, Feels, and"
-    emphasis="Responds"
-    body="We create intuitive, modern digital experiences that blend strategy and innovation to connect people with brands in meaningful, memorable ways."
-    height={700}
-  />
+  <CentredHero {...hero} />
   <StudioProjects />
   <CtaFooter />
 </BaseLayout>

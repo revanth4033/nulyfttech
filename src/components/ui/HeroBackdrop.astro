@@ -1,0 +1,115 @@
+---
+import { Image } from "astro:assets";
+import homeCloud from "../../assets/images/home/hero-cloud.png";
+import pageCloud from "../../assets/images/home/hero-cloud-page.png";
+import glow from "../../assets/images/home/hero-glow.png";
+import { shafts } from "../../data/home";
+
+/**
+ * The redesign's hero ground — four blurred light shafts, a glow and two
+ * clouds — shared by the home hero (664:2978) and the centred inner-page
+ * heroes (Studio 667:3303, About 669:3595). They differ only in the clouds:
+ *
+ * - `home`  the lavender cloud at 0.42
+ * - `page`  a whiter cloud at 0.16
+ *
+ * Both are the same raw bitmap in Figma under different image adjustments,
+ * so `download_assets`' `rawImages` hands back one identical, unadjusted file
+ * for all three — use the image `get_design_context` returns, which has the
+ * adjustments baked in.
+ *
+ * Fills its positioned parent, which must clip (`overflow: hidden`); every
+ * piece is placed in the 1440 frame's own coordinates inside a 1440 box
+ * centred on the page.
+ *
+ * The glow is a pre-rendered raster, not Figma's SVG. That export is a
+ * 1947 x 745 ellipse under a 302px Gaussian blur, and Chrome re-ran the
+ * filter whenever it repainted the hero, which dropped scrolling there to
+ * ~30fps while every other section held 60. Rendered once at quarter scale
+ * and drawn back at full size it is within 4 levels of the live SVG (0.3 on
+ * average) — a blur that wide has no detail to lose.
+ */
+interface Props {
+  variant?: "home" | "page";
+}
+
+const { variant = "home" } = Astro.props;
+const { cloud, cloudOpacity } =
+  variant === "home" ? { cloud: homeCloud, cloudOpacity: 0.42 } : { cloud: pageCloud, cloudOpacity: 0.16 };
+---
+
+<div class="backdrop" style={`--cloud-o:${cloudOpacity}`} aria-hidden="true">
+  {
+    shafts.map((s, i) => (
+      <span
+        class="backdrop__shaft"
+        style={`left:${s.x}px;top:${s.y}px;width:${s.w}px;height:${s.h}px;--bar-w:${s.barW}px;--rot:${s.rotate}deg;--flip:${s.flip ? -1 : 1};z-index:${i === 0 ? 0 : 2}`}
+      >
+        <i />
+      </span>
+    ))
+  }
+  {/* Figma's stack: first shaft, glow, the other three shafts, clouds. */}
+  <Image class="backdrop__glow" src={glow} alt="" width={789} quality={90} />
+  <Image class="backdrop__cloud backdrop__cloud--a" src={cloud} alt="" width={612} />
+  <Image class="backdrop__cloud backdrop__cloud--b" src={cloud} alt="" width={612} />
+</div>
+
+<style>
+  .backdrop {
+    position: absolute;
+    inset: 0 auto 0 50%;
+    width: var(--frame-w);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .backdrop__shaft {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .backdrop__shaft i {
+    flex: none;
+    width: var(--bar-w);
+    height: 541px;
+    border-radius: 70px;
+    background: linear-gradient(180deg, var(--c-accent-glow), #f1ebff);
+    filter: blur(32px);
+    rotate: var(--rot);
+    scale: 1 var(--flip);
+  }
+
+  /* A 1947 x 745 ellipse under a 302px blur; the raster carries the bleed. */
+  .backdrop :global(.backdrop__glow) {
+    z-index: 1;
+    position: absolute;
+    left: -818px;
+    top: -126px;
+    width: 3155px;
+    height: 1953px;
+    max-width: none;
+  }
+
+  .backdrop :global(.backdrop__cloud) {
+    z-index: 3;
+    position: absolute;
+    width: 1681.5px;
+    height: 1121px;
+    max-width: none;
+    opacity: var(--cloud-o);
+  }
+
+  .backdrop :global(.backdrop__cloud--a) {
+    left: 367px;
+    top: 263px;
+    scale: -1 1;
+  }
+
+  .backdrop :global(.backdrop__cloud--b) {
+    left: -565px;
+    top: 335px;
+  }
+</style>

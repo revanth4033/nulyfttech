@@ -7,8 +7,6 @@
  * boards 647:7514 and 647:7155; their geometry lives here so the static
  * render and the script agree.
  */
-import type { Shot } from "./capProductDesign";
-import requirements from "../assets/images/cap-design/aster-feature-5.jpg";
 
 /* --- hero ------------------------------------------------------------------ */
 
@@ -18,8 +16,10 @@ export const hero = {
   title: "Make AI part of how your",
   emphasis: "business works",
   body: "We engineer AI agents, intelligent workflows, and connected automation that take work beyond experimentation into systems your teams can actually use.",
-  primary: { label: "Build Your AI Workflow", href: "#contact" },
-  secondary: { label: "Explore Our Work", href: "#ai-work" },
+  primary: { label: "Build Your AI Workflow", href: "/contact" },
+  // Pointed at #ai-work until that section was replaced by the technology
+  // ecosystem; the work now lives on the Work page.
+  secondary: { label: "Explore Our Work", href: "/studio" },
   /** Logo discs on the 460px target, top-left positions and disc size. */
   logos: [
     { icon: "icons/ai/logo-n8n", x: 77.05, y: 26.45, d: 73.6, w: 36.8, h: 36.8 },
@@ -112,40 +112,52 @@ export const services = {
   },
 };
 
-/* --- what we've been building (dark) --------------------------------------- */
+/* --- the technology ecosystem (dark) — Figma 673:10175 ------------------ */
 
-const screen: Shot = { src: requirements, alt: "Requirements board", crop: { w: 100, h: 154.27, left: 0.09, top: 0.08 } };
-
-export const projects = {
-  eyebrow: "What We've Been Building",
-  title: "From AI experiments to working systems",
-  body: "A look at practical AI we've engineered around real business problems",
-  rows: [
-    {
-      name: "AI Data Copilot",
-      kicker: "Ask the data. Get the answer",
-      body: "A RAG-powered copilot that lets recruitment teams query hiring data conversationally from open positions and candidate movement to pipeline delays.",
-      tags: ["RAG", "Knowledge AI"],
-      shot: screen,
-      reverse: false,
-    },
-    {
-      name: "AI Voice Follow-up Agent",
-      kicker: "Turn follow-ups into conversations",
-      body: "A voice AI agent engineered to handle EMI payment follow-ups, engage customers conversationally, and support structured calling workflows.",
-      tags: ["Voice AI", "Calling Workflows"],
-      shot: screen,
-      reverse: true,
-    },
-    {
-      name: "Intelligent Lead Workflow",
-      kicker: "From enquiry to qualified lead",
-      body: "A concept for an AI workflow that qualifies real-estate enquiries, captures missing information, updates CRM records, and triggers the next action automatically.",
-      tags: ["AI", "Workflow Automation"],
-      shot: screen,
-      reverse: false,
-    },
-  ],
+/**
+ * Replaces "What we've been building". Twenty-four technology tiles placed
+ * around three concentric rings, the nuLyft mark at their shared centre.
+ * Coordinates are the 1240-wide stage's own (673:10176), read per tile off
+ * the file — the tiles sit in several nested, offset groups, so the group
+ * coordinates alone would place them wrong. `w`/`h` is the logo's drawn
+ * size inside its 64px tile; most are 32 square.
+ */
+export const technology = {
+  eyebrow: "The technology ecosystem",
+  title: "Different technologies. One Solution",
+  // Copy as drawn, including "Automation. Integrations".
+  body: "We bring together the best in AI, Automation. Integrations and Modern infrastructure to build solutions that work for your business",
+  stage: { w: 1240, h: 1183.771, top: 136 },
+  /** All three share the hub's centre. */
+  center: { x: 616.546, y: 591.886 },
+  rings: [591.885, 887.828, 1183.771],
+  hub: 147.971,
+  tiles: [
+    { name: "Slack", icon: "slack", x: 334, y: 406.89 },
+    { name: "PostgreSQL", icon: "postgresql", x: 291, y: 553.89 },
+    { name: "Twilio", icon: "twilio", x: 334, y: 713.89 },
+    { name: "MongoDB", icon: "mongodb", x: 204, y: 328 },
+    { name: "LlamaIndex", icon: "llamaindex", x: 155, y: 482.89 },
+    { name: "Vapi", icon: "vapi", x: 143, y: 637.89 },
+    { name: "Claude", icon: "claude", x: 204, y: 793 },
+    { name: "LangChain", icon: "langchain", x: 966, y: 327.89 },
+    { name: "Media playback", icon: "play-circle", x: 1015, y: 481.89 },
+    { name: "IoT", icon: "iot", x: 1027, y: 634.89 },
+    { name: "Pinecone", icon: "pinecone", x: 966, y: 792.89, w: 29 },
+    { name: "n8n", icon: "n8n", x: 836, y: 406.89 },
+    { name: "Make", icon: "make", x: 879, y: 553.89 },
+    { name: "Power Automate", icon: "power-automate", x: 836, y: 713.89 },
+    { name: "Database search", icon: "database-search", x: 96, y: 230.89 },
+    { name: "ElevenLabs", icon: "elevenlabs", x: 28, y: 721.89, w: 19 },
+    { name: "Salesforce", icon: "salesforce", x: 24, y: 386.89 },
+    { name: "Gemini", icon: "gemini", x: 0, y: 542.89 },
+    { name: "Microsoft Teams", icon: "teams", x: 96, y: 885.89, w: 31 },
+    { name: "Meta", icon: "meta", x: 1079, y: 231, h: 21 },
+    { name: "Redis", icon: "redis", x: 1147, y: 721.89 },
+    { name: "Jira", icon: "jira", x: 1158, y: 386.89 },
+    { name: "OpenAI", icon: "openai", x: 1175, y: 542.89 },
+    { name: "Mistral AI", icon: "mistral", x: 1079, y: 885.89, w: 35 },
+  ] as { name: string; icon: string; x: number; y: number; w?: number; h?: number }[],
 };
 
 /* --- where can we help ------------------------------------------------------ */

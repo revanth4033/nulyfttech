@@ -1,0 +1,290 @@
+---
+import Icon from "../ui/Icon.astro";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import { technology as t } from "../../data/capAi";
+
+/**
+ * The technology ecosystem — Figma 673:10175, 1440 x 1187, dark band.
+ * Replaces "What we've been building" on the AI & Automation page.
+ *
+ * A centred header over a 1240-wide stage: three concentric rings, the
+ * nuLyft mark at their centre, and twenty-four technology tiles placed at
+ * Figma's own coordinates. The stage starts at 136, under the header, and the
+ * section clips it at 1187 — the outer ring runs off the bottom as drawn.
+ *
+ * The rings are SVG circles, not masked boxes: each is a 1.381px inside
+ * stroke in a vertical white ramp (clear at top and bottom, 0.44 at the
+ * middle) at 0.36 — a gradient stroke the design context reports as flat
+ * transparent white. Plain strokes keep the band cheap to repaint.
+ *
+ * Below the 1240 design width the stage scales as one picture (`fit.ts`);
+ * it holds no text beyond the hover labels.
+ *
+ * Hover (tap on touch) — `scripts/ai-tech.ts`: the tile lifts, glows and
+ * names itself, and its ring brightens. (A line to the hub with a travelling
+ * dot was tried and taken out at the user's request.)
+ *
+ * Float: every tile bobs on its own slow loop — 4-6px over a 4-7s cycle, a
+ * third drifting 1-2px sideways too — phases spread so no two move together.
+ * It is a CSS animation, not GSAP: 24 tiles re-positioned from the main
+ * thread every frame repainted their inline logos and roughly doubled the
+ * long frames on a slow machine; a transform animation runs on the
+ * compositor. Paused under hover (`.is-on`), off screen (`.is-idle`, set by
+ * the script) and reduced motion.
+ */
+const RING_W = 1.381;
+const TILE = 64;
+const px = (n: number) => `${n}px`;
+
+/** A stable 0-1 value per tile and channel — the same float every build. */
+const rand = (i: number, k: number) => {
+  const v = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+/** Each tile's centre, the ring it sits on (nearest by radius), and its float. */
+const tiles = t.tiles.map((tile, i) => {
+  const cx = tile.x + TILE / 2;
+  const cy = tile.y + TILE / 2;
+  const d = Math.hypot(cx - t.center.x, cy - t.center.y);
+  const ring = t.rings
+    .map((size, i) => ({ i, off: Math.abs(size / 2 - d) }))
+    .sort((a, b) => a.off - b.off)[0].i;
+  const amp = 4 + rand(i, 1) * 2; // 4-6px of travel
+  const half = 2 + rand(i, 2) * 1.5; // one way; a 4-7s cycle
+  const sway = rand(i, 4) < 0.34 ? 1 + rand(i, 5) : 0; // a third drift sideways
+  const float = `--fy:${(amp / 2).toFixed(2)}px;--fx:${(sway / 2).toFixed(2)}px;--fd:${half.toFixed(2)}s;--fdel:${(-rand(i, 3) * half * 2).toFixed(2)}s`;
+  return { ...tile, cx, cy, ring, float };
+});
+---
+
+<section class="atech" data-section="ai-technology">
+  <header class="atech__head container">
+    <div class="atech__lead">
+      <EyebrowBadge variant="dark" data-animate>{t.eyebrow}</EyebrowBadge>
+      <h2 class="atech__title" data-animate>{t.title}</h2>
+    </div>
+    <p class="atech__body" data-animate>{t.body}</p>
+  </header>
+
+  <div class="atech__stage-wrap container" aria-hidden="true">
+    <div class="fit atech__fit" data-fit={t.stage.w} style={`--fit-w:${t.stage.w};--fit-h:${t.stage.h}`}>
+      <div class="fit__inner atech__stage">
+        <svg class="atech__rings" width={t.stage.w} height={t.stage.h} viewBox={`0 0 ${t.stage.w} ${t.stage.h}`} fill="none">
+          <defs>
+            <linearGradient id="atech-ring" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0" />
+              <stop offset="0.5" stop-color="#fff" stop-opacity="0.44" />
+              <stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          {
+            t.rings.map((d, i) => (
+              <circle
+                class="atech__ring"
+                data-ring={i}
+                cx={t.center.x}
+                cy={t.center.y}
+                r={d / 2 - RING_W / 2}
+                stroke="url(#atech-ring)"
+                stroke-width={RING_W}
+              />
+            ))
+          }
+        </svg>
+
+
+        <span
+          class="atech__hub"
+          style={`left:${px(t.center.x - t.hub / 2)};top:${px(t.center.y - t.hub / 2)};width:${px(t.hub)};height:${px(t.hub)}`}
+        >
+          <Icon name="brand/ai/tech-hub" size={t.hub} />
+        </span>
+
+        {
+          tiles.map((tile) => (
+            <span
+              class="atech__tile"
+              style={`left:${px(tile.x)};top:${px(tile.y)};${tile.float}`}
+              data-tile
+              data-ring={tile.ring}
+            >
+              <Icon name={`icons/ai-tech/${tile.icon}`} width={tile.w ?? 32} height={tile.h ?? 32} />
+              <span class="atech__label">{tile.name}</span>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <ul class="visually-hidden">
+    {t.tiles.map((tile) => <li>{tile.name}</li>)}
+  </ul>
+</section>
+
+<style>
+  .atech {
+    position: relative;
+    height: 1187px;
+    overflow: hidden;
+    background: var(--c-bg-dark);
+  }
+
+  /* --- header ------------------------------------------------------------ */
+
+  .atech__head {
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-top: 100px;
+    text-align: center;
+  }
+
+  .atech__lead {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .atech__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .atech__body {
+    max-width: 788px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  /* --- stage ------------------------------------------------------------- */
+
+  .atech__stage-wrap {
+    position: absolute;
+    top: 136px;
+    left: 0;
+    right: 0;
+  }
+
+  .atech__stage {
+    position: relative;
+  }
+
+  .atech__rings {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+  }
+
+  .atech__ring {
+    stroke-opacity: 0.36;
+    transition: stroke-opacity var(--dur-fast) var(--ease-out);
+  }
+
+  /* The hovered tile's ring, at low strength. */
+  .atech__ring.is-lit {
+    stroke-opacity: 0.75;
+  }
+
+
+  .atech__hub {
+    position: absolute;
+    display: flex;
+    border-radius: 50%;
+  }
+
+
+  .atech__tile {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 0.986px solid rgba(131, 77, 251, 0.24);
+    border-radius: 7.892px;
+    background: #21163b;
+    cursor: default;
+    animation: atech-float var(--fd) ease-in-out var(--fdel) infinite alternate;
+    will-change: transform;
+    transition:
+      translate var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  @keyframes atech-float {
+    from {
+      transform: translate(calc(var(--fx) * -1), calc(var(--fy) * -1));
+    }
+    to {
+      transform: translate(var(--fx), var(--fy));
+    }
+  }
+
+  /* Held still under the pointer, and while the section is off screen. */
+  .atech__tile.is-on,
+  .atech.is-idle .atech__tile {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .atech__tile {
+      animation: none;
+    }
+  }
+
+  .atech__tile.is-on {
+    z-index: 2;
+    translate: 0 -3px;
+    border-color: var(--c-accent);
+    box-shadow: 0 0 18px rgba(131, 77, 251, 0.45);
+  }
+
+  /* The tile names itself below. */
+  .atech__label {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    padding: 4px 8px;
+    border: 1px solid rgba(131, 77, 251, 0.32);
+    border-radius: 6px;
+    background: rgba(24, 16, 43, 0.92);
+    font-weight: 500;
+    font-size: var(--fs-xxs);
+    line-height: 16px;
+    color: var(--c-bg-light);
+    white-space: nowrap;
+    opacity: 0;
+    translate: -50% -4px;
+    pointer-events: none;
+    transition:
+      opacity var(--dur-fast) var(--ease-out),
+      translate var(--dur-fast) var(--ease-out);
+  }
+
+  .atech__tile.is-on .atech__label {
+    opacity: 1;
+    translate: -50% 0;
+  }
+
+  @media (max-width: 900px) {
+    .atech__title {
+      font-size: 28px;
+      letter-spacing: -1px;
+      white-space: normal;
+    }
+  }
+</style>

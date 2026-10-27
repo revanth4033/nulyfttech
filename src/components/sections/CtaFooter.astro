@@ -19,9 +19,10 @@ import { screens, FAN_W, FAN_H, CARD_W, CARD_H } from "../../data/cta";
 const rasters = { "screen-1": screen1, "screen-2": screen2, "screen-3": screen3 };
 
 /**
- * The Studio page's Talent tab carries its own CTA copy (Figma 501:3810), so
- * the block is prop-driven. `studio-tabs.ts` swaps the text when that tab is
- * selected and restores this default on the others.
+ * Pages may carry their own CTA copy (Product Engineering, AI & Automation),
+ * so the block is prop-driven. The default title breaks after "building?",
+ * where every frame wraps it; left to `text-wrap: balance` it split as
+ * "...worth / building? Let's talk about it".
  */
 interface Props {
   title?: string;
@@ -29,34 +30,45 @@ interface Props {
   /** Copy column width. Figma draws 504; AI & Automation widens it to 642
       from the same left edge so its longer body sets in two lines. */
   copyWidth?: number;
+  /**
+   * `false` drops the CTA card and its overlap — Contact Us (672:3922) ends
+   * on the footer alone, its content 141 down rather than 241.
+   */
+  cta?: boolean;
+  /** The card's button label; Product Engineering reads "Discuss Your Project". */
+  button?: string;
 }
 
 const {
+  cta = true,
+  button = "Start a Conversation",
   copyWidth = 504,
-  title = "Have a product worth building? Let\u2019s talk about it",
+  title = "Have a product worth building?\nLet\u2019s talk about it",
   body = "Tell us what you\u2019re trying to solve, where you\u2019re stuck, or what you\u2019re planning next. We\u2019ll figure out the right way forward together.",
 } = Astro.props;
 
-/** Each points at its row inside What We Do, from whichever page we are on. */
+/**
+ * Footer columns — Figma 664:3250, from the redesigned home page. "UX
+ * Capabilities" is the design's label for the Product Design page.
+ */
 const capabilities = [
-  { label: "AI & Automation", href: "/#ai-automation" },
-  { label: "Product Design & Engineering", href: "/#product-design" },
-  { label: "Narrative Intelligence", href: "/#narrative" },
-  { label: "Talent Intelligence", href: "/#talent" },
+  { label: "UX Capabilities", href: "/product-design" },
+  { label: "Product Engineering", href: "/product-engineering" },
+  { label: "AI & Automation", href: "/ai-automation" },
 ];
-/** Blogs has no target yet — `anchors.ts` leaves an unresolved hash inert
- *  rather than letting the browser jump to the top of the page. */
 const company = [
+  { label: "Work", href: "/studio" },
+  { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
-  { label: "Blogs", href: "#blogs" },
 ];
-const work = [
-  { label: "Case Studies", href: "/#work" },
-  { label: "Studio", href: "/studio" },
+const contact = [
+  { label: "contact@nulyfttech.com", href: "mailto:contact@nulyfttech.com" },
+  { label: "+91-7032648989", href: "tel:+917032648989" },
 ];
 ---
 
-<div class="outro">
+<div class:list={["outro", { "outro--plain": !cta }]}>
+  {cta && (
   <section class="cta" data-section="cta">
     <span class="cta__stars" aria-hidden="true">
       <Image src={starfield} alt="" width={2000} widths={[1256, 2000]} sizes="1256px" quality={50} />
@@ -65,10 +77,10 @@ const work = [
     <span class="cta__arcs" aria-hidden="true"><Icon name="brand/cta-arcs" width={965} height={965} /></span>
 
     <div class="cta__copy" style={`--cta-copy-w:${copyWidth}px`}>
-      <h2 class="cta__title" data-animate data-cta-title>{title}</h2>
-      <p class="cta__body" data-animate data-cta-body>{body}</p>
-      <a class="cta__btn" href="#contact" data-animate>
-        <span class="cta__btn-label">Start a Conversation</span>
+      <h2 class="cta__title" data-animate>{title}</h2>
+      <p class="cta__body" data-animate>{body}</p>
+      <a class="cta__btn" href="/contact" data-animate>
+        <span class="cta__btn-label">{button}</span>
         <span class="cta__btn-arrow"><Icon name="icons/arrow-cta" width={33.2} height={33.2} /></span>
       </a>
     </div>
@@ -92,6 +104,7 @@ const work = [
       }
     </div>
   </section>
+  )}
 
   <footer class="foot">
     <div class="foot__top">
@@ -115,7 +128,7 @@ const work = [
         </div>
       </div>
 
-      <nav class="foot__nav">
+      <nav class="foot__nav" aria-label="Footer">
         <div class="foot__col">
           <h3 class="foot__col-title">Capabilities</h3>
           <ul>{capabilities.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
@@ -124,9 +137,9 @@ const work = [
           <h3 class="foot__col-title">Company</h3>
           <ul>{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
         </div>
-        <div class="foot__col foot__col--narrow">
-          <h3 class="foot__col-title">Work</h3>
-          <ul>{work.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        <div class="foot__col foot__col--contact">
+          <h3 class="foot__col-title">Contact</h3>
+          <ul>{contact.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
         </div>
       </nav>
     </div>
@@ -350,6 +363,16 @@ const work = [
     margin-top: 258px;
   }
 
+  /* No card to clear: the footer starts flush, its content 141 down — the
+     1px top rule plus 140, inside Figma's 358. */
+  .outro--plain .foot {
+    margin-top: 0;
+  }
+
+  .outro--plain .foot__top {
+    padding-top: 140px;
+  }
+
   .foot__top {
     display: flex;
     align-items: center;
@@ -466,11 +489,15 @@ const work = [
     color: var(--c-bg-light);
   }
 
+  /* Figma sets the links at the default leading — a 19px line for 16px
+     Inter — so they step 35 apart; at the body's 24 they ran 40 and the
+     footer 16 tall. */
   .foot__col ul {
     display: flex;
     flex-direction: column;
     gap: 16px;
     list-style: none;
+    line-height: 19px;
   }
 
   .foot__col a,
@@ -488,7 +515,9 @@ const work = [
     width: 100%;
     max-width: var(--frame-w);
     margin-inline: auto;
-    padding: 40px var(--gutter);
+    /* Figma's rule is an inside stroke: the text sits 40 from the frame's
+       top edge, rule included, and the bar is 104 tall. */
+    padding: 39px var(--gutter) 40px;
     border-top: 1px solid #333;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
@@ -640,7 +669,7 @@ const work = [
       line-height: normal;
     }
 
-    /* Capabilities runs full width; Company and Work share the row under it. */
+    /* Capabilities runs full width; Company and Contact share the row under it. */
     .foot__nav {
       flex-wrap: wrap;
       gap: 24px;
@@ -650,7 +679,8 @@ const work = [
       flex: 0 0 100%;
     }
 
-    .foot__col--narrow {
+    .foot__col--narrow,
+    .foot__col--contact {
       flex: 1 0 0;
       min-width: 0;
     }

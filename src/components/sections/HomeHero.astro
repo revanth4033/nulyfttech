@@ -1,0 +1,421 @@
+---
+import { Image } from "astro:assets";
+import PillButton from "../ui/PillButton.astro";
+import HeroBackdrop from "../ui/HeroBackdrop.astro";
+import notchLeft from "../../assets/images/home/hero-notch-left.png";
+import notchRight from "../../assets/images/home/hero-notch-right.png";
+import { heroSlides } from "../../data/home";
+
+/**
+ * Home hero — Figma 664:2978, 1440 x 894.
+ *
+ * The nav floats over the top of it (it lives in the layout's overlay slot),
+ * so the section starts at y=0 and the copy sits at the frame's own 201.
+ *
+ * The photo card is one 1240 x 450 shape with a notch bitten out of its
+ * bottom-right corner, where the button sits. Figma builds it as a boolean
+ * subtract; here the photo is masked so it can still be swapped. The notch
+ * corner (320 x 110, cut from the subtract's own export so the fillets are
+ * Figma's) is split in two — the left fillets and the right curve — with a
+ * plain 36px band between them, so the notch can widen by `--notch-e` when a
+ * slide's button is longer than slide 1's (the user's AI & Automation mock
+ * widens it the same way). Two more fills cover the rest of the card. At
+ * `--notch-e: 0` the pieces rebuild the original corner exactly.
+ *
+ * The shafts, glow and clouds behind it are `HeroBackdrop`, shared with the
+ * Studio hero.
+ */
+const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
+
+/*
+ * Slides: one per capability. Every slide's copy and button share one grid
+ * cell, so the block is always as tall as the tallest slide and switching
+ * never moves the photo; the photos are stacked inside the one notched mask.
+ * They advance every 3s (the user asked for 2-3) and cross-fade; a dot jumps
+ * to a slide and restarts the clock. Auto-advance pauses while the pointer is
+ * over the photo or focus is inside the hero, while the hero is off screen or
+ * the tab hidden, and never runs under reduced motion.
+ */
+---
+
+<section class="hhero" data-section="home-hero">
+  <HeroBackdrop />
+
+  <div class="hhero__inner container">
+    <div class="hhero__head" data-hero-slides>
+      <div class="hhero__stack hhero__stack--title" data-animate>
+        {
+          heroSlides.map((sl, i) => {
+            const Tag = i === 0 ? "h1" : "p";
+            return (
+              <Tag
+                class:list={["hhero__title", "hhero__slide", { "is-active": i === 0 }]}
+                data-slide={i}
+                aria-hidden={i === 0 ? undefined : "true"}
+              >
+                {sl.title.lead}<em>{sl.title.em}</em>
+              </Tag>
+            );
+          })
+        }
+      </div>
+      <div class="hhero__stack hhero__stack--body" data-animate>
+        {
+          heroSlides.map((sl, i) => (
+            <p
+              class:list={["hhero__body", "hhero__slide", { "is-active": i === 0 }]}
+              data-slide={i}
+              aria-hidden={i === 0 ? undefined : "true"}
+            >
+              {sl.body}
+            </p>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="hhero__media" data-animate>
+      <div
+        class="hhero__photo"
+        data-hero-photo
+        style={`--notch-l:url(${notchLeft.src});--notch-r:url(${notchRight.src});--notch-w:${NOTCH.w}px;--notch-h:${NOTCH.h}px;--notch-p:${NOTCH.piece}px;--notch-b:${NOTCH.band}px`}
+      >
+        {
+          heroSlides.map((sl, i) => (
+            <Image
+              src={sl.photo}
+              alt={sl.photoAlt}
+              class:list={["hhero__shot", "hhero__slide", { "is-active": i === 0 }]}
+              data-slide={i}
+              aria-hidden={i === 0 ? undefined : "true"}
+              style={sl.photoPosition ? `object-position:${sl.photoPosition}` : undefined}
+              widths={[1240, 2000]}
+              sizes="(max-width: 1440px) calc(100vw - 2 * var(--gutter)), 1240px"
+              loading="eager"
+              fetchpriority={i === 0 ? "high" : "low"}
+            />
+          ))
+        }
+      </div>
+
+      <div class="hhero__dots" role="group" aria-label="Hero slides">
+        {
+          heroSlides.map((sl, i) => (
+            <button
+              type="button"
+              class:list={["hhero__dot", { "is-active": i === 0 }]}
+              data-dot={i}
+              aria-label={`Slide ${i + 1}: ${sl.id.replace("-", " ")}`}
+              aria-current={i === 0 ? "true" : undefined}
+            />
+          ))
+        }
+      </div>
+
+      <div class="hhero__cta">
+        {
+          heroSlides.map((sl, i) => (
+            <div
+              class:list={["hhero__slide", { "is-active": i === 0 }]}
+              data-slide={i}
+              aria-hidden={i === 0 ? undefined : "true"}
+            >
+              <PillButton href={sl.cta.href} flat arrow={20} tabindex={i === 0 ? undefined : "-1"}>
+                {sl.cta.label}
+              </PillButton>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hhero {
+    position: relative;
+    height: 894px;
+    overflow: hidden;
+    background: var(--c-bg-light);
+  }
+
+  /* --- copy -------------------------------------------------------------- */
+
+  .hhero__inner {
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 201px;
+  }
+
+  .hhero__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  /* Each stack holds every slide in one grid cell. */
+  .hhero__stack {
+    display: grid;
+  }
+
+  .hhero__stack > .hhero__slide,
+  .hhero__cta > .hhero__slide {
+    grid-area: 1 / 1;
+  }
+
+  .hhero__slide {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      visibility 0s linear var(--dur-base);
+  }
+
+  .hhero__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .hhero__stack--title {
+    flex: 0 1 603px;
+    align-items: center;
+  }
+
+  .hhero__stack--body {
+    flex: 0 1 431px;
+    align-items: center;
+  }
+
+  .hhero__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    text-transform: capitalize;
+    color: var(--c-heading);
+    /* Figma breaks after "Products"; balance would pull "Work" up. */
+    text-wrap: wrap;
+  }
+
+  .hhero__title em {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .hhero__body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  /* --- media ------------------------------------------------------------- */
+
+  .hhero__media {
+    position: relative;
+    height: 450px;
+  }
+
+  /* Animatable, so the notch eases to its new width when a slide changes. */
+  @property --notch-e {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+  }
+
+  .hhero__photo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 32px;
+    --notch-e: 0px;
+    mask-image:
+      var(--notch-r),
+      var(--notch-l),
+      linear-gradient(#000, #000),
+      linear-gradient(#000, #000),
+      linear-gradient(#000, #000);
+    mask-size:
+      var(--notch-p) var(--notch-h),
+      var(--notch-p) var(--notch-h),
+      calc(var(--notch-w) - 2 * var(--notch-p) + var(--notch-e)) var(--notch-b),
+      calc(100% - var(--notch-w) - var(--notch-e)) 100%,
+      100% calc(100% - var(--notch-h));
+    /* Four-value positions only: `mask-position` takes <position>, which —
+       unlike `background-position` — has no three-value form, and one bad
+       value drops the whole list to 0% 0%. */
+    mask-position:
+      right 0 bottom 0,
+      right calc(var(--notch-w) - var(--notch-p) + var(--notch-e)) bottom 0,
+      right var(--notch-p) bottom calc(var(--notch-h) - var(--notch-b)),
+      left 0 top 0,
+      left 0 top 0;
+    mask-repeat: no-repeat;
+    transition: --notch-e var(--dur-base) var(--ease-out);
+  }
+
+  .hhero__photo :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hhero__dots {
+    position: absolute;
+    left: 32px;
+    top: 410px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .hhero__dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.24);
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+
+  /* A bigger hit area than the 8px dot it draws. */
+  .hhero__dot::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+  }
+
+  .hhero__dot.is-active {
+    background: #fff;
+  }
+
+  .hhero__dot:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+
+  /* Slide 1's pill box is 224.76 x 50.55, 8 up from the card's foot and
+     22.24 in from its right edge; longer labels grow leftwards from that
+     right edge. */
+  .hhero__cta {
+    position: absolute;
+    right: 22.24px;
+    bottom: 8px;
+    display: grid;
+    align-items: center;
+    justify-items: end;
+    height: 50.55px;
+  }
+
+  .hhero__cta > .hhero__slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 224.76px;
+  }
+</style>
+
+<script>
+  /* Hero slides: auto-advance every 3s, dots jump, and the photo's notch
+     widens for a longer button. */
+  import { prefersReducedMotion } from "../../scripts/gsap";
+
+  const root = document.querySelector<HTMLElement>("[data-hero-slides]")?.closest<HTMLElement>(".hhero");
+  if (root) {
+    const INTERVAL = 3000;
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-dot]"));
+    const photo = root.querySelector<HTMLElement>("[data-hero-photo]");
+    const count = dots.length;
+    let current = 0;
+
+    /* Widen the notch when a slide's button is longer than slide 1's — the
+       same clearance as the drawn notch. */
+    const BASE = 224.76;
+    const fitNotch = (n: number) => {
+      const btn = root.querySelector<HTMLElement>(`.hhero__cta [data-slide="${n}"]`);
+      if (!photo || !btn) return;
+      photo.style.setProperty("--notch-e", `${Math.max(0, btn.getBoundingClientRect().width - BASE)}px`);
+    };
+
+    const show = (n: number) => {
+      current = n;
+      root.querySelectorAll<HTMLElement>(".hhero__slide").forEach((el) => {
+        const on = Number(el.dataset.slide) === n;
+        el.classList.toggle("is-active", on);
+        if (on) el.removeAttribute("aria-hidden");
+        else el.setAttribute("aria-hidden", "true");
+        el.querySelectorAll<HTMLElement>("a, button").forEach((f) => (on ? f.removeAttribute("tabindex") : f.setAttribute("tabindex", "-1")));
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle("is-active", i === n);
+        if (i === n) d.setAttribute("aria-current", "true");
+        else d.removeAttribute("aria-current");
+      });
+      fitNotch(n);
+    };
+
+    /* --- auto-advance --------------------------------------------------- */
+    const auto = !prefersReducedMotion();
+    let timer = 0;
+    let inView = false;
+    let hovered = false;
+    let focused = false;
+
+    const stop = () => {
+      window.clearTimeout(timer);
+      timer = 0;
+    };
+    const schedule = () => {
+      stop();
+      if (!auto || !inView || hovered || focused || document.hidden) return;
+      timer = window.setTimeout(() => {
+        show((current + 1) % count);
+        schedule();
+      }, INTERVAL);
+    };
+
+    dots.forEach((d, i) =>
+      d.addEventListener("click", () => {
+        show(i);
+        schedule(); // a fresh 3s on the chosen slide
+      }),
+    );
+
+    const media = root.querySelector<HTMLElement>(".hhero__media");
+    media?.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovered = true;
+      stop();
+    });
+    media?.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovered = false;
+      schedule();
+    });
+    // Keyboard focus only: a mouse click on a dot also focuses it, and
+    // pausing on that would stop the slides for good after one click.
+    root.addEventListener("focusin", (e) => {
+      if (!(e.target as Element).matches?.(":focus-visible")) return;
+      focused = true;
+      stop();
+    });
+    root.addEventListener("focusout", (e) => {
+      if (root.contains(e.relatedTarget as Node | null)) return;
+      focused = false;
+      schedule();
+    });
+    document.addEventListener("visibilitychange", schedule);
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      schedule();
+    }).observe(root);
+  }
+</script>

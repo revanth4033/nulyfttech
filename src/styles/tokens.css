@@ -25,19 +25,13 @@
   --c-eyebrow-text-dark: rgba(245, 243, 255, 0.8);
 
   /* --- Studio page ------------------------------------------------------ */
-  --c-tab-rule: #c7affd;      /* the 2px track under the filter tabs */
   --c-project-title: #1a1625;
   --c-plate-outer: rgba(219, 219, 219, 0.24);
   --c-plate-inner: rgba(255, 255, 255, 0.3);
-  --c-deck-bar: #333639;      /* PDF-viewer toolbar */
-  --c-deck-divider: #717375;
-  --c-deck-chip: rgba(0, 0, 0, 0.8);
 
-  /* --- Talent Intelligence ---------------------------------------------- */
-  --c-card-border-strong: rgba(22, 19, 32, 0.2);  /* scorecard rules */
-  --c-meter-track: #e6e6e6;
-  --c-live: #e14942;          /* "Round 2 · Live" */
-  --c-step-bg: rgba(131, 77, 251, 0.08);
+  /* Born on the old Studio page's Talent tab; still used elsewhere. */
+  --c-card-border-strong: rgba(22, 19, 32, 0.2);  /* Product Engineering proof rules */
+  --c-step-bg: rgba(131, 77, 251, 0.08);          /* Careers perk chips */
 
   /* --- Careers ----------------------------------------------------------- */
   --c-perk-border: #f3edff;   /* the bento cards' hairline */
@@ -95,7 +89,9 @@
   --frame-w: 1440px;          /* Figma frame */
   --content-w: 1240px;        /* frame minus 100px gutters */
   --gutter: 100px;
-  --nav-h: 83px;
+  --nav-h: 83px;              /* the old full-width bar; inner heroes still clear it */
+  --nav-top: 48px;            /* the floating nav card (Figma 664:2984) */
+  --nav-card-h: 72px;
   --hero-h: 882px;
 
   /* --- Radius & elevation ----------------------------------------------- */
@@ -105,10 +101,12 @@
   --r-eyebrow-sm: 30px;
   --r-browser: 20px;
   --r-pill: 999px;
+  --r-nav: 14px;
 
   --tilt: -0.65deg;           /* every pill button carries this */
 
   --sh-nav: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --sh-nav-card: 0 15px 14px rgba(131, 77, 251, 0.05);
   --sh-button-inset: inset 0 4px 4px rgba(0, 0, 0, 0.25);
   --sh-card: 0 4px 24px rgba(24, 16, 43, 0.06);
   --sh-browser: 0 24px 64px rgba(24, 16, 43, 0.12);

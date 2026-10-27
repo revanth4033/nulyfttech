@@ -1,0 +1,158 @@
+---
+import Icon from "../ui/Icon.astro";
+import PillButton from "../ui/PillButton.astro";
+import { about } from "../../data/home";
+
+/**
+ * "A little about nuLyft" — Figma 664:3024, 1440 x 696.
+ *
+ * The heading is set as written rather than through `capitalize`: Figma's
+ * render keeps the brand's lower-case "n", which CSS would turn into
+ * "NuLyft". The cards' ring is a real border — Figma's frames are 290 tall
+ * with 288 of content, so the 1px stroke adds to the box here.
+ *
+ * The middle card is drawn lit (solid ring plus a 2px glow); reproduced as
+ * drawn.
+ */
+---
+
+<section class="habout" id="about" data-section="home-about">
+  <div class="habout__inner container">
+    <div class="habout__body">
+      <header class="habout__head">
+        <h2 class="habout__title" data-animate>{about.title}</h2>
+        <p class="habout__lede" data-animate>{about.body}</p>
+      </header>
+
+      <ul class="habout__cards">
+        {
+          about.cards.map((c) => (
+            <li class:list={["habout__card", { "is-lit": c.lit }]} data-animate>
+              <span class="habout__chip">
+                <Icon name={c.icon} size={32} />
+              </span>
+              <div class="habout__text">
+                <h3 class="habout__card-title">{c.title}</h3>
+                <p class="habout__card-body">{c.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="habout__cta" data-animate>
+      <PillButton href={about.cta.href} variant="outline" arrow={20} arrowIcon="icons/arrow-circle-20-outline">
+        {about.cta.label}
+      </PillButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .habout {
+    background: var(--c-bg-light);
+    padding-block: 100px 99.9px;
+  }
+
+  .habout__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .habout__body {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    width: 100%;
+  }
+
+  .habout__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .habout__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .habout__lede {
+    flex: 0 1 506px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  .habout__cards {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .habout__card {
+    flex: 1 0 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding: 24px;
+    background: var(--c-surface);
+    border: 1px solid rgba(131, 77, 251, 0.24);
+    border-radius: 16px;
+  }
+
+  .habout__card.is-lit {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 2px var(--c-accent);
+  }
+
+  .habout__chip {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: var(--c-accent);
+    color: #fff;
+    line-height: 0;
+  }
+
+  .habout__text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .habout__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-md);
+    line-height: 24px;
+    letter-spacing: var(--tr-project-title);
+    color: var(--c-ink);
+  }
+
+  .habout__card-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* The pill's rotated box is 184.76 x 50.09; the column gap is measured to it. */
+  .habout__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50.095px;
+  }
+</style>

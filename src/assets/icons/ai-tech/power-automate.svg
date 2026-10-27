@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="selfhst:microsoft-power-automate" clip-path="url(#clip0_0_47)">
+<path id="Vector" d="M0.34375 5.525L9.71875 16L20.9938 3.39375C20.8375 3.33125 20.6625 3.2875 20.4875 3.2875H1.3375C0.18125 3.29375 -0.425 4.6625 0.34375 5.525Z" fill="url(#paint0_linear_0_47)"/>
+<path id="Vector_2" d="M29.4 19.4188L31.6625 16.8937C32.1188 16.3875 32.1188 15.6188 31.6625 15.1125L29.4 12.5875L21.4875 3.7375C21.35 3.5875 21.1813 3.46875 20.9938 3.39375L9.71875 16L0.34375 26.475C-0.425 27.3375 0.18125 28.7062 1.3375 28.7062H20.4875C20.8688 28.7062 21.2313 28.5438 21.4813 28.2625L29.4 19.4188Z" fill="url(#paint1_linear_0_47)"/>
+<path id="Vector_3" d="M21.4875 3.7375C21.35 3.5875 21.1813 3.46875 20.9938 3.39375L9.71875 16L0.34375 26.475C-0.425 27.3375 0.18125 28.7062 1.3375 28.7062H9.7125L26.7688 9.64375L21.4875 3.7375Z" fill="url(#paint2_linear_0_47)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_47" x1="14.8194" y1="18.0081" x2="10.3871" y2="3.76119" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0D36A5"/>
+<stop offset="1" stop-color="#1152D4"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_47" x1="16" y1="28.7071" x2="16" y2="3.39612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#84CAFF"/>
+<stop offset="1" stop-color="#61B1FB"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_47" x1="13.3863" y1="28.7071" x2="13.3863" y2="3.39612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3B90F5"/>
+<stop offset="1" stop-color="#2A78EE"/>
+</linearGradient>
+<clipPath id="clip0_0_47">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>
