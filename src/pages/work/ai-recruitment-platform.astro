@@ -7,6 +7,8 @@ import CaseRecApproach from "../../components/sections/CaseRecApproach.astro";
 import CaseRecSystem from "../../components/sections/CaseRecSystem.astro";
 import CaseRecScreens from "../../components/sections/CaseRecScreens.astro";
 import CtaFooter from "../../components/sections/CtaFooter.astro";
+import CaseChallenge from "../../components/case/CaseChallenge.astro";
+import { challenge } from "../../data/caseRec";
 ---
 
 <BaseLayout
@@ -17,6 +19,7 @@ import CtaFooter from "../../components/sections/CtaFooter.astro";
 
   <CaseRecHero />
   <CaseRecOverview />
+  <CaseChallenge {...challenge} />
   <CaseRecApproach />
   <CaseRecSystem />
   <CaseRecScreens />

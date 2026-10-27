@@ -1,6 +1,7 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 import { Image } from "astro:assets";
-import { overview, challenge } from "../../data/caseRec";
+import { overview } from "../../data/caseRec";
 
 const { stage, slots, screens } = overview;
 
@@ -26,7 +27,7 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
 <section class="cover" data-section>
   <div class="container cover__inner">
     <div class="cover__copy">
-      <p class="cover__eyebrow" data-animate>{overview.eyebrow}</p>
+      <EyebrowBadge class="case-eyebrow" data-animate>{overview.eyebrow}</EyebrowBadge>
       <h2 class="cover__title" data-animate>{overview.title}</h2>
       <p class="cover__body" data-animate>{overview.body}</p>
 
@@ -73,48 +74,20 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
   </div>
 </section>
 
-<section class="chal" data-section>
-  <div class="container chal__inner">
-    <div class="chal__copy">
-      <p class="cover__eyebrow" data-animate>{challenge.eyebrow}</p>
-      <h2 class="chal__title" data-animate>{challenge.title}</h2>
-      <p class="cover__body" data-animate>{challenge.body}</p>
-
-      <ul class="chal__points">
-        {
-          challenge.points.map((p) => (
-            <li data-animate>
-              <span class="chal__x" aria-hidden="true">
-                &#10005;
-              </span>
-              {p}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <figure class="chal__photos" data-animate>
-      <Image
-        src={challenge.photos.src}
-        alt={challenge.photos.alt}
-        width={1302}
-        widths={[651, 1302]}
-        sizes="651px"
-      />
-    </figure>
-  </div>
-</section>
-
 <style>
-  .cover,
-  .chal {
+  /* The shared section eyebrow (by request — the case studies had their own
+     pale, untracked-padding pill). It is inline-flex, so in these column
+     layouts it would stretch the full width without this. */
+  :global(.case-eyebrow) {
+    align-self: flex-start;
+  }
+
+  .cover {
     position: relative;
     background: var(--c-bg-light);
   }
 
-  .cover__inner,
-  .chal__inner {
+  .cover__inner {
     display: flex;
     align-items: flex-start;
     gap: 48px;
@@ -134,17 +107,7 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
     max-width: 100%;
   }
 
-  .cover__eyebrow {
-    font-weight: 600;
-    font-size: var(--fs-sm);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--c-accent);
-  }
-
-  .cover__title,
-  .chal__title {
+  .cover__title {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--fs-h3);
@@ -268,71 +231,8 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
     opacity: 0.16;
   }
 
-  /* --- challenge ----------------------------------------------------------- */
-
-  .chal__copy {
-    display: flex;
-    flex: none;
-    flex-direction: column;
-    gap: 16px;
-    width: 541px;
-    max-width: 100%;
-  }
-
-  .chal__points {
-    display: flex;
-    flex-direction: column;
-    margin-top: 8px;
-  }
-
-  .chal__points li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-block: 18px;
-    border-bottom: 1px solid var(--c-card-border);
-    font-weight: 500;
-    font-size: var(--fs-body);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--c-danger);
-  }
-
-  .chal__x {
-    font-size: 15px;
-    line-height: 1;
-  }
-
   /* One 651x461 export here, not the LMS's three separate photos — the frame
      groups all three into a single node with no bleed. */
-  .chal__photos {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    border-radius: var(--r-card);
-  }
-
-  .chal__photos :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .chal__shot {
-    overflow: hidden;
-    border-radius: var(--r-card);
-  }
-
-  .chal__shot--wide {
-    grid-column: 1 / -1;
-  }
-
-  .chal__shot :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
 
   @media (max-width: 560px) {
     .cover__modules {
@@ -345,20 +245,17 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
   }
 
   @media (max-width: 1080px) {
-    .cover__inner,
-    .chal__inner {
+    .cover__inner {
       flex-direction: column;
       gap: 48px;
     }
 
-    .cover__copy,
-    .chal__copy {
+    .cover__copy {
       width: auto;
       max-width: 640px;
     }
 
-    .cover__media,
-    .chal__photos {
+    .cover__media {
       width: 100%;
     }
 
@@ -370,13 +267,11 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
   }
 
   @media (max-width: 900px) {
-    .cover__inner,
-    .chal__inner {
+    .cover__inner {
       padding-block: 64px;
     }
 
-    .cover__title,
-    .chal__title {
+    .cover__title {
       font-size: 26px;
       letter-spacing: -0.8px;
       line-height: 34px;
@@ -390,15 +285,13 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
 
   /* Mobile */
   @media (max-width: 560px) {
-    .cover__inner,
-    .chal__inner {
+    .cover__inner {
       padding-block: 40px;
     }
 
     /* `--tr-h2` is -2px, which is a 40px heading's tracking. At 20 it closes
        the words up by a tenth of their width. */
-    .cover__title,
-    .chal__title {
+    .cover__title {
       font-size: 20px;
       line-height: 28px;
       letter-spacing: -0.4px;
@@ -407,11 +300,6 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
     .cover__body {
       font-size: 14px;
       line-height: 22px;
-    }
-
-    .cover__eyebrow {
-      font-size: 11px;
-      letter-spacing: 1.6px;
     }
 
     .cover__facts {
@@ -434,21 +322,9 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
       white-space: normal;
     }
 
-
     .cover__facts dd {
       font-size: 16px;
       line-height: 24px;
-    }
-
-    .chal__points li {
-      gap: 8px;
-      padding-block: 14px;
-      font-size: 12px;
-      letter-spacing: 1.2px;
-    }
-
-    .chal__x {
-      font-size: 12px;
     }
   }
 </style>

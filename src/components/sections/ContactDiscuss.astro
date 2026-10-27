@@ -31,7 +31,7 @@ import { discuss } from "../../data/contact";
       src={curves}
       alt=""
       widths={[448, 896]}
-      sizes="448px"
+      sizes="(max-width: 1180px) 360px, 448px"
       aria-hidden="true"
       data-animate
     />
@@ -84,9 +84,105 @@ import { discuss } from "../../data/contact";
     height: 49.662px;
   }
 
+  /* The raster carries the section's ground baked in, and WebP lifts that
+     plate a level above the real ground — enough for its box to show once
+     the picture sits in open space on a tablet. `darken` keeps whichever is
+     darker per pixel: the ground wherever the plate is, the curves (always
+     darker than the ground) everywhere else. */
   .discuss :global(.discuss__art) {
     flex: none;
     width: 448px;
     height: 429px;
+    mix-blend-mode: darken;
+  }
+
+  /* --- narrower than the design ------------------------------------------ */
+
+  /* 600 + 147 + 448 only fits the design's column; at 1024 the copy was
+     left 229px. The gap closes and the illustration (a picture, so it
+     scales) steps down before anything stacks. */
+  @media (max-width: 1180px) {
+    .discuss__inner {
+      gap: 64px;
+    }
+
+    .discuss :global(.discuss__art) {
+      width: 360px;
+      height: auto;
+      aspect-ratio: 448 / 429;
+    }
+
+    .discuss__title {
+      font-size: 40px;
+      letter-spacing: -1.4px;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .discuss :global(.discuss__art) {
+      width: 300px;
+    }
+  }
+
+  /* Stacked: the copy, then the curves centred under it, smaller — they are
+     an ornament here, not a column. */
+  @media (max-width: 900px) {
+    .discuss {
+      padding-block: 64px;
+    }
+
+    .discuss__inner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 40px;
+    }
+
+    .discuss__copy {
+      flex: none;
+    }
+
+    .discuss__title {
+      max-width: 560px;
+      font-size: 34px;
+      letter-spacing: -1px;
+    }
+
+    .discuss :global(.discuss__art) {
+      align-self: center;
+      width: min(100%, 320px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .discuss {
+      padding-block: 40px;
+    }
+
+    .discuss__inner {
+      gap: 32px;
+    }
+
+    .discuss__copy {
+      gap: 12px;
+    }
+
+    .discuss__title {
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.6px;
+    }
+
+    .discuss__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .discuss__cta {
+      margin-top: 8px;
+    }
+
+    .discuss :global(.discuss__art) {
+      width: min(100%, 260px);
+    }
   }
 </style>

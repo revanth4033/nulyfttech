@@ -39,7 +39,7 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
       </h1>
     </div>
     <p class="phead__body" data-animate>
-      {body.map((line, i) => (i === 0 ? line : [<br />, line]))}
+      {body.map((line, i) => (i === 0 ? line : [<br />, " ", line]))}
     </p>
   </div>
 </section>
@@ -83,8 +83,9 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
   }
 
   .phead__title em {
-    font-weight: 500;
-    font-style: italic;
+    /* Set upright at full weight, like the rest of the headline (by
+       request — the frame sets this tail italic). */
+    font-style: normal;
   }
 
   .phead__body {
@@ -92,5 +93,63 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
     line-height: var(--lh-body);
     letter-spacing: var(--tr-body);
     color: var(--c-muted);
+  }
+
+  /* --- tablet and phone -------------------------------------------------- */
+
+  /* The frame is a fixed height with the copy centred in it; narrower, the
+     copy grows taller than the frame allows for under the nav, so the hero
+     sizes to its copy instead. The copy joins the flow — and a block that
+     leaves `position: absolute` keeps its `translate`, which would drag it
+     half its width off the left edge, so that is reset too. It stays
+     `relative` so it still paints over the backdrop.
+
+     Figma's hand-set line breaks are for a 728 column; in a narrow one they
+     strand a word or two on a line, so they give way to normal wrapping (the
+     space after each break keeps the words apart; at desktop a space at the
+     start of a line collapses, so the frame is untouched). */
+  @media (max-width: 900px) {
+    .phead {
+      height: auto;
+      padding: calc(var(--nav-top) + var(--nav-card-h) + 72px) 0 80px;
+    }
+
+    .phead__copy {
+      position: relative;
+      left: auto;
+      top: auto;
+      translate: none;
+      margin-inline: auto;
+    }
+
+    .phead__title {
+      font-size: 40px;
+      letter-spacing: -1.4px;
+    }
+
+    .phead__body br {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .phead {
+      padding: calc(var(--nav-top) + var(--nav-card-h) + 48px) 0 56px;
+    }
+
+    .phead__copy {
+      gap: 12px;
+    }
+
+    .phead__title {
+      font-size: 30px;
+      line-height: 1.2;
+      letter-spacing: -0.8px;
+    }
+
+    .phead__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
   }
 </style>

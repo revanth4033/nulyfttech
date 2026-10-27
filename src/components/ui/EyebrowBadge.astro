@@ -88,6 +88,14 @@ const { variant = "section", class: className, ...rest } = Astro.props;
       letter-spacing: 0.6px;
     }
 
+    /* The centred page heroes' badge: 14/2.4 is a desktop size; at that
+       tracking "ABOUT NULYFT" alone is a third of a phone column. */
+    .eyebrow--studio {
+      padding: 6px 14px 6px 6px;
+      font-size: 12px;
+      letter-spacing: 1.2px;
+    }
+
     /* Keep the badge hugging its text rather than filling the column. */
     .eyebrow {
       gap: 8px;

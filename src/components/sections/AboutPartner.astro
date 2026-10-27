@@ -18,7 +18,12 @@ import { partner } from "../../data/about";
 <section class="partner" data-section="about-partner">
   <div class="partner__inner container">
     <figure class="partner__photo" data-animate>
-      <Image src={photo} alt={partner.photo.alt} widths={[400, 800]} sizes="400px" />
+      <Image
+        src={photo}
+        alt={partner.photo.alt}
+        widths={[400, 800]}
+        sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 700px) calc(100vw - 64px), 400px"
+      />
       <figcaption class="partner__caption">
         <Icon name="icons/about/star-badge" size={24} />
         {partner.photo.caption}
@@ -173,6 +178,19 @@ import { partner } from "../../data/about";
     background: var(--c-surface);
     border: 1px solid rgba(131, 77, 251, 0.24);
     border-radius: 16px;
+    /* Same hover as the home page's craft cards (by request): a light brand
+       tint a step deeper than the #f5f3ff ground, the border deepening with
+       it, on an even 0.6s ease-in-out. Fine pointers only. */
+    transition:
+      background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .partner__card:hover {
+      background-color: #efe8ff;
+      border-color: rgba(131, 77, 251, 0.45);
+    }
   }
 
   .partner__card-head {
@@ -216,5 +234,162 @@ import { partner } from "../../data/about";
     font-size: var(--fs-sm);
     line-height: 20px;
     color: var(--c-muted);
+  }
+
+  /* --- narrower than the design ------------------------------------------ */
+
+  /* The card titles are `nowrap` for the frame's 261px cards; at 1280 the
+     cards are 208 and "Find the right way forward" ran out of its card. */
+  @media (max-width: 1439px) {
+    .partner__card-title {
+      white-space: normal;
+    }
+
+    .partner__card {
+      padding: 20px;
+    }
+  }
+
+  /* Tablet: the photo stays beside the pitch, and the three cards move out
+     from under the pitch to run the full width below both — under the pitch
+     alone they were three 150px slivers. The caption anchors to the photo's
+     foot rather than Figma's fixed 471, since the photo's height now follows
+     its width. From 1320, not lower: beside the photo a card's content box
+     drops under the 166px its widest tag ("Business understanding") needs
+     at about 1300. */
+  @media (max-width: 1320px) {
+    .partner__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+      align-items: center;
+      gap: 32px;
+    }
+
+    .partner__copy {
+      display: contents;
+    }
+
+    .partner__photo {
+      grid-row: 1;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 400 / 519;
+    }
+
+    .partner__lead {
+      grid-column: 2;
+      grid-row: 1;
+      gap: 32px;
+    }
+
+    .partner__cards {
+      grid-column: 1 / -1;
+    }
+
+    .partner__card {
+      gap: 32px;
+    }
+
+    .partner__caption {
+      top: auto;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      translate: none;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .partner {
+      padding-block: 64px;
+    }
+
+    .partner__inner {
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: 32px 24px;
+    }
+
+    .partner__title {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .partner__body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  /* Phone: one column — the pitch first, then the photo (cropped landscape:
+     a 343 x 445 portrait would be most of a screen of photo), then the
+     cards one under another. From 720: three across, a card's content box
+     falls under the widest tag's 166 just above 700. */
+  @media (max-width: 720px) {
+    .partner__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+
+    .partner__lead {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .partner__photo {
+      grid-row: 2;
+      aspect-ratio: 4 / 3;
+    }
+
+    .partner__photo :global(img) {
+      object-position: 50% 35%;
+    }
+
+    .partner__cards {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .partner__card {
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .partner__card-body {
+      padding-top: 16px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .partner {
+      padding-block: 40px;
+    }
+
+    .partner__lead {
+      gap: 24px;
+    }
+
+    .partner__title {
+      font-size: 24px;
+      letter-spacing: -0.6px;
+    }
+
+    .partner__body {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .partner__caption {
+      left: 16px;
+      bottom: 16px;
+      font-size: var(--fs-sm);
+      line-height: 20px;
+    }
+
+    .partner__card-title {
+      font-size: var(--fs-body);
+      line-height: 22px;
+    }
   }
 </style>

@@ -1,0 +1,667 @@
+---
+/**
+ * The small pictures at the head of each challenge card (`CaseChallenge`).
+ * One per pain point, drawn in the site's product-UI language rather than
+ * photographed: white tiles on the pale lavender, 1px lavender rings, 11px
+ * labels in muted ink, the accent for whatever matters, and a soft rose only
+ * for something gone wrong (an overdue item). All decorative — the card's
+ * text carries the meaning, so the picture is `aria-hidden` by the caller.
+ *
+ * Twelve, four per case study:
+ *   Recruitment  files · status · followups · pipeline
+ *   Skill Wagon  tabs · approvals · insights · capacity
+ *   Automotive   stock · listing · reach · channels
+ *
+ * Each sits centred in a 140px box (124 on a phone) and is never wider than
+ * 214px, so it fits the narrowest card (about 230 at 1181) with room.
+ */
+import type { ArtKind } from "./challenge-art";
+
+interface Props {
+  kind: ArtKind;
+}
+
+const { kind } = Astro.props;
+---
+
+<div class="art">
+  {/* --- Recruitment ------------------------------------------------------- */}
+
+  {kind === "files" && (
+    <div class="files">
+      {["Client C.xlsx", "Client B.xlsx", "Client A.xlsx"].map((f, k) => (
+        <span class={`tile file file--${k}`}>
+          <span class="sheet" />
+          {f}
+        </span>
+      ))}
+    </div>
+  )}
+
+  {kind === "status" && (
+    <div class="tile row">
+      <span class="avatar">PS</span>
+      <span class="who">
+        <span class="name">Priya S.</span>
+        <span class="meta">Typed in by hand</span>
+      </span>
+      <span class="pill pill--ask">Interview?</span>
+    </div>
+  )}
+
+  {kind === "followups" && (
+    <div class="list">
+      <span class="tile item"><span class="box" />Call back Rahul</span>
+      <span class="tile item"><span class="box" />Send JD to client</span>
+      <span class="tile item item--late">
+        <span class="box" />Follow up: offer
+        <span class="late">Overdue</span>
+      </span>
+    </div>
+  )}
+
+  {kind === "pipeline" && (
+    <div class="tile panel">
+      <span class="label">Hiring pipeline</span>
+      <span class="segs">
+        <span class="seg seg--on" />
+        <span class="seg seg--on" />
+        <span class="seg seg--unknown">?</span>
+        <span class="seg seg--unknown">?</span>
+      </span>
+      <span class="stages">
+        <span>Sourced</span><span>Screened</span><span>Interview</span><span>Offer</span>
+      </span>
+    </div>
+  )}
+
+  {/* --- Skill Wagon ------------------------------------------------------- */}
+
+  {/* Learning split across three tools: one window, a tab per tool. */}
+  {kind === "tabs" && (
+    <div class="tile window">
+      <span class="tabs">
+        <span class="tab tab--on">Videos</span>
+        <span class="tab">Quiz form</span>
+        <span class="tab">Notes</span>
+        <span class="tab tab--add">+</span>
+      </span>
+      <span class="win-body">
+        <span class="bone bone--w80" />
+        <span class="bone bone--w60" />
+        <span class="where">Module 3 is in another tab</span>
+      </span>
+    </div>
+  )}
+
+  {/* Operations done by hand: a queue of approvals. */}
+  {kind === "approvals" && (
+    <div class="tile panel">
+      <span class="head">
+        <span class="label">Batch requests</span>
+        <span class="pill pill--count">57 pending</span>
+      </span>
+      {["Enrol · Aarav M.", "Enrol · Neha K.", "Assign instructor"].map((r) => (
+        <span class="req">
+          {r}
+          <span class="approve">Approve</span>
+        </span>
+      ))}
+    </div>
+  )}
+
+  {/* Progress nobody can see: a chart with no data in it. */}
+  {kind === "insights" && (
+    <div class="tile panel">
+      <span class="head">
+        <span class="label">Course completion</span>
+        <span class="pill pill--ask">No data</span>
+      </span>
+      <span class="bars">
+        {[46, 70, 34, 58, 40].map((h) => (
+          <span class="bar" style={`height:${h}%`} />
+        ))}
+      </span>
+    </div>
+  )}
+
+  {/* Growth running into a ceiling of manual work. */}
+  {kind === "capacity" && (
+    <div class="tile panel">
+      <span class="head">
+        <span class="label">Active learners</span>
+        <span class="up">1,240 ↑</span>
+      </span>
+      <svg class="cap" viewBox="0 0 190 52" fill="none">
+        <path class="cap__ceiling" d="M0 12H190" />
+        <path class="cap__line" d="M2 48C30 46 48 40 70 34S112 20 136 14 168 12 188 12" />
+        <circle class="cap__dot" cx="188" cy="12" r="3" />
+      </svg>
+      <span class="ceiling-label">Manual capacity</span>
+    </div>
+  )}
+
+  {/* --- Automotive -------------------------------------------------------- */}
+
+  {/* Stock nobody is sure of. */}
+  {kind === "stock" && (
+    <div class="tile panel">
+      <span class="label">Stock</span>
+      {[
+        ["Classic 350", "In stock?"],
+        ["Pulsar 150", "Sold?"],
+        ["Duke 200", "—"],
+      ].map(([bike, state]) => (
+        <span class="req">
+          {bike}
+          <span class="pill pill--ask">{state}</span>
+        </span>
+      ))}
+    </div>
+  )}
+
+  {/* A listing that still has to be made from scratch. */}
+  {kind === "listing" && (
+    <div class="tile listing">
+      <span class="photo" />
+      <span class="listing__copy">
+        <span class="bone bone--w80" />
+        <span class="placeholder">Add photos and a description…</span>
+        <span class="pill pill--draft">Draft</span>
+      </span>
+    </div>
+  )}
+
+  {/* A listing hardly anyone sees. */}
+  {kind === "reach" && (
+    <div class="tile panel">
+      <span class="head">
+        <span class="label">Your listing</span>
+        <span class="views">3 views</span>
+      </span>
+      <svg class="spark" viewBox="0 0 190 34" fill="none">
+        <path class="spark__base" d="M0 30H190" />
+        <path class="spark__line" d="M2 28 30 29 58 27 86 29 114 28 142 29 170 28 188 29" />
+      </svg>
+      <span class="ceiling-label">This week</span>
+    </div>
+  )}
+
+  {/* Buyers reaching the dealer from everywhere at once. */}
+  {kind === "channels" && (
+    <div class="msgs">
+      <span class="tile msg msg--0"><span class="chan">Call</span>Is the bike still available?</span>
+      <span class="tile msg msg--1"><span class="chan">Chat</span>What's your best price?</span>
+      <span class="tile msg msg--2"><span class="chan">SMS</span>Can I see it today?</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .art {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 14px;
+    color: #6f6a7c;
+  }
+
+  .art * {
+    box-sizing: border-box;
+  }
+
+  /* The shared tile: white, a 1px lavender ring, a soft drop. */
+  .tile {
+    border-radius: 10px;
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px rgba(131, 77, 251, 0.18),
+      0 4px 12px rgba(24, 16, 43, 0.06);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(214px, calc(100% - 24px));
+    padding: 12px;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .label {
+    font-weight: 500;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .pill {
+    flex: none;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    white-space: nowrap;
+  }
+
+  /* A question nobody can answer. */
+  .pill--ask {
+    background: #f8f5ff;
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.45);
+    color: var(--c-accent);
+  }
+
+  .pill--count {
+    background: var(--c-accent);
+    color: #fff;
+  }
+
+  .pill--draft {
+    align-self: flex-start;
+    background: var(--c-accent-tint);
+    color: var(--c-accent);
+  }
+
+  /* Skeleton lines for content not there yet. */
+  .bone {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(131, 77, 251, 0.14);
+  }
+
+  .bone--w80 {
+    width: 80%;
+  }
+
+  .bone--w60 {
+    width: 60%;
+  }
+
+  .ceiling-label {
+    align-self: flex-end;
+    font-size: 9.5px;
+    line-height: 12px;
+    color: rgba(131, 77, 251, 0.75);
+  }
+
+  /* --- files --------------------------------------------------------------- */
+
+  .files {
+    position: relative;
+    width: 170px;
+    height: 96px;
+  }
+
+  .file {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 128px;
+    height: 28px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-weight: 500;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .file--0 {
+    translate: calc(-50% - 18px) calc(-50% - 31px);
+    rotate: -2deg;
+    opacity: 0.75;
+  }
+
+  .file--1 {
+    translate: calc(-50% + 2px) calc(-50% - 1px);
+    rotate: 1.5deg;
+    opacity: 0.88;
+  }
+
+  .file--2 {
+    translate: calc(-50% + 20px) calc(-50% + 29px);
+    rotate: -1deg;
+  }
+
+  /* A tiny sheet: a grid in the accent. */
+  .sheet {
+    flex: none;
+    width: 14px;
+    height: 16px;
+    border-radius: 3px;
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) 0 5px / 100% 1px no-repeat,
+      linear-gradient(var(--c-accent), var(--c-accent)) 0 10px / 100% 1px no-repeat,
+      linear-gradient(var(--c-accent), var(--c-accent)) 5px 0 / 1px 100% no-repeat;
+    box-shadow: inset 0 0 0 1.2px var(--c-accent);
+  }
+
+  /* --- status -------------------------------------------------------------- */
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: min(214px, calc(100% - 24px));
+    padding: 10px;
+  }
+
+  .avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--c-accent-tint);
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--c-accent);
+  }
+
+  .who {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--c-ink);
+  }
+
+  /* May take a second line: at the narrowest four-column width the row is
+     ~170 wide and a single line ran under the pill. */
+  .meta {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  /* --- followups ----------------------------------------------------------- */
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(184px, calc(100% - 24px));
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.14);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .box {
+    flex: none;
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1.2px rgba(131, 77, 251, 0.55);
+  }
+
+  .item--late {
+    box-shadow: inset 0 0 0 1px rgba(229, 103, 122, 0.45);
+  }
+
+  .late {
+    margin-left: auto;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: rgba(229, 103, 122, 0.12);
+    font-weight: 500;
+    font-size: 9.5px;
+    color: #c4475a;
+  }
+
+  /* --- pipeline ------------------------------------------------------------ */
+
+  .segs,
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .seg {
+    display: grid;
+    place-items: center;
+    height: 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 10px;
+    color: rgba(131, 77, 251, 0.7);
+  }
+
+  .seg--on {
+    background: var(--c-accent);
+  }
+
+  .seg--unknown {
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.35);
+    background: repeating-linear-gradient(-45deg, transparent 0 4px, rgba(131, 77, 251, 0.08) 4px 6px);
+  }
+
+  .stages {
+    font-size: 9px;
+    line-height: 12px;
+    text-align: center;
+  }
+
+  /* --- tabs ---------------------------------------------------------------- */
+
+  .window {
+    width: min(214px, calc(100% - 24px));
+    overflow: hidden;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 6px 6px 0;
+    background: #f3eeff;
+  }
+
+  .tab {
+    padding: 4px 8px;
+    border-radius: 6px 6px 0 0;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .tab--on {
+    background: #fff;
+    font-weight: 500;
+    color: var(--c-ink);
+  }
+
+  .tab--add {
+    color: rgba(131, 77, 251, 0.6);
+  }
+
+  .win-body {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 12px;
+  }
+
+  .where {
+    margin-top: 2px;
+    font-size: 10px;
+    color: var(--c-accent);
+  }
+
+  /* --- approvals / stock rows ---------------------------------------------- */
+
+  .req {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(131, 77, 251, 0.1);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .approve {
+    padding: 1px 7px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.35);
+    font-size: 9.5px;
+    color: var(--c-accent);
+  }
+
+  /* --- insights ------------------------------------------------------------ */
+
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 46px;
+    padding: 0 4px;
+    border-bottom: 1px solid rgba(131, 77, 251, 0.18);
+  }
+
+  .bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.3);
+    background: repeating-linear-gradient(-45deg, transparent 0 4px, rgba(131, 77, 251, 0.1) 4px 6px);
+  }
+
+  /* --- capacity / reach ---------------------------------------------------- */
+
+  .up {
+    font-weight: 600;
+    color: var(--c-accent);
+  }
+
+  .views {
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .cap,
+  .spark {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .cap__ceiling {
+    stroke: rgba(229, 103, 122, 0.6);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+
+  .cap__line,
+  .spark__line {
+    stroke: var(--c-accent);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .cap__dot {
+    fill: var(--c-accent);
+  }
+
+  .spark__base {
+    stroke: rgba(131, 77, 251, 0.18);
+    stroke-width: 1;
+  }
+
+  /* --- listing ------------------------------------------------------------- */
+
+  .listing {
+    display: flex;
+    gap: 10px;
+    width: min(214px, calc(100% - 24px));
+    padding: 10px;
+  }
+
+  .photo {
+    flex: none;
+    width: 64px;
+    height: 56px;
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px rgba(131, 77, 251, 0.3);
+    background: repeating-linear-gradient(-45deg, transparent 0 5px, rgba(131, 77, 251, 0.08) 5px 7px);
+  }
+
+  .listing__copy {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .placeholder {
+    font-size: 10px;
+    line-height: 13px;
+    color: rgba(111, 106, 124, 0.75);
+  }
+
+  /* --- channels ------------------------------------------------------------ */
+
+  .msgs {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(204px, calc(100% - 24px));
+  }
+
+  .msg {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: max-content;
+    max-width: 100%;
+    padding: 5px 9px 5px 5px;
+    border-radius: 9px;
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .msg--1 {
+    align-self: flex-end;
+  }
+
+  .msg--2 {
+    margin-left: 10px;
+  }
+
+  .chan {
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--c-accent-tint);
+    font-weight: 600;
+    font-size: 9px;
+    color: var(--c-accent);
+  }
+</style>

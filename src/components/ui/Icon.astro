@@ -18,10 +18,17 @@ interface Props {
   width?: number | string;
   height?: number | string;
   class?: string;
+  /**
+   * Extra id suffix for a second copy of the same icon on one page. Ids are
+   * prefixed per icon *name*, so two copies share them and every `url(#…)`
+   * resolves to the first — which paints nothing if that copy sits under
+   * `display: none` (the home Why platform's stacked copy went blank so).
+   */
+  uid?: string;
   [key: string]: unknown;
 }
 
-const { name, size, width, height, class: className, ...rest } = Astro.props;
+const { name, size, width, height, class: className, uid, ...rest } = Astro.props;
 
 const key = `../../assets/${name}.svg`;
 const raw = icons[key];
@@ -45,7 +52,7 @@ const h = height ?? size;
  * can collide and one silently steals the other's gradient, clip or filter.
  * Prefixing with the icon name keeps each self-contained.
  */
-const slug = name.replace(/[^a-z0-9]+/gi, "-");
+const slug = name.replace(/[^a-z0-9]+/gi, "-") + (uid ? `-${uid}` : "");
 const ids = new Set([...raw.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
 
 let body = raw;

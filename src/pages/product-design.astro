@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
 import CapHero from "../components/sections/CapHero.astro";
-import CapApproach from "../components/sections/CapApproach.astro";
+import CapFilm from "../components/sections/CapFilm.astro";
 import CapProject from "../components/sections/CapProject.astro";
 import CapWebsites from "../components/sections/CapWebsites.astro";
 import CapWebWork from "../components/sections/CapWebWork.astro";
@@ -17,7 +17,7 @@ import { hero, projects, cta } from "../data/capProductDesign";
   <Nav slot="overlay" />
 
   <CapHero hero={hero} />
-  <CapApproach />
+  <CapFilm />
   {projects.map((project) => <CapProject project={project} />)}
   <CapWebsites />
   <CapWebWork />

@@ -79,10 +79,14 @@ const contact = [
     <div class="cta__copy" style={`--cta-copy-w:${copyWidth}px`}>
       <h2 class="cta__title" data-animate>{title}</h2>
       <p class="cta__body" data-animate>{body}</p>
-      <a class="cta__btn" href="/contact" data-animate>
-        <span class="cta__btn-label">{button}</span>
-        <span class="cta__btn-arrow"><Icon name="icons/arrow-cta" width={33.2} height={33.2} /></span>
-      </a>
+      {/* The reveal goes on a wrapper: GSAP leaves `scale: none` inline on
+          whatever it animates, which would cancel the button's press. */}
+      <div class="cta__action" data-animate>
+        <a class="cta__btn" href="/contact">
+          <span class="cta__btn-label">{button}</span>
+          <span class="cta__btn-arrow"><Icon name="icons/arrow-cta" width={33.2} height={33.2} /></span>
+        </a>
+      </div>
     </div>
 
     <div class="cta__fan" data-fan>
@@ -304,24 +308,54 @@ const contact = [
     max-width: none;
   }
 
+  /* The same states as `PillButton` (see there): deeper purple and a glow on
+     hover with the arrow stepping right, the darkest purple pressed in on
+     click, an accent ring for keyboard focus. It sits on the dark card, so
+     the ring is the light lavender rather than the accent. */
+  .cta__btn {
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out),
+      scale 0.15s var(--ease-out);
+  }
+
+  .cta__btn-arrow {
+    transition: translate var(--dur-fast) var(--ease-out);
+  }
+
   @media (hover: hover) and (pointer: fine) {
-    .cta__btn {
-      transition:
-        background var(--dur-fast) ease,
-        translate var(--dur-fast) ease;
-    }
-
-    .cta__btn-arrow {
-      transition: translate var(--dur-fast) ease;
-    }
-
     .cta__btn:hover {
-      background: #7437fb;
-      translate: 0 -2px;
+      background-color: #6c2cfa;
+      box-shadow:
+        inset 0 4px 4px rgba(0, 0, 0, 0.25),
+        0 10px 24px -8px rgba(131, 77, 251, 0.7);
     }
 
     .cta__btn:hover .cta__btn-arrow {
-      translate: 4px 0;
+      translate: 3px 0;
+    }
+  }
+
+  .cta__btn:active {
+    background-color: #5a14f4;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.38);
+    /* `scale`: the reveal leaves an inline transform on this button. */
+    scale: 0.97;
+    transition-duration: 0.08s;
+  }
+
+  .cta__btn:focus-visible {
+    outline: 2px solid #c7b0fd;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn:active {
+      scale: none;
+    }
+
+    .cta__btn:hover .cta__btn-arrow {
+      translate: none;
     }
   }
 
@@ -565,6 +599,17 @@ const contact = [
     .cta__copy {
       left: 87.5px;
       translate: 0 -50%;
+      /* The fan's left edge sits at 50% + 186 of the card, so on a card
+         under ~811 (901-1010 viewports) a 504 copy ran under the
+         screenshots. Stop 24 short of it. */
+      width: min(var(--cta-copy-w, 504px), calc(50% + 74.5px));
+    }
+  }
+
+  @media (max-width: 1100px) and (min-width: 901px) {
+    .cta__title {
+      font-size: 28px;
+      line-height: 36px;
     }
   }
 
@@ -587,8 +632,14 @@ const contact = [
       border-radius: 20px;
     }
 
+    /* Relative, not static: a static copy block paints *under* the card's
+       absolutely placed starfield and tint, which hid the headline and body
+       on every phone and tablet — only the button, which opens its own
+       stacking context, showed through. */
     .cta__copy {
-      position: static;
+      position: relative;
+      left: auto;
+      top: auto;
       align-items: center;
       gap: 14px;
       width: 100%;
@@ -699,6 +750,33 @@ const contact = [
 
     .foot__legal {
       gap: 24px;
+    }
+  }
+
+  /* On a phone Company and Contact cannot share a row: the address alone is
+     wider than half the column and ran off the screen. Capabilities and
+     Company pair up instead, and Contact takes its own row. */
+  /* With no card to clear (Contact Us), the desktop's 140 above the footer
+     content is a screen's worth of nothing on a phone. The rule above is
+     `.outro--plain .foot__top`, which outranks the plain `.foot__top`
+     mobile padding, so it is re-pointed with the same selector. */
+  @media (max-width: 900px) {
+    .outro--plain .foot__top {
+      padding-top: 80px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .outro--plain .foot__top {
+      padding-top: 56px;
+    }
+
+    .foot__col:first-child {
+      flex: 1 0 0;
+    }
+
+    .foot__col--contact {
+      flex: 0 0 100%;
     }
   }
 </style>

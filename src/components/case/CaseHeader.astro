@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * The header every case-study section below the hero shares — Figma's 1240x84
  * row: eyebrow over title on the left, one intro paragraph on the right, the
@@ -20,7 +21,7 @@ const { eyebrow, title, body, class: className } = Astro.props;
 
 <header class:list={["chead", className]}>
   <div class="chead__left">
-    <p class="chead__eyebrow" data-animate>{eyebrow}</p>
+    <EyebrowBadge class="case-eyebrow" data-animate>{eyebrow}</EyebrowBadge>
     <h2 class="chead__title" data-animate>{title}</h2>
   </div>
 
@@ -28,6 +29,13 @@ const { eyebrow, title, body, class: className } = Astro.props;
 </header>
 
 <style>
+  /* The shared section eyebrow (by request — the case studies had their own
+     pale, untracked-padding pill). It is inline-flex, so in these column
+     layouts it would stretch the full width without this. */
+  :global(.case-eyebrow) {
+    align-self: flex-start;
+  }
+
   .chead {
     display: flex;
     align-items: center;
@@ -43,20 +51,6 @@ const { eyebrow, title, body, class: className } = Astro.props;
     gap: 8px;
   }
 
-  /* Vertical padding only — the pill hugs the text horizontally, which is
-     what the frame draws. */
-  .chead__eyebrow {
-    align-self: flex-start;
-    padding-block: 8px;
-    background: var(--c-case-eyebrow-bg);
-    border-radius: 88px;
-    font-weight: 500;
-    font-size: var(--fs-sm);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--c-accent);
-  }
 
   .chead__title {
     width: 525px;
@@ -148,10 +142,5 @@ const { eyebrow, title, body, class: className } = Astro.props;
       line-height: 22px;
     }
 
-    .chead__eyebrow {
-      font-size: 11px;
-      letter-spacing: 1.6px;
-      padding-block: 6px;
-    }
   }
 </style>

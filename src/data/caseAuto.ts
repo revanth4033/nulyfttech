@@ -1,6 +1,6 @@
+import type { ChallengeCard } from "../components/case/challenge-art";
 import heroPhones from "../assets/images/case-auto/hero-phones.png";
 import overviewPhone from "../assets/images/case-auto/overview-phone.png";
-import problemPhotos from "../assets/images/case-auto/problem-photos.png";
 import phase02 from "../assets/images/case-auto/phase-02.png";
 import phase03 from "../assets/images/case-auto/phase-03.png";
 import typographyFigure from "../assets/images/case-auto/typography.png";
@@ -27,7 +27,7 @@ import screenDetails from "../assets/images/case-auto/screen-details.png";
  */
 
 export const hero = {
-  eyebrow: "AI reel creator - Case Study",
+  eyebrow: "NxtDealer - Case Study",
   title: "Turn Bike Stock Into Real ",
   /** Italic accent tail, set on its own line in the frame. */
   titleTail: "Opportunities",
@@ -53,7 +53,7 @@ export const overview = {
   body: "We designed a mobile platform that helps dealers easily manage, showcase, and sell bikes using AI-powered posts, stock management, and direct buyer connections all in one place.",
   modules: ["Stock Feature", "Marketplace Feature", "Dashboard Analytics", "Content Creation"],
   facts: [
-    { label: "Technology", value: "Automotive Marketplace" },
+    { label: "Technology", value: "NxtDealer" },
     { label: "Scope", value: "Mobile" },
     { label: "Business Type", value: "B2B" },
   ],
@@ -65,14 +65,17 @@ export const challenge = {
   eyebrow: "The Challenge",
   title: "Challenges in the Current Bike Selling Ecosystem",
   body: "The bike buying and selling process for dealers is still fragmented, time-consuming, and lacks digital efficiency, especially when managing inventory and reaching potential buyers.",
-  points: [
-    "Disorganized Inventory Tracking",
-    "No Easy Content Creation for Listings",
-    "Low Marketplace Visibility",
-    "Fragmented Dealer Communication Channels",
-  ],
-  /** Three photos in one export — 651x441 with no bleed at all. */
-  photos: { src: problemPhotos, x: 589, y: 0, w: 651, h: 441 },
+  /**
+   * The four challenges as cards (`CaseChallenge`), each with a small UI
+   * picture and what it cost the dealer. Replaces the frame's red ✕ list and
+   * AI-generated photos (user's request). The `body` lines are ours.
+   */
+  cards: [
+    { art: "stock", title: "Disorganized inventory tracking", body: "No reliable view of which bikes were in stock or already sold." },
+    { art: "listing", title: "No easy content creation for listings", body: "Every listing's photos and description were made by hand." },
+    { art: "reach", title: "Low marketplace visibility", body: "Listings rarely reached buyers beyond the dealer's own circle." },
+    { art: "channels", title: "Fragmented dealer communication channels", body: "Buyer conversations were split across calls, chats and messages." },
+  ] satisfies ChallengeCard[],
 };
 
 export interface PhaseItem {

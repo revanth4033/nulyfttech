@@ -1,158 +1,428 @@
 ---
 import Icon from "../ui/Icon.astro";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 import PillButton from "../ui/PillButton.astro";
 import { about } from "../../data/home";
 
 /**
- * "A little about nuLyft" — Figma 664:3024, 1440 x 696.
+ * "A little about nuLyft" — the home page's one-section answer to "what is
+ * nuLyft". Not a Figma frame (see `about` in data/home.ts for why).
  *
- * The heading is set as written rather than through `capitalize`: Figma's
- * render keeps the brand's lower-case "n", which CSS would turn into
- * "NuLyft". The cards' ring is a real border — Figma's frames are 290 tall
- * with 288 of content, so the 1px stroke adds to the box here.
+ * A statement on the left, the partner line and the button on the right, and
+ * under them one quiet line: the three starting points the About page draws,
+ * running into the nuLyft mark — "the next step". That line is the whole
+ * About page in a sentence, so it stays a line, not a diagram.
  *
- * The middle card is drawn lit (solid ring plus a 2px glow); reproduced as
- * drawn.
+ * Motion: a single dot runs the line into the mark, slipping behind each
+ * starting point, and the mark glows as it arrives. CSS only — the runner is
+ * a track-wide box translated -100% -> 0 with the dot on its leading edge, so
+ * it is a compositor animation however wide the line is. Paused off screen
+ * (`.is-idle`), hidden under reduced motion. At 1240 and below — wherever
+ * the column is narrower than the design's — the line runs down the left
+ * instead of across.
  */
 ---
 
 <section class="habout" id="about" data-section="home-about">
   <div class="habout__inner container">
-    <div class="habout__body">
-      <header class="habout__head">
-        <h2 class="habout__title" data-animate>{about.title}</h2>
-        <p class="habout__lede" data-animate>{about.body}</p>
-      </header>
+    <div class="habout__top">
+      <div class="habout__lead">
+        <EyebrowBadge data-animate>{about.eyebrow}</EyebrowBadge>
+        <h2 class="habout__title" data-animate>
+          {about.title.lead}<em>{about.title.em}</em>
+        </h2>
+      </div>
 
-      <ul class="habout__cards">
+      <div class="habout__side" data-animate>
+        <p class="habout__lede">{about.lede}</p>
+        <PillButton href={about.cta.href} variant="outline" arrow={20} arrowIcon="icons/arrow-circle-20-outline">
+          {about.cta.label}
+        </PillButton>
+      </div>
+    </div>
+
+    <div class="habout__path" data-animate>
+      <span class="habout__track" aria-hidden="true">
+        <span class="habout__runner"></span>
+      </span>
+
+      <ol class="habout__starts">
         {
-          about.cards.map((c) => (
-            <li class:list={["habout__card", { "is-lit": c.lit }]} data-animate>
-              <span class="habout__chip">
-                <Icon name={c.icon} size={32} />
+          about.starts.map((s) => (
+            <li class="habout__start">
+              <span class="habout__check">
+                <Icon name="icons/about/check-circle" size={20} />
               </span>
-              <div class="habout__text">
-                <h3 class="habout__card-title">{c.title}</h3>
-                <p class="habout__card-body">{c.body}</p>
-              </div>
+              {s}
             </li>
           ))
         }
-      </ul>
-    </div>
+      </ol>
 
-    <div class="habout__cta" data-animate>
-      <PillButton href={about.cta.href} variant="outline" arrow={20} arrowIcon="icons/arrow-circle-20-outline">
-        {about.cta.label}
-      </PillButton>
+      <p class="habout__goal">
+        <span class="habout__goal-label">{about.goal}</span>
+        <span class="habout__mark" aria-hidden="true">
+          <span class="habout__pulse"></span>
+          <Icon name="brand/about/next-mark" size={40} />
+        </span>
+      </p>
     </div>
   </div>
 </section>
 
+<script>
+  // Stop the runner and the glow while the section is off screen.
+  const el = document.querySelector<HTMLElement>(".habout");
+  if (el) {
+    el.classList.add("is-idle");
+    new IntersectionObserver(([e]) => el.classList.toggle("is-idle", !e.isIntersecting)).observe(el);
+  }
+</script>
+
 <style>
   .habout {
     background: var(--c-bg-light);
-    padding-block: 100px 99.9px;
+    padding-block: 100px;
   }
 
   .habout__inner {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 40px;
+    gap: 64px;
   }
 
-  .habout__body {
+  /* --- statement --------------------------------------------------------- */
+
+  .habout__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 64px;
+  }
+
+  .habout__lead {
+    flex: 0 1 700px;
     display: flex;
     flex-direction: column;
-    gap: 64px;
-    width: 100%;
-  }
-
-  .habout__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
+    align-items: flex-start;
+    gap: 16px;
   }
 
   .habout__title {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--fs-h2);
-    line-height: normal;
+    line-height: 1.2;
     letter-spacing: var(--tr-h2);
+    color: var(--c-ink);
+    text-wrap: wrap;
+  }
+
+  /* The purple stays; upright at the heading's weight, like the heroes (by
+     request). */
+  .habout__title em {
+    font-style: normal;
+    color: var(--c-accent);
+  }
+
+  .habout__side {
+    flex: 0 1 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .habout__lede {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- the path to the next step ---------------------------------------- */
+
+  .habout__path {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(131, 77, 251, 0.16);
+  }
+
+  /* The line, from the first check's centre to the mark's. Items sit over it
+     on the section ground, so it shows only in the gaps between them. */
+  .habout__track {
+    position: absolute;
+    top: calc(40px + 20px - 4px);
+    left: 20px;
+    right: 28px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .habout__track::before {
+    content: "";
+    position: absolute;
+    inset: 3.4px 0 auto;
+    height: 1.2px;
+    background: linear-gradient(90deg, rgba(131, 77, 251, 0.12), rgba(131, 77, 251, 0.6));
+  }
+
+  .habout__runner {
+    position: absolute;
+    inset: 0;
+    translate: -100% 0;
+    animation: habout-run 4.5s linear infinite;
+  }
+
+  .habout__runner::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    animation: habout-dot 4.5s linear infinite;
+  }
+
+  /* 3s across, eased, then a rest before the next run. */
+  @keyframes habout-run {
+    0% { translate: -100% 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+    66%, 100% { translate: 0 0; }
+  }
+
+  @keyframes habout-dot {
+    0% { opacity: 0; }
+    4%, 62% { opacity: 1; }
+    66%, 100% { opacity: 0; }
+  }
+
+  .habout__starts {
+    display: contents;
+    list-style: none;
+  }
+
+  .habout__start,
+  .habout__goal {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-inline: 16px;
+    background: var(--c-bg-light);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: 24px;
     color: var(--c-ink);
     white-space: nowrap;
   }
 
-  .habout__lede {
-    flex: 0 1 506px;
-    font-size: var(--fs-body);
-    line-height: var(--lh-body);
-    color: var(--c-muted);
+  .habout__start:first-child {
+    padding-left: 0;
   }
 
-  .habout__cards {
-    display: flex;
-    gap: 24px;
-    list-style: none;
+  /* Room for the mark's 8px ring inside the column. */
+  .habout__goal {
+    padding-right: 8px;
   }
 
-  .habout__card {
-    flex: 1 0 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 64px;
-    padding: 24px;
-    background: var(--c-surface);
-    border: 1px solid rgba(131, 77, 251, 0.24);
-    border-radius: 16px;
-  }
-
-  .habout__card.is-lit {
-    border-color: var(--c-accent);
-    box-shadow: 0 0 2px var(--c-accent);
-  }
-
-  .habout__chip {
+  .habout__check {
     display: grid;
     place-items: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    background: var(--c-accent);
-    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--c-accent-tint);
+    color: var(--c-accent);
     line-height: 0;
   }
 
-  .habout__text {
+  .habout__goal-label {
+    font-size: var(--fs-sm);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+
+  /* A 40px disc in a soft ring, as on the About page. */
+  .habout__mark {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 8px rgba(131, 77, 251, 0.12);
+    line-height: 0;
   }
 
-  .habout__card-title {
-    font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: var(--fs-md);
-    line-height: 24px;
-    letter-spacing: var(--tr-project-title);
-    color: var(--c-ink);
+  .habout__mark :global(.icon) {
+    position: relative;
+    z-index: 1;
   }
 
-  .habout__card-body {
-    font-size: var(--fs-body);
-    line-height: var(--lh-body);
-    color: var(--c-muted);
+  /* It glows as the dot arrives (66% of the lap). */
+  .habout__pulse {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: rgba(131, 77, 251, 0.2);
+    box-shadow: 0 0 24px 6px rgba(131, 77, 251, 0.3);
+    opacity: 0;
+    animation: habout-pulse 4.5s linear infinite;
   }
 
-  /* The pill's rotated box is 184.76 x 50.09; the column gap is measured to it. */
-  .habout__cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50.095px;
+  @keyframes habout-pulse {
+    0%, 64% { opacity: 0; scale: 1; }
+    69% { opacity: 1; scale: 1.2; }
+    84%, 100% { opacity: 0; scale: 1; }
+  }
+
+  .habout.is-idle .habout__runner,
+  .habout.is-idle .habout__runner::after,
+  .habout.is-idle .habout__pulse {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .habout__runner,
+    .habout__runner::after,
+    .habout__pulse {
+      animation: none;
+    }
+
+    .habout__runner {
+      display: none;
+    }
+  }
+
+  /* --- narrower ---------------------------------------------------------- */
+
+  /* The path needs ~1,050px on one line (three nowrap labels and the mark),
+     so wherever the column is narrower than the design's it runs down the
+     left instead — the same line, turned, with the mark at the foot. It cut
+     "THE NEXT STEP" off at 1024 before this. The statement still sits
+     beside its lede down to 900. */
+  @media (max-width: 1240px) {
+    .habout__top {
+      gap: 48px;
+    }
+
+    .habout__title {
+      font-size: 34px;
+      letter-spacing: -1.4px;
+    }
+
+    .habout__path {
+      --pt: 40px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      padding-top: var(--pt);
+    }
+
+    .habout__track {
+      top: calc(var(--pt) + 20px);
+      bottom: 20px;
+      left: 16px;
+      right: auto;
+      width: 8px;
+      height: auto;
+    }
+
+    .habout__track::before {
+      inset: 0 auto 0 3.4px;
+      width: 1.2px;
+      height: auto;
+      background: linear-gradient(rgba(131, 77, 251, 0.12), rgba(131, 77, 251, 0.6));
+    }
+
+    .habout__runner {
+      translate: 0 -100%;
+      animation-name: habout-run-down;
+    }
+
+    .habout__runner::after {
+      top: auto;
+      bottom: 0;
+    }
+
+    .habout__start,
+    .habout__goal {
+      padding: 0;
+      white-space: normal;
+    }
+
+    /* Mark first, so it sits on the line under the checks; its ring now has
+       the gutter to hang into. */
+    .habout__goal {
+      flex-direction: row-reverse;
+    }
+  }
+
+  @keyframes habout-run-down {
+    0% { translate: 0 -100%; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+    66%, 100% { translate: 0 0; }
+  }
+
+  /* The statement stacks over its lede. */
+  @media (max-width: 900px) {
+    .habout {
+      padding-block: 64px;
+    }
+
+    .habout__inner {
+      gap: 40px;
+    }
+
+    .habout__top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .habout__lead,
+    .habout__side {
+      flex: none;
+    }
+
+    .habout__lead {
+      max-width: 640px;
+    }
+
+    .habout__title {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .habout__path {
+      --pt: 32px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .habout {
+      padding-block: 40px;
+    }
+
+    .habout__inner {
+      gap: 32px;
+    }
+
+    .habout__title {
+      font-size: 24px;
+      letter-spacing: -0.6px;
+    }
+
+    .habout__lede {
+      font-size: var(--fs-sm);
+      line-height: 22px;
+    }
+
+    .habout__start {
+      font-size: var(--fs-sm);
+    }
   }
 </style>

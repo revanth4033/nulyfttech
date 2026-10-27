@@ -125,40 +125,31 @@ export interface Shot {
 }
 
 /* ==========================================================================
-   Design Approach — 637:2196, dark, 750 tall. Six steps ride a 1200px ring
-   centred 480px off the left edge; the frame draws step 01 at the hub.
+   Design Approach — was 637:2196, a pinned six-step ring. Replaced at the
+   user's request by a 60s motion film of the same process (most visitors
+   never stepped through all six states). The eyebrow and title are kept as
+   the section's header; the six steps stay as text for screen readers and
+   search, since the film carries them only as pictures.
    ========================================================================== */
 
-import approachBack from "../assets/images/cap-design/approach-back.jpg";
-import approachFront from "../assets/images/cap-design/approach-front.jpg";
-import approach3 from "../assets/images/cap-design/approach-3.png";
-import approach4 from "../assets/images/cap-design/web-back-1.jpg";
-import approach5 from "../assets/images/cap-design/skill-feature-4.jpg";
-import approach6 from "../assets/images/cap-design/approach-6.jpg";
-
-/**
- * One card per step. The stack is a queue: in state k the step-k card is in
- * front, step k-1 sits back-left and step k+1 back-right (637:4316). The
- * first two are photos; the rest are screens in a browser frame. Crops are
- * the front-slot crops — the same card shrinks into the side slots.
- */
-export interface StackCard extends Shot {
-  kind: "photo" | "browser";
-}
+import filmPoster from "../assets/images/cap-design/film-poster.jpg";
 
 export const approach = {
   eyebrow: "OUR DESIGN APPROACH",
   title: "A structured approach to better product experiences",
-  cards: [
-    { kind: "photo", src: approachFront, alt: "Designer sketching wireframes on a whiteboard", crop: "cover" },
-    { kind: "photo", src: approachBack, alt: "User-flow diagram drawn on a whiteboard", crop: { w: 100, h: 106.95, left: -0.05, top: 0.08 } },
-    { kind: "browser", src: approach3, alt: "Mobile wireframes", crop: { w: 100, h: 101.57, left: -0.02, top: -0.39 } },
-    { kind: "browser", src: approach4, alt: "Design-system components", crop: { w: 100, h: 151.64, left: 0.12, top: -0.25 } },
-    { kind: "browser", src: approach5, alt: "Polished dashboard interface", crop: { w: 114.35, h: 415.93, left: -14.58, top: -0.29 } },
-    { kind: "browser", src: approach6, alt: "Prototype flow map", crop: { w: 100, h: 178.02, left: -0.07, top: -0.03 } },
-  ] satisfies StackCard[],
-  // The redesign drops the per-step tag line; CapApproach renders it only
-  // when a step carries one.
+  film: {
+    /** In `public/`: astro:assets does not process video. 1920 x 1080,
+        H.264 + AAC, 60s, 8.4MB, moov atom at the front (streams). */
+    src: "/videos/nulyft-ux-capabilities.mp4",
+    /** The frame at 56.3s — "One design mindset. Different product
+        experiences." over the collage. Shown only when the film is not
+        autoplaying (reduced motion, no JS); the film itself opens on an
+        empty lavender frame that matches the ground. */
+    poster: filmPoster,
+    label: "A one-minute film of how nuLyft designs a product: from the problem, through user needs and structure, to finished product screens.",
+  },
+  // Not shown on screen any more — the film carries the steps as pictures;
+  // CapFilm renders them as a visually hidden list.
   steps: [
     {
       n: "01",
@@ -427,15 +418,15 @@ export const projects: Project[] = [
   {
     id: "automotive",
     theme: "light",
-    name: "Automotive Marketplace",
+    name: "NxtDealer",
     tagline: "A Visual-First Motorcycle Marketplace",
-    body: "An automotive marketplace designed to help users discover motorcycles through image-rich listings, detailed vehicle information, and intuitive search. The mobile experience also incorporates AI-powered reel creation, giving listings an additional way to present motorcycles through engaging visual content.",
+    body: "NxtDealer is a marketplace designed to help users discover motorcycles through image-rich listings, detailed vehicle information, and intuitive search. The mobile experience also incorporates AI-powered reel creation, giving listings an additional way to present motorcycles through engaging visual content.",
     facts: [
       { label: "Technology", value: "Mobile App" },
-      { label: "Scope", value: "Automotive Marketplace" },
+      { label: "Scope", value: "NxtDealer" },
       { label: "Business Type", value: "B2C" },
     ],
-    href: "/work/automotive-marketplace",
+    href: "/work/nxtdealer",
     media: {
       kind: "phones",
       phones: [

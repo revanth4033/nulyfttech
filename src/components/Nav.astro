@@ -93,13 +93,28 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
   <div class="nav__drawer" id="nav-menu" data-nav-drawer hidden>
     <ul>
       {
-        links.flatMap((l) => ("menu" in l ? l.menu : [l])).map((l) => (
-          <li>
-            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
-              {l.label}
-            </a>
-          </li>
-        ))
+        links.map((l) =>
+          "menu" in l ? (
+            <li class="nav__drawer-group">
+              <span class="nav__drawer-label">{l.label}</span>
+              <ul>
+                {l.menu.map((m) => (
+                  <li>
+                    <a href={m.href} aria-current={isCurrent(m.href) ? "page" : undefined}>
+                      {m.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li>
+              <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ),
+        )
       }
     </ul>
     <PillButton href="/contact" variant="outline">Get Started</PillButton>
@@ -117,6 +132,13 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     background: var(--c-bg-light);
     border-radius: var(--r-nav);
     box-shadow: var(--sh-nav-card);
+    transition: translate 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hidden while scrolling down (see the script): lifted past its own top
+     offset and its shadow, so nothing of it shows. */
+  .nav.is-hidden {
+    translate: -50% calc(-100% - var(--nav-top) - 24px);
   }
 
   .nav__inner {
@@ -158,17 +180,11 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     font-weight: 500;
     font-size: var(--fs-body);
     line-height: normal;
-    letter-spacing: var(--tr-nav);
+    /* Figma tracks these 2px; the user asked for normal spacing. */
     text-transform: capitalize;
     color: var(--c-ink);
     white-space: nowrap;
     transition: color var(--dur-fast) var(--ease-out);
-  }
-
-  /* CSS adds the 2px tracking after the last glyph too; Figma's text boxes
-     end at the glyph, so without this the row runs 8px long. */
-  .nav__label {
-    margin-right: calc(-1 * var(--tr-nav));
   }
 
   /* The current page is set heavier, in the accent, and underlined. */
@@ -201,9 +217,11 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     position: relative;
   }
 
+  /* 26 brings the panel to the bar's foot; the extra 12 stands it off the
+     bar (by request — it touched). */
   .nav__sub {
     position: absolute;
-    top: calc(100% + 26px);
+    top: calc(100% + 26px + 12px);
     left: -16px;
     display: grid;
     min-width: 240px;
@@ -218,6 +236,17 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
       opacity var(--dur-fast) var(--ease-out),
       translate var(--dur-fast) var(--ease-out),
       visibility 0s linear var(--dur-fast);
+  }
+
+  /* An invisible bridge over that 12px gap, so the pointer crossing from
+     "Capabilities" to the panel never leaves the menu on the way. */
+  .nav__sub::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 40px;
   }
 
   .nav__menu-btn[aria-expanded="true"] + .nav__sub {
@@ -302,6 +331,25 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     color: var(--c-accent);
   }
 
+  /* Capabilities keeps its grouping in the drawer: a small label over its
+     three pages, indented, so they do not read as three more top-level
+     links. */
+  .nav__drawer-label {
+    display: block;
+    padding: 10px 0 2px;
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .nav__drawer-group ul {
+    padding-left: 12px;
+    border-left: 1px solid var(--c-perk-border);
+    margin-block: 4px;
+  }
+
   @media (max-width: 1080px) {
     .nav__links,
     .nav :global(.nav__cta) {
@@ -320,7 +368,99 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
       display: none;
     }
   }
+
+  @media (max-width: 560px) {
+    .nav__inner {
+      padding: 8px 12px 8px 16px;
+    }
+
+    .nav__drawer {
+      padding: 0 16px 20px;
+    }
+  }
 </style>
+
+<script>
+  /* Hide on scroll down, show on scroll up (by request). It always shows
+     near the top of the page, and a mouse at the top edge — or over the bar
+     — brings it in without scrolling. It stays while the phone menu or the
+     Capabilities menu is open, or while keyboard focus is inside it, so it
+     never leaves under someone using it. ScrollSmoother keeps the native
+     scroll position, so window scroll events are the source. */
+  const bar = document.querySelector<HTMLElement>("[data-nav]");
+  if (bar) {
+    const TOP = 120; // always shown above this
+    const DELTA = 6; // ignore smaller wobbles
+    const ZONE = 96; // pointer this close to the top reveals it
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    let lastY = window.scrollY;
+    let hidden = false;
+    let peek = false;
+    let ticking = false;
+    /** Last mouse position; scrolling does not move the pointer, so the
+        reveal is re-checked against it on scroll. */
+    let pointerY = Infinity;
+    let overBar = false;
+
+    // Keyboard focus only: a mouse click leaves focus on whatever was
+    // clicked, and holding on that pinned the bar after any click.
+    const held = () =>
+      bar.querySelector(":focus-visible") !== null ||
+      bar.querySelector('[aria-expanded="true"]') !== null;
+
+    const apply = () => bar.classList.toggle("is-hidden", hidden && !peek && !held());
+
+    const onScroll = () => {
+      ticking = false;
+      const y = window.scrollY;
+      if (y < TOP) {
+        hidden = false;
+        lastY = y;
+      } else if (Math.abs(y - lastY) > DELTA) {
+        hidden = y > lastY;
+        lastY = y;
+      }
+      // A peek lasts while the mouse stays at the top or on the bar — the
+      // bar never slides out from under the cursor.
+      peek = fine.matches && (pointerY < ZONE || overBar);
+      apply();
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(onScroll);
+        }
+      },
+      { passive: true },
+    );
+
+    document.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse" || !fine.matches) return;
+      pointerY = e.clientY;
+      overBar = bar.contains(e.target as Node);
+      const next = pointerY < ZONE || overBar;
+      if (next !== peek) {
+        peek = next;
+        apply();
+      }
+    });
+
+    document.documentElement.addEventListener("mouseleave", () => {
+      pointerY = Infinity;
+      overBar = false;
+      peek = false;
+      apply();
+    });
+
+    // Opening a menu or tabbing in holds it; closing lets it go again.
+    bar.addEventListener("focusin", apply);
+    bar.addEventListener("focusout", () => requestAnimationFrame(apply));
+    new MutationObserver(apply).observe(bar, { subtree: true, attributes: true, attributeFilter: ["aria-expanded"] });
+  }
+</script>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");

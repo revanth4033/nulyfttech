@@ -489,7 +489,7 @@ element inside a container that also holds a component.**
 at `/home-old` (`pages/home-old.astro`, untouched). Five sections plus the
 shared CTA + footer — `sections/HomeHero`, `HomeAbout`, `HomeCraft`,
 `HomeWhy`, `HomeShaping` — with copy and geometry in `src/data/home.ts`.
-Static so far: `reveal.ts` only. Built desktop-first; mobile is not done.
+Built desktop-first, then adapted in code down to 320 (no Figma mobile frames) — see "Home — mobile" below.
 
 **The nav and footer changed with it, site-wide.** `Nav.astro` is now the
 floating 1240 x 72 card 48px down (Figma 664:2984) on every page; inner-page
@@ -539,6 +539,31 @@ no three-value form** (`right 20px bottom` is invalid there, unlike
 `background-position`), and one bad value drops the whole list to `0% 0%` —
 use four values.
 
+**"A little about nuLyft" is not Figma's any more — and it is not the About
+page either.** The frame's three idea / challenge / direction cards
+(664:3024) read as cards placed at random, so the user had it replaced. A
+first rebuild set the About page's two sections side by side (its diagram and
+its partner cards) and was rejected outright: the brief is the About page's
+*idea* in one simple section, not its layout. It is now a statement ("Every
+business reaches a point where it needs to move forward. *We help you take
+that next step.*"), the partner line and the button, over one quiet line —
+the three starting points running into the nuLyft mark. Copy in `about` in
+`data/home.ts`, condensed from the About page's own words. One dot runs the
+line and the mark glows as it lands: CSS only (a track-wide runner translated
+-100% -> 0), paused off screen, hidden under reduced motion; below 900 the
+line turns and runs down the left.
+
+**The nav hides on scroll down and returns on scroll up (by request)** —
+script and `.nav.is-hidden` in `Nav.astro`, on every page. Always shown in
+the first 120px; moves under 6px are ignored. A mouse within 96px of the
+top, or over the bar, reveals it, and the reveal lasts while the pointer
+stays there — scroll events re-check the last pointer position, or the bar
+slid away from under the cursor. It is held while any `aria-expanded` in it
+is true (phone drawer, Capabilities) or keyboard focus is inside — and that
+must be `:focus-visible`, not `:focus-within`: a mouse click leaves focus on
+the clicked button and pinned the bar after any click. ScrollSmoother keeps
+the native scroll position, so `window` scroll events drive it.
+
 **The why-section rings are gradient strokes, and the design context says
 they are not.** It reports a flat 2px #834dfb; the render fades each ring to
 nothing on the side facing away from the mark. Ring = `border-box` gradient
@@ -549,15 +574,140 @@ stroke takes no room, and at 20 two bodies wrap a line early.
 (it sits at 102.33% across), so it is not shown; the footer logo is wider and
 does show it.
 
-**Trailing tracking, twice.** Nav labels carry 2px tracking and CSS adds it
-after the last glyph, which ran the link row 8px long; `.nav__label` takes it
-back with a negative margin. The craft card bodies do the same with -0.16 —
-one line measured 391.13 in a 391 column and dropped a word.
+**Buttons have brand hover / pressed / focus states (by request)**, replacing
+the old 2px lift — all in `PillButton` (plus `CtaFooter`'s own button and the
+dark-band override in `CapProject`). Purples only: hover deepens the fill
+(#7437fb -> #5a14f4 gradient, or #6c2cfa flat) with a soft purple glow and
+steps the arrow 3px right; outline hover fills with the chip tint and
+deepens border and label to #6624fa; pressed goes darkest (#4e05ef) with a
+deeper inset shadow and `scale: 0.97`; keyboard focus is a 2px accent ring.
+A gradient cannot transition, so each state fill is a `::before` layer under
+the label (`isolation: isolate` on the pill). Hover is fine-pointer only.
+**Never put `data-animate` on a button itself** — GSAP's reveal leaves
+`scale: none` (and folds `rotate` into `transform`) inline, which cancelled
+the CTA button's press; the reveal is on a wrapper (`.cta__action`). The
+outline arrow icon now draws in `currentColor` so it deepens with the label.
+
+**Every eyebrow has 8px corners, not Figma's full pill (by request; 4px was tried first and read too sharp).** A
+reviewer read the round tinted uppercase pill as the mark of an
+AI-generated site; a numbered "01 / …" index and an outlined tag were tried
+on the home page first and dropped. The change is the two tokens —
+`--r-eyebrow` and `--r-eyebrow-sm` are both 8px — which `EyebrowBadge` and
+the capability pages' own section eyebrows read; three eyebrows that
+hard-coded an 88px pill (`CaseHeader`, Automotive's challenge label,
+`CapProject`'s kicker) now read the token too. The case studies' own
+eyebrows — `CaseHeader` and the three Overview/Challenge labels, a pale
+untracked-padding pill or bare tracked text in the frames — are now the
+shared `EyebrowBadge` itself (class `case-eyebrow`, pinned
+`align-self: flex-start` so it hugs rather than stretching in their column
+layouts). That moved desktop heights a little: LMS 9,750, Recruitment
+9,594, Automotive 10,063. A scan of every page for
+boxed uppercase labels found every one on the token.
+
+**The nav labels are untracked, by request.** Figma sets them at 2px
+(`--tr-nav`); the user asked for it removed, so the nav departs from the
+frame there (the token stays — two capability sections use it).
+
+**Trailing tracking.** CSS adds letter-spacing after the last glyph too. The
+craft card bodies hand back their -0.16 with a margin — one line measured
+391.13 in a 391 column and dropped a word.
 
 **Footer leading is 19, not 24.** The links step 35 apart in Figma; at the
 body line-height the footer came out 16 tall. The bottom bar's rule is an
 inside stroke too (39 + 1, not 40 + 1). Desktop page height is 4881, the
 frame's.
+
+**The Why section has an entrance (user-approved), once, on first sight** —
+the script is in `HomeWhy.astro`. Desktop: a hole opens in the platform's
+top disc, the nuLyft mark rises through it (`back.out`, ~0.8s) and lands
+with a flare, the hole closes; then the connectors grow *out of the mark*
+to the cards — inner pair (Clear thinking, Quality) at 1.0s, outer pair at
+1.35s — and each card appears as its line lands (~2.3s in all). Tablet and
+phone: the stacked cards are never hidden (the reader has scrolled past
+them before the platform is on screen); the mark rises the same way, then
+a glow climbs the line from the mark to the top card, lighting each card
+as it passes. Every hidden state is set by the script, so JS off or
+reduced motion shows the finished diagram.
+
+- The connector exports run card -> mark, so they are drawn from the far
+  end: `dasharray L L`, offset `-L` (hidden) -> `0`.
+- The mark rises through a `clip-path: path(...)` on a wrapper that does not
+  move (`.hwhy__lift`) — clip on the moving element would travel with it.
+  The clip is the region above the hole's front arc; it is removed once the
+  mark is clear, so its drop shadow lands whole.
+- **GSAP's `scale` writes `transform`.** The hole was hidden with the CSS
+  `scale: 0` property and GSAP's tween never touched it, so it stayed shut —
+  hide with `transform: scale(0)`.
+- At rest everything is handed back to the stylesheet (`clearProps`). A
+  motion-on capture still differs from a reduced-motion one by edge
+  anti-aliasing (469px, max 31 levels) — that is ScrollSmoother's page
+  layer, which reduced motion turns off: an untouched section differs more.
+
+**The Shaping section ("Possibility into Progress") has three motion layers
+(user-approved)**, all in `HomeShaping.astro`:
+
+- **Connectors** — not in Figma, added because the orbit and the steps read
+  as separate pieces: a curve from the outer ring (r 145) to each step's
+  icon, leaving the ring on the line towards its icon; on a phone, one curve
+  from the ring's foot to the first icon, the timeline rail carrying on.
+  Drawn from layout offsets (the orbit carries a reveal transform) and
+  redrawn on resize, outside `registerSection` so they exist under reduced
+  motion.
+- **Entrance, once** — an arc sweeps the ring's right half, 12 to 6 o'clock,
+  in 1.5s (`power1.inOut`); each connector draws out when the sweep reaches
+  its root (the ease is inverted to find that moment) and its step goes from
+  0.3 to full; the disc pulses. On a phone the steps are never dimmed — each
+  icon pops as it scrolls in.
+- **Ambient** — the nine ring dots turn about the orbit's centre (they sit
+  on two circles, r 114.5 and 145.5, so a rotation with the centre as
+  transform-origin keeps each on its ring), 60-110s a lap, alternate dots
+  reversed; the open arc turns in 120s; a halo breathes behind the disc.
+  CSS, paused off screen, `animation: none` under reduced motion.
+
+Two traps: **`clearProps: "all"` wipes the inline custom properties too** —
+the steps carry `--top`/`--w`, so only the props the entrance set are
+cleared. And **CSS animations beat inline styles**, so the entrance pulses the
+disc, not the halo, which is under a running animation. The orbit's phone
+step-down is now `scale` + negative margins rather than `zoom`, so layout
+offsets stay true for the connector maths.
+
+### Home — mobile
+
+No Figma frames; each section re-designed for the width, not scaled. 1440 is
+pixel-identical to before the pass (diffed). Swept 1440 -> 320 with no
+sideways scroll and no text past the viewport.
+
+| section | 1241-1439 | <= 1240 / 1180 | <= 900 | phone |
+| --- | --- | --- | --- | --- |
+| Hero | as drawn | as drawn | copy stacks, notched photo kept (notch < half the photo) | no notch — a 320 notch would eat a 343 photo; button moves under the copy, photo last, dots stay on it |
+| About | as drawn | path runs down the left | statement stacks | type steps down |
+| Craft | columns give way; caption anchored right (its `left: 357` ran off at 1280) | <= 1180 stacks: three upright service cards, belief, photo + overlaid caption | one service per row, icon beside | caption leaves the photo and becomes its footer — no overlap |
+| Why | diagram fitted (`fit.ts`, >= 0.84) | cards in a column, a line running down through them into the mark on the platform | header stacks | — |
+| Shaping | copy gives way, steps hold >= 377 | copy on top, orbit beside the zig-zag | — | < 768 orbit, then the steps as a timeline through their icons |
+
+Traps found on the way, each a real bug:
+
+- **The CTA headline was invisible on every phone and tablet, site-wide.**
+  `CtaFooter`'s mobile copy went `position: static`, and a static block paints
+  *under* the card's absolutely placed starfield and tint. The button showed
+  through only because its `rotate` opens a stacking context. Now `relative`.
+- **The CTA copy ran under the screenshot fan at 901-1010.** The fan's left
+  edge is 50% + 186 of the card; the copy is capped at that minus 24.
+- **A second copy of an inlined icon renders blank if the first is under
+  `display: none`.** `<Icon>` prefixes ids per icon *name*, so both copies
+  share gradient ids and `url(#…)` resolves to the hidden one. The Why
+  platform's stacked copy came out as a mark floating on nothing. Pass
+  `uid` for any second copy.
+- **A wrapping flex row breaks on the basis, before anything shrinks.** The
+  steps' 446 basis dropped them under the orbit at 960 with 50px to spare;
+  the basis is the 377 minimum now, capped at 446.
+- **`sizes` cannot hold `var()`.** The hero's `calc(100vw - 2 * var(--gutter))`
+  was dropped as invalid and the browser fell through to `1240px` at every
+  width. The sizes now step with the gutter.
+- **Fit wrappers re-raster at scale 1.** The Why stage's `transform` is
+  switched off from 1440 so the design width renders untouched.
+- **Nav**: the card sits 24 down at <= 900 and 12 down (60 tall) on phones;
+  the drawer keeps Capabilities as a labelled group.
 
 ## In-page navigation
 
@@ -761,7 +911,60 @@ message fields — a stray copy in the frame, flagged to the user. The frame's
 nav is the five-link variant again; the shared nav is used.
 
 
+### About Us and Contact Us — mobile
+
+No Figma frames; adapted in code, 1440 untouched (the frames' 2843 / 2474).
+
+- **`CentredHero` (also Studio and Careers)** stops being a fixed frame at
+  900: the copy joins the flow under the nav (`relative`, so it still paints
+  over the backdrop, with its `translate: -50%` reset — the old `PageHero`
+  trap) and the section sizes to it. Figma's hand-set `<br>`s give way to
+  normal wrapping there; each carries a following space so the words do not
+  fuse, which collapses at desktop (a space at the start of a line).
+- **About's "next step" diagram**: fitted 1181-1439; at 1180 and below it is
+  rebuilt in flow — starts in a column, lines converging on the mark beside
+  them (tablet) or out into a right-hand lane and down one trunk into the
+  mark below (phone, under 700). Those lines are drawn by `about-paths.ts`
+  from layout **offsets, not rects**: the starts carry `data-animate`, so on
+  load they are still translated by the reveal and a rect-measured line lands
+  where the copy *was* — and a transform never fires the ResizeObserver to
+  correct it. The drawing runs outside `registerSection`, since that bails
+  under reduced motion and the lines are part of the picture. The dots ride
+  the drawn paths in a `gsap.matchMedia` context per layout.
+- **About's partner section** moves the three cards out from under the pitch
+  to a full-width row below photo + pitch from **1320**, not lower: beside
+  the photo a card's content box falls under the 166 its widest tag
+  ("Business understanding") needs at ~1300. They stack under 720 for the
+  same reason. On a phone the pitch comes first and the photo is cropped
+  landscape.
+- **Contact**: the discuss band's curves step down (448 -> 360 -> 300) before
+  stacking at 900; the form heading drops its `nowrap`; the two-up fields
+  stack on a phone. **Inputs stay 16px at every width** — iOS zooms the page
+  into any field set smaller. With no CTA card above it, the footer's 140 top
+  padding drops to 80 / 56 — through `.outro--plain .foot__top`, since that
+  selector outranks the plain mobile rule.
+- **The curves raster's baked ground showed as a box** once the picture sat
+  in open space on a tablet: WebP lifts the plate a level above the real
+  ground. `mix-blend-mode: darken` keeps the ground wherever the plate is
+  and the (always darker) curves elsewhere — sampled seamless at 1440 and
+  768. Same fix for any raster that carries its section's ground.
+
+1440 was diffed against the last commit's build, built-versus-built: About,
+Studio and Careers identical; Contact differs only by that plate (63px,
+at most 5 levels).
+
 ## Page heroes
+
+**No hero sets its emphasis italic any more, by request.** Every frame draws
+the headline's `<em>` tail in italic (most at weight 500); all nine hero
+components — home, the centred page hero, the three capability heroes, the
+three case studies and `/home-old` — now set it `font-style: normal` at the
+headline's own weight. Colour is kept where a frame tints it (LMS and
+Automotive's accent). The home page's "A little about nuLyft" statement
+follows the same rule: upright, still purple. One knock-on: the upright "One Hiring Engine." is
+wider than the italic, and the Recruitment headline dropped "Engine." to a
+third line at 1440 — its title takes 24px of the gap before the card there.
+Check line counts against the last build whenever emphasis styling changes.
 
 Studio, About Us, Careers and Contact Us all use `sections/CentredHero` — the
 redesign's 600-tall centred hero over `ui/HeroBackdrop` (`page` clouds).
@@ -1066,6 +1269,24 @@ callback under `prefers-reduced-motion`. The hover is colour, not motion, and
 should survive — otherwise reduced-motion visitors hover glyph outlines and
 fall through the gaps between letters.
 
+### The challenge section — redesigned for all three case studies
+
+Every frame draws the challenge as a red uppercase ✕ list beside a collage
+of AI-generated photos; the user judged that off-brand against the rest of
+the site. Two layouts were tried on the Recruitment page and **B** was
+chosen: `case/CaseChallenge.astro` — the case header (eyebrow and title left,
+intro right) over one panel split into four columns by hairlines (the
+panel's fill through a 1px grid gap, so the lines hold at 4 / 2 / 1
+columns). Each column opens on a small UI picture of the pain
+(`case/ChallengeArt.astro`, twelve of them, typed in `challenge-art.ts`),
+then the number, the challenge in sentence case and what it cost — those
+lines are our copy, written from each page's story. Data: `challenge.cards`
+in `caseLms` / `caseRec` / `caseAuto`. The old markup and styles were cut out
+of the three Overview components (shared selectors such as
+`.cover__title, .chal__title` kept their other half) and the five photos are
+deleted. The pictures were checked for overlapping or escaping labels at 11
+widths per page — a candidate-row caption collided at 1181 and now wraps.
+
 ## Case study — AI Powered Recruitment Platform
 
 `src/pages/work/ai-recruitment-platform.astro` — Figma 514:6633, ~9,650px.
@@ -1104,9 +1325,12 @@ its card at (656, 129) against the LMS's (632, 111). Exported from the
 container (514:7010), not the body, because the "Heading - Medium" callout is
 a sibling of the body node; the header band is cropped back off.
 
-**Two copy blocks are stray pastes and are left as drawn**: the Challenge
-title still reads "Learning was happening everywhere - except in one connected
-place", and the approach eyebrow is spelled "our approch". Flagged, not fixed.
+**The Challenge title is ours, not the frame's.** Figma still carries the
+LMS frame's "Learning was happening everywhere - except in one connected
+place" there, a stray paste; at the user's request it reads "Every
+requirement had its own spreadsheet. No one had the full picture." — the
+pains listed under it, echoing the hero. The approach eyebrow is still
+spelled "our approch" as drawn; flagged, not fixed.
 
 ## Case study — Automotive Marketplace
 
@@ -1178,7 +1402,7 @@ say how; do not touch the header or footer for these pages.
 
 | page | data | components | scripts |
 | --- | --- | --- | --- |
-| Product Design | `data/capProductDesign.ts` | `sections/Cap*.astro`, `cap/*` | `cap-approach(-geometry).ts`, `cap-features.ts`, `cap-outcomes.ts`, `cap-webwork.ts`, `cap-pin.ts` |
+| Product Design | `data/capProductDesign.ts` | `sections/Cap*.astro`, `cap/*` | `cap-features.ts`, `cap-outcomes.ts`, `cap-webwork.ts`, `cap-pin.ts` |
 | Product Engineering | `data/capProductEngineering.ts` | `sections/Pe*.astro` | `pe-hero.ts`, `pe-services.ts` |
 | AI & Automation | `data/capAi.ts` | `sections/Ai*.astro`, `ai/*Art.astro` | `ai-hero.ts`, `ai-agents.ts`, `ai-workflow.ts`, `ai-doc.ts`, `ai-voice.ts`, `ai-industries.ts` |
 
@@ -1242,17 +1466,30 @@ scroll or hover to change it.
 
 ### Product Design
 
-**Design Approach** pins through six states. The ring's slots are not evenly
-spaced (-33.1 / -15.8 / 0 / 15.8 / 33.0 degrees), so positions are
-interpolated as an angle on the ring; the photo stack is a three-slot queue.
-Both are pure functions in `cap-approach-geometry.ts`, shared by the server
-render (state 01 with JS off) and the script. Copy is a hand-off fade
-(`1 - |d| * 2`), not a cross-fade — overlapping read as two paragraphs.
+**Design Approach is a film now (`sections/CapFilm.astro`), not the pinned
+ring.** The user replaced the six-step scroll pin with a 60s motion film of
+the process (`public/videos/nulyft-ux-capabilities.mp4`, 1920 x 1080 H.264
++ AAC, 8.4MB, moov at the front so it streams); most visitors never stepped
+through six pinned states. `CapApproach.astro`, `cap-approach.ts`,
+`cap-approach-geometry.ts` and the four stack images that only it used are
+deleted — recover from git if the ring ever comes back. The six steps stay
+in `approach.steps` and render as a visually hidden list.
 
-Below 1280 it is a vertical timeline: number on a rail, each step lighting
-as it reaches 65% of the viewport (`once`). **`render()` writes inline
-styles on the steps**; the desktop context's cleanup must strip them, or
-five of six steps stay hidden in the timeline.
+Laid out to the user's reference: the dark band, the eyebrow and title
+centred in white, the film as a 16px-radius lavender card 1094 wide at
+1440 (the reference's box is ~2.4:1; the film keeps 16:9 rather than be
+cropped), and play/pause + sound buttons in a row under it — on the film
+they covered its own captions on a phone. The card is also capped at
+`(100svh - 360px) * 16/9` so eyebrow-to-buttons fits under the nav on a
+laptop. Playback: muted autoplay + loop while 40% on screen and the tab is
+visible; `preload="none"` until 600px away; a visitor's pause sticks
+through scrolling; unmuting starts it. Under reduced motion it never
+starts itself and shows the poster (the 56.3s collage frame, "One design
+mindset…"); autoplaying, the poster is removed because the film opens on
+an empty lavender frame and the collage would flash first. Without JS the
+native controls stay. Verify in full Chrome for Testing — the headless
+shell needs the metadata-ready check made before the listener, or it
+waits forever.
 
 **Key Features** pins one tab per scroll band on desktop; below 1280 the
 screen sits on top and a tap selects a row. The rail fills to the measured
@@ -1279,7 +1516,7 @@ untouched apart from what the new copy needed: the hero copy column 654 -> 694
 outcomes body 695 -> 787 (both two lines in the frame), the lead title's
 `capitalize` dropped (every heading here is now set as typed — only the two
 website headings stay Title Case), the Design Approach tag lines removed (the
-new steps have none; `CapApproach` renders one only if a step carries it), and
+new steps have none — and the section is now the film, see above), and
 an optional `tagline` under the Skill Wagon and Automotive names. The page CTA
 carries its own copy. Desktop height is still the frame's 11,519.
 
@@ -1729,7 +1966,10 @@ npx astro check   # typecheck .astro files
 Dev server debugging: in DEV, `window.gsap`, `window.ScrollTrigger`, and
 `window.smoother()` are exposed on the page for console inspection.
 
-**Restart the dev server after any `npm install` / `uninstall`.** Mutating
+**Restart the dev server after any `npm install` / `uninstall` — or an
+`astro.config.mjs` edit.** Adding the NxtDealer redirect did exactly this:
+the config change restarted the server, every script 504ed ("Outdated
+Optimize Dep") and the home hero sat on slide 1 with nothing else running. Mutating
 node_modules under a running server invalidates Vite's pre-bundled deps; it
 rebuilds the cache without GSAP while still serving the old chunk hashes, so
 every module 504s and the page silently falls back to its no-JS state:

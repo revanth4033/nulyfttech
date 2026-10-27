@@ -49,13 +49,13 @@ export const caseStudies: CaseStudy[] = [
   {
     id: "automotive",
     category: "Automotive · E-Commerce",
-    title: "Automotive Marketplace",
+    title: "NxtDealer",
     body: "A connected vehicle marketplace that helps dealers showcase inventory, discover opportunities, and move vehicles from stock to sale.",
     outcomes: ["Smart Stock Management", "AI Content Creation", "Dealer Marketplace Network"],
     href: "#work",
     media: {
       kind: "device",
-      alt: "Automotive marketplace app across three phone screens",
+      alt: "NxtDealer app across three phone screens",
       // Measured off the Figma composite render. The child frames' own
       // coordinates don't work here — phone 3's bounding box overflows the
       // group by 73px because the frames are rotated.

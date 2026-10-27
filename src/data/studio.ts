@@ -80,14 +80,14 @@ export const projects: Project[] = [
     },
   },
   {
-    id: "automotive-marketplace",
-    title: "Automotive Marketplace",
+    id: "nxtdealer",
+    title: "NxtDealer",
     meta: "Product Design & Engineering · E - Commerce · 2026",
-    href: "/work/automotive-marketplace",
+    href: "/work/nxtdealer",
     span: "full",
     media: {
       kind: "phones",
-      alt: "Automotive marketplace app: vehicle listings, reel view, brand picker and template chooser",
+      alt: "NxtDealer app: vehicle listings, reel view, brand picker and template chooser",
       shots: [automotive1, automotive2, automotive3, automotive4],
     },
   },

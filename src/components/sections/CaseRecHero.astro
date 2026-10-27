@@ -91,6 +91,17 @@ import { hero } from "../../data/caseRec";
     max-width: 100%;
   }
 
+  /* Upright, "One Hiring Engine." is wider than the frame's italic, and in
+     604 it dropped "Engine." onto a third line. The headline alone takes 24
+     of the 56px gap before the card, which restores the drawn two lines;
+     the paragraph and the card stay put. Desktop width only — narrower, the
+     column flexes and the headline wraps on its own. */
+  @media (min-width: 1440px) {
+    .chero__title {
+      margin-right: -24px;
+    }
+  }
+
   .chero__title {
     font-family: var(--font-display);
     font-weight: 600;
@@ -103,7 +114,9 @@ import { hero } from "../../data/caseRec";
 
   /* Italic, but in the heading ink — this frame does not tint its emphasis. */
   .chero__title em {
-    font-style: italic;
+    /* Set upright at full weight, like the rest of the headline (by
+       request — the frame sets this tail italic). */
+    font-style: normal;
     color: inherit;
   }
 
