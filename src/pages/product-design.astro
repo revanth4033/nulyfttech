@@ -7,12 +7,12 @@ import CapProject from "../components/sections/CapProject.astro";
 import CapWebsites from "../components/sections/CapWebsites.astro";
 import CapWebWork from "../components/sections/CapWebWork.astro";
 import CtaFooter from "../components/sections/CtaFooter.astro";
-import { hero, projects } from "../data/capProductDesign";
+import { hero, projects, cta } from "../data/capProductDesign";
 ---
 
 <BaseLayout
   title="Product Design — nuLyft"
-  description="We design products around how people actually work — turning business goals, user behaviour and product complexity into clear, purposeful digital experiences."
+  description="We design digital products around business and user needs — practical, intuitive, and easy to use."
 >
   <Nav slot="overlay" />
 
@@ -21,7 +21,7 @@ import { hero, projects } from "../data/capProductDesign";
   {projects.map((project) => <CapProject project={project} />)}
   <CapWebsites />
   <CapWebWork />
-  <CtaFooter />
+  <CtaFooter title={cta.title} body={cta.body} />
 </BaseLayout>
 
 <script>

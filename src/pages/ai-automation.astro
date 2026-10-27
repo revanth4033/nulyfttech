@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
 import AiHero from "../components/sections/AiHero.astro";
 import AiServices from "../components/sections/AiServices.astro";
-import AiProjects from "../components/sections/AiProjects.astro";
+import AiTechnology from "../components/sections/AiTechnology.astro";
 import AiIndustries from "../components/sections/AiIndustries.astro";
 import AiEngineer from "../components/sections/AiEngineer.astro";
 import CtaFooter from "../components/sections/CtaFooter.astro";
@@ -18,7 +18,7 @@ import { cta } from "../data/capAi";
 
   <AiHero />
   <AiServices />
-  <AiProjects />
+  <AiTechnology />
   <AiIndustries />
   <AiEngineer />
   <CtaFooter title={cta.title} body={cta.body} copyWidth={642} />
@@ -35,4 +35,5 @@ import { cta } from "../data/capAi";
   import "../scripts/ai-doc.ts";
   import "../scripts/ai-voice.ts";
   import "../scripts/ai-industries.ts";
+  import "../scripts/ai-tech.ts";
 </script>

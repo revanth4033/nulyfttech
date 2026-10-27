@@ -38,12 +38,14 @@ export interface Connector {
 
 export const hero = {
   height: 931,
-  eyebrow: "NULYFT STUDIO · PRODUCT ENGINEERING",
-  title: "From product idea to",
-  emphasis: "production-ready",
-  body: "We design, engineer, and evolve digital products where every layer experience, architecture, data, AI, and infrastructure works together.",
-  primary: { label: "Let’s Build Your Product", href: "#contact" },
-  secondary: { label: "Explore Our Work", href: "#proof" },
+  eyebrow: "PRODUCT ENGINEERING",
+  title: "Building products around",
+  emphasis: "business requirements",
+  body: "We take products from initial design through development and delivery, with each stage guided by the business\u2019s needs.",
+  primary: { label: "Discuss Your Project", href: "/contact" },
+  // The 673:9086 copy update drops the second button; PeHero renders one
+  // only when it is set.
+  secondary: null as { label: string; href: string } | null,
 
   hub: { title: "The Engineering Layer", flow: "idea → Product →impact" },
 
@@ -81,27 +83,27 @@ export const hero = {
 
 export const services = {
   eyebrow: "WHAT WE DO",
-  title: "From business challenges to digital products",
-  body: "Whether you're launching something new, improving existing systems, or exploring AI, we bring the right thinking and engineering to turn your requirements into practical software.",
+  title: "From business challenges to products that work",
+  body: "Whether you're building a new product, improving existing systems, or exploring AI, we bring together design and engineering to develop practical solutions around your business needs.",
   cards: [
     {
-      title: "Digital Products & SaaS",
-      tags: "SaaS platforms · Web apps · Mobile apps · ",
-      body: "Turn your idea into a market-ready product with thoughtful design, focused MVP development, & scalable engineering.",
+      title: "Product Development",
+      tags: "SaaS Platforms · Web Applications · Mobile Applications",
+      body: "From initial concept to launch, we design and build products around your requirements, with a focus on usability, functionality, and long-term growth.",
       shot: { src: skillDashboard, alt: "Learner dashboard", crop: { w: 112.2, h: 306.61, left: -12.1, top: -0.58 } },
     },
     {
-      title: "Custom Software Solutions",
-      tags: "Business Applications · API Development ·",
-      body: "Replace the disconnected tools and complex workflows with tailored software built around your business.",
+      title: "Custom Solutions",
+      tags: "Business Applications · System Integrations · API Development",
+      body: "We develop solutions tailored to your business processes, helping simplify complex workflows and connect the systems your teams rely on.",
       shot: { src: asterDashboard, alt: "Recruitment dashboard", crop: { w: 100, h: 284.54, left: -0.16, top: -0.29 } },
       // Figma draws the middle card lifted: accent border and glow.
       featured: true,
     },
     {
-      title: "AI Powered Products",
-      tags: "AI Integration · RAG & Intelligent search ·   ",
-      body: "Integrate AI into products and workflows to automate tasks, unlock insights, and support smarter decisions.",
+      title: "AI & Automation",
+      tags: "AI Integration · RAG & Intelligent Search · Workflow Automation",
+      body: "We integrate AI into products & business workflows to automate repetitive tasks, make information easier to access, and support better decisions.",
       shot: { src: webBack1, alt: "Component library", crop: { w: 100, h: 157.06, left: -0.04, top: -8.07 } },
     },
   ] as { title: string; tags: string; body: string; shot: Shot; featured?: boolean }[],
@@ -132,16 +134,16 @@ export interface ProofItem {
 
 export const proof = {
   eyebrow: "SELECTED PRODUCT ENGINEERING",
-  title: "Products we've engineered, not just designed",
-  body: "A closer look at the thinking, technology, and engineering behind products we've taken from concept to working software.",
+  title: "Products we've engineered from concept to delivery",
+  body: "A closer look at the products we've built, the engineering behind them, and how we've addressed specific business and user needs.",
   projects: [
     {
       name: "AI Powered Recruitment Platform",
       href: "/work/ai-recruitment-platform",
       items: [
-        { label: "Intelligent candidate discovery", text: "AI interprets job requirements to surface relevant candidates." },
-        { label: "Connected Hiring Workflows", text: "Candidate data flows seamlessly across recruitment stages." },
-        { label: "AI-Driven Data Processing", text: "Transforms recruitment data into actionable hiring insights." },
+        { label: "Intelligent candidate discovery", text: "Matches job requirements with relevant candidate profiles to support candidate search and shortlisting." },
+        { label: "Connected Recruitment Workflows", text: "Brings candidate information and recruitment activities together across hiring stages." },
+        { label: "Recruitment Data Intelligence", text: "Helps recruitment teams evaluate candidate profiles, review requirements, and gain insights from recruitment data." },
       ],
       media: {
         kind: "browser" as const,
@@ -153,9 +155,9 @@ export const proof = {
       name: "Skillwagon",
       href: "/work/lms-education-saas",
       items: [
-        { label: "Modular Learning Architecture", text: "Connects courses, assessments, projects, and learning resources." },
-        { label: "Unified Progress Tracking", text: "Turns learning activity into a clear view of progress." },
-        { label: "Multi-Format Content Delivery", text: "Supports live sessions, recorded lessons, and practical learning." },
+        { label: "Flexible Learning Architecture", text: "Brings courses, assessments, projects, and learning resources together in one platform." },
+        { label: "Learning Progress Tracking", text: "Gives students and administrators a clear view of learning activity and progress." },
+        { label: "Multi-Format Learning", text: "Supports live sessions, recorded lessons, and other learning resources within one platform." },
       ],
       media: {
         kind: "browser" as const,
@@ -164,12 +166,12 @@ export const proof = {
       reverse: true,
     },
     {
-      name: "Automotive Marketplace",
+      name: "Motorcycle Discovery Platform",
       href: "/work/automotive-marketplace",
       items: [
-        { label: "Structured Vehicle Data", text: "Connects vehicle specifications, listings, and media assets." },
-        { label: "AI-Powered Content Pipeline", text: "Transforms vehicle images and details into promotional reels." },
-        { label: "Automated Media Generation", text: "Streamlines the journey from vehicle listing to social-ready content." },
+        { label: "Structured Vehicle Listings", text: "Organizes vehicle details, specifications, images, and listing information." },
+        { label: "AI-Powered Reel Creation", text: "Uses vehicle images and details to generate promotional reels." },
+        { label: "Automated Content Generation", text: "Simplifies the process of turning vehicle listings into content for social media." },
       ],
       media: {
         kind: "phones" as const,
@@ -185,6 +187,7 @@ export const proof = {
 };
 
 export const cta = {
-  title: "Your next big idea deserves better\nengineering.",
-  body: "Bring us your vision, challenge, or existing system. We'll help turn it into a product built for what's next.",
+  title: "Have a product to build or improve?",
+  body: "Bring us your idea, business challenge, or existing product. We'll help you define the right approach and turn it into a well-engineered solution.",
+  button: "Discuss Your Project",
 };

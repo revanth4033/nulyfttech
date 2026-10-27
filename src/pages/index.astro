@@ -1,16 +1,15 @@
 ---
+/**
+ * Home — the redesigned page, Figma 664:2977. The previous home page lives
+ * on at /home-old (src/pages/home-old.astro).
+ */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Nav from "../components/Nav.astro";
-import Hero from "../components/sections/Hero.astro";
-import KeyHighlights from "../components/sections/KeyHighlights.astro";
-import WhatWeDo from "../components/sections/WhatWeDo.astro";
-import WhatWeDoDark from "../components/sections/WhatWeDoDark.astro";
-import SelectedWork from "../components/sections/SelectedWork.astro";
-import WhyNulyft from "../components/sections/WhyNulyft.astro";
-import OurProcess from "../components/sections/OurProcess.astro";
-import Technology from "../components/sections/Technology.astro";
-import Industries from "../components/sections/Industries.astro";
-import Clients from "../components/sections/Clients.astro";
+import HomeHero from "../components/sections/HomeHero.astro";
+import HomeAbout from "../components/sections/HomeAbout.astro";
+import HomeCraft from "../components/sections/HomeCraft.astro";
+import HomeWhy from "../components/sections/HomeWhy.astro";
+import HomeShaping from "../components/sections/HomeShaping.astro";
 import CtaFooter from "../components/sections/CtaFooter.astro";
 ---
 
@@ -20,31 +19,16 @@ import CtaFooter from "../components/sections/CtaFooter.astro";
 >
   <Nav slot="overlay" />
 
-  <Hero />
-  <KeyHighlights />
-  <WhatWeDo />
-  <WhatWeDoDark />
-  <SelectedWork />
-  <WhyNulyft />
-  <OurProcess />
-  <Technology />
-  <Industries />
-  <Clients />
+  <HomeHero />
+  <HomeAbout />
+  <HomeCraft />
+  <HomeWhy />
+  <HomeShaping />
   <CtaFooter />
 </BaseLayout>
 
 <script>
-  import "../scripts/hero.ts";
   import "../scripts/reveal.ts";
   import "../scripts/anchors.ts";
-  import "../scripts/tilt.ts";
-  import "../scripts/phone-focus.ts";
-  import "../scripts/why-orbit.ts";
-  import "../scripts/process-scroll.ts";
-  import "../scripts/tech-orbit.ts";
-  import "../scripts/eng-pipeline.ts";
-  import "../scripts/aidata-orbit.ts";
-  import "../scripts/cloud-progress.ts";
-  import "../scripts/industries.ts";
   import "../scripts/cta-fan.ts";
 </script>

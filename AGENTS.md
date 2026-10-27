@@ -51,7 +51,12 @@ src/
     index.astro
     studio.astro
     careers.astro
+    product-design.astro       # capability pages — see "Capability pages"
+    product-engineering.astro
+    ai-automation.astro
     work/lms-education-saas.astro
+    work/ai-recruitment-platform.astro
+    work/automotive-marketplace.astro
 ```
 
 ## Conventions
@@ -459,6 +464,14 @@ starfield came to 29MB of source PNG; at 2x a viewer now pulls 404KB.
 stack a zigzag. The design context has it at -40.22 — an even diagonal, which
 is what the render shows.
 
+**The copy is anchored by its left edge between 901 and 1240.** On desktop it
+is placed from the card's centre (`50% - 280.5px`, translate -50%), which only
+holds while the card is 1240; once the card goes fluid the copy slid off its
+left edge (-120 at 1024) on every page. Below 1240 it is `left: 87.5px` —
+where its left edge sits at 1240 — with `translate: 0 -50%`. Pages pass
+`title`, `body` and `copyWidth` (AI & Automation: 642, same left edge); the
+title is `white-space: pre-line`, so a `\n` in it is a deliberate break.
+
 
 **The mobile drawer's CTA is an `<a>`, so `.nav__drawer a` caught it.**
 `PillButton` renders an anchor whenever it carries an `href`, and the drawer's
@@ -469,6 +482,82 @@ label hard against the left edge of the pill, and the ink colour overrode the
 outline variant's accent. The rules are `.nav__drawer ul a` now. Same trap as
 `.deck__title span` catching `<Icon>` on the Studio page: **never select a bare
 element inside a container that also holds a component.**
+
+## Home page (redesign) — Figma 664:2977
+
+`src/pages/index.astro` is the redesigned home page; the previous one lives on
+at `/home-old` (`pages/home-old.astro`, untouched). Five sections plus the
+shared CTA + footer — `sections/HomeHero`, `HomeAbout`, `HomeCraft`,
+`HomeWhy`, `HomeShaping` — with copy and geometry in `src/data/home.ts`.
+Static so far: `reveal.ts` only. Built desktop-first; mobile is not done.
+
+**The nav and footer changed with it, site-wide.** `Nav.astro` is now the
+floating 1240 x 72 card 48px down (Figma 664:2984) on every page; inner-page
+heroes were checked and nothing sits under it. `--nav-h` (83) is kept because
+those heroes still offset their copy by the old bar. The Capabilities menu is
+ours — Figma draws only the chevron. `CtaFooter`'s columns are now
+Capabilities / Company / Contact (664:3250); "UX Capabilities" links to
+`/product-design`, Work to `/studio`, About Us to `/about`.
+
+**The hero photo is masked, not exported.** Figma's subtract bakes the photo
+into the notched shape; here the photo is a normal `<Image>` and the notch is
+a 320 x 110 alpha crop of the subtract's own export (`hero-notch.png`) pinned
+bottom-right, unioned with two plain fills — so the fillets are Figma's and
+the notch keeps its size as the card narrows. The three dots are drawn as
+Figma has them over one photo.
+
+**Never ship a big SVG blur — the hero's glow is a raster for this reason.**
+Figma exports the glow as a 1947 x 745 ellipse under a 302px
+`feGaussianBlur`. As an `<img>` it looked right and cost the hero its frame
+rate: Chrome re-ran the filter whenever it repainted, so scrolling there
+dropped to ~30fps (p95 33ms) while every other section held 60. Disabling
+layers one at a time pinned it — the shafts' CSS `blur(32px)`, the clouds and
+the photo mask made no difference. `hero-glow.png` is that SVG rendered once
+at quarter scale and drawn at full size: within 4 levels of the live filter.
+Stack order is Figma's, set by `z-index` — first shaft 0, glow 1, other
+shafts 2, clouds 3. Check any future decorative export for a large blur
+before using it as-is.
+
+**The hero is three slides** (product design / engineering / AI &
+automation), copy in `heroSlides` in `data/home.ts`; slides 2-3 came from the
+user's mocks, photos from Pexels (3861972, 34804018 — free, no attribution).
+Each slide's title, body and button share one grid cell, so the photo never
+moves. **The slides should show AI built into software, not robots** — a
+robot-arm photo on slide 3 was rejected outright ("we are not creating
+robots"); it is now an AI assistant menu in a code editor, framed with a
+per-slide `photoPosition`. Pick future imagery the same way.
+It advances every 3s and a dot click restarts the clock. It pauses on mouse
+hover over the photo, on keyboard focus, off screen and in a hidden tab, and
+never auto-plays under reduced motion. **The focus pause must test
+`:focus-visible`** — a mouse click on a dot focuses it too, and a plain
+`focusin` pause then froze the carousel for good after the first click.
+**The photo's notch stretches** to fit a longer button: the corner is two
+cut pieces (`hero-notch-left/right.png`) with a 36px band between, widened by
+`--notch-e` (a registered `@property`, so it eases). Slide 1 renders
+pixel-identical to the single-piece mask it replaced. **`mask-position` has
+no three-value form** (`right 20px bottom` is invalid there, unlike
+`background-position`), and one bad value drops the whole list to `0% 0%` —
+use four values.
+
+**The why-section rings are gradient strokes, and the design context says
+they are not.** It reports a flat 2px #834dfb; the render fades each ring to
+nothing on the side facing away from the mark. Ring = `border-box` gradient
+under a `padding-box` fill. Padding is 18, not Figma's 20: Figma's inside
+stroke takes no room, and at 20 two bodies wrap a line early.
+
+**Figma's logo frame in the nav clips its "technologies / Pvt Ltd" lockup**
+(it sits at 102.33% across), so it is not shown; the footer logo is wider and
+does show it.
+
+**Trailing tracking, twice.** Nav labels carry 2px tracking and CSS adds it
+after the last glyph, which ran the link row 8px long; `.nav__label` takes it
+back with a negative margin. The craft card bodies do the same with -0.16 —
+one line measured 391.13 in a 391 column and dropped a word.
+
+**Footer leading is 19, not 24.** The links step 35 apart in Figma; at the
+body line-height the footer came out 16 tall. The bottom bar's rule is an
+inside stroke too (39 + 1, not 40 + 1). Desktop page height is 4881, the
+frame's.
 
 ## In-page navigation
 
@@ -510,68 +599,51 @@ The four row anchors come from `row.id` in `src/data/whatWeDo.ts`, applied by
 `CapabilityRow.astro` — add a row there and its anchor comes with it.
 
 
-## Studio page
+## Studio page ("Work")
 
-`src/pages/studio.astro` — Figma 493:2801. Three parts: a static centred hero,
-the filtered project grid, and the home page's `CtaFooter` reused unchanged.
-Data in `src/data/studio.ts`, tab behaviour in `src/scripts/studio-tabs.ts`.
-Nothing here animates beyond `reveal.ts`.
+`src/pages/studio.astro` — Figma 667:3302, the redesign. The nav's "Work"
+lands here. Three parts: `sections/CentredHero` (600 tall, centred copy over
+the shared `ui/HeroBackdrop`), `sections/StudioProjects` (the three case
+studies as `studio/ProjectCard`s) and the shared `CtaFooter`. Data in
+`src/data/studio.ts`. Nothing animates beyond `reveal.ts`.
 
-**The hero height is the one deliberate departure from Figma.** The frame is
-816 tall; `--studio-hero-h` ships 700. At 816 there are 252px of bare grid
-under the copy and the filter tabs land at y=916 — below the fold on a laptop,
-which the user flagged. Only the bottom is available to cut: the copy is pinned
-by the mask behind it, and the mask is pinned to the grid, because the hatched
-square at (91, 163) fills exactly one 126px cell and the mask's top edge at 289
-sits on that square's bottom. Raise the copy and the mask rides up over the
-square; raise the square and it falls off the rules. 700 leaves 95px under the
-mask's lowest edge (605), so ~660 is the practical floor before it crowds.
+**The redesign removed the filter tabs, the Talent Intelligence pitch and the
+Narrative decks.** All of it is deleted — `studio-tabs.ts`,
+`talent-collage.ts`, `TalentIntelligence.astro`, `talent/Scorecard.astro`,
+`data/talent.ts`, `studio/DeckChrome.astro`, the deck and talent images and
+icons, and the tokens only they used. Recover from git (before the
+`home-redesign` branch) if a tab ever comes back. Every remaining card has a
+case-study page, so `ProjectCard` lost its disabled-button branch too.
 
-**The Figma frame is a "show everything" mock, not the first tab's state.** It
-draws every card under *Product Design & Engineering*, but the tabs are
-real filters. Each tab's grid is therefore *derived* from the data, not copied
-off the frame: cards flow in data order, a `full` card takes a row of its own,
-and a leftover `half` sits alone on the left — the pattern the frame's own last
-row already uses. The phone card is placed mid-list in Product Design so the
-odd card lands last instead of leaving a hole in the middle of the grid.
+**The frame's footer is stale.** It still draws the old columns (About /
+Blogs / Case Studies); the page uses the shared redesign footer, like every
+other page.
 
-**Each project's meta line opens with its own tab's name**, which is how the
-two stay legible together — "Product Design & Engineering · SaaS Platform ·
-2025", "Narrative Intelligence · Branding · 2026". The one exception is the
-automation tab, whose supplied copy reads "AI Intelligent & Automation" against
-the tab's "AI & Intelligent Automation"; that is the client's wording and is
-left as given. Talent Intelligence has no projects yet and renders an empty
-state — that copy is ours, not Figma's.
+**The hero is `sections/CentredHero`, shared with About Us.** Same frame,
+different copy; it sits on `ui/HeroBackdrop` with `variant="page"`.
 
-**The card button names what it opens.** `ProjectCard` derives the label from
-the media — a deck reads "View Pitch Deck", anything else "Full Case Study" —
-with a per-project `ctaLabel` to override. Narrative's three cards are the only
-decks today, so the rule and the tab happen to coincide; the derivation is on
-the media so a deck filed under another tab still reads correctly.
+**The browser bars here draw a Google favicon and a photo avatar.**
+`BrowserChrome` takes them as `favicon`/`avatar`; other pages keep the nuLyft
+mark and the gradient disc.
+
+**Size the phone row by its slots, not its artwork.** The row is 1240 x 542 —
+four 250-wide slots at 0/330/660/990 — and each phone export hangs 5.67 past
+its slot on every side (true bounds 261.33 x 553.33; export at scale 1 to
+confirm). Sizing the stage to the artwork, 1251.33 wide, left the row 5px
+short.
+
+**The caption row is 50.06, not 48** — Figma sizes it by the tilted pill's
+bounding box — and the meta line is 19. Together with the phone row that was
+the 7px the section measured short of its 1528.
 
 **The meta line must not wrap.** Figma marks the node `nowrap` and it needs to
-be: the longest line, "PRODUCT DESIGN & ENGINEERING · HR RECRUITMENT · 2025",
-measures 582.5px against the 580px the caption leaves it, so without `nowrap`
-it drops "2025" onto a second row and knocks that one card 19px taller than its
-neighbour. A negative right margin reclaims the trailing letter-space CSS adds
-after the final glyph, and the caption's 16px padding absorbs the remainder.
+be: "PRODUCT DESIGN & ENGINEERING · HR RECRUITMENT · 2026" measures ~582.5px
+against the 580 the caption leaves it, so without `nowrap` the year drops a
+row and that card grows 19px. A negative right margin reclaims the trailing
+letter-space CSS adds after the final glyph.
 
-**Each card is its own `data-section`.** One trigger for the whole 3,400px grid
-would fire every card at once with most of them still far below the fold.
-`reveal.ts` picks up per-card triggers for free.
-
-**`text-wrap: normal` is not a value the `text-wrap` shorthand accepts** —
-it is `wrap | nowrap | balance | stable | pretty`, so `normal` is parsed out
-and silently dropped. `global.css` sets `text-wrap: balance` on every heading,
-which moved the Studio headline's break a word early; the reset is
-`text-wrap: wrap`. Symptom: the declaration is present in the served CSS, at
-winning specificity, and the computed value is still `balance`.
-
-**A descendant `span` selector also catches `<Icon>`.** `Icon.astro` renders
-`<span class="icon">`, so `.deck__title span { flex: 1 }` applied to the icon
-as well and the toolbar split itself evenly down the middle — a 16px icon came
-out 64px wide. Target a class, never a bare `span`, inside anything holding an
-`<Icon>`.
+**Each card is its own `data-section`**, so `reveal.ts` gives each its own
+trigger instead of firing the whole grid at once.
 
 **The card plate is three nested frosted shells**, not one: 32px radius over
 24px over 16px, each with a 1px white border and its own padding, the outer two
@@ -580,125 +652,126 @@ anchored `center top`, except the e-learning shot which Figma anchors right so
 its empty left rail falls away — that override lives per-project in
 `studio.ts`.
 
-**The phone exports overflow their Figma slot.** The frames read 250x542 in
-metadata, but the artwork's true render bounds are 261.33x553.33 — 5.67px of
-bleed on every side. Export at scale 1 to confirm (262x554) before trusting a
-scaled export's arithmetic. The export also bakes `#f5f3ff` into the rounded
-corners, which is exactly the ground it sits on, so it composites cleanly.
+**`text-wrap: normal` is not a value the `text-wrap` shorthand accepts** —
+it is `wrap | nowrap | balance | stable | pretty`, so `normal` is parsed out
+and silently dropped. `global.css` sets `text-wrap: balance` on every heading;
+the reset is `text-wrap: wrap`.
+
+**A descendant `span` selector also catches `<Icon>`.** `Icon.astro` renders
+`<span class="icon">`, so a bare `span` rule inside anything holding an icon
+hits the icon too. Target a class.
+
+**The dev server served `BrowserChrome`'s pre-fix CSS during this rebuild** —
+the old `.chrome__url span { flex: 1 }` that centres the URL, long since
+replaced in the source and absent from `npm run build`. If a browser bar
+centres its URL, `touch` the component before debugging it.
 
 
-## Studio — Talent Intelligence
+## About Us page
 
-The one tab that is not a project grid. Figma 501:3477 gives it a pitch
-instead: a split intro over a live scorecard, a four-step process beside a
-photo collage, and its own stat band. Copy and geometry in
-`src/data/talent.ts`; markup in `sections/TalentIntelligence.astro` and
-`talent/Scorecard.astro`. Nothing here animates beyond `reveal.ts`.
+`src/pages/about.astro` — Figma 669:3594, 2843 tall and matched to it. "About
+Us" in the nav and footer, and the home page's "Get To Know Us", land here.
+`CentredHero` (copy in `data/about.ts`), `sections/AboutPaths` (the "next
+step" diagram), `sections/AboutPartner` (photo + pitch + three cards), then
+`CtaFooter` with this page's own title and body. Static; `reveal.ts` only.
 
-**A panel is either a grid or a bespoke section.** `StudioProjects.astro`
-branches on the tab id, and the panels had to move *outside* the tab bar's
-`.container` to do it — the Talent sections are full-bleed siblings in the
-frame, each with its own gutter, so nesting them inside one gave double
-gutters. The section's bottom padding moved onto the panel for the same
-reason: a grid needs one, the Talent panel ends on a stat band that has one.
+**The frame's nav is a different variant** — Work / Capabilities / About Us /
+Careers / Contact Us, no Home and no chevron. The page uses the shared
+redesign nav like every other page; flagged to the user.
 
-**The step rail is a grid, not the frame's offsets.** Figma spaces the
-numbered discs 135.25px apart while the copy steps sit 137px apart, so by step
-four its own artwork is 5px out of true. Putting the disc and its copy in one
-grid row locks them together and makes the connector a line between rows. For
-the same reason there is no optical nudge on the label — a 2px pad costs 8px
-over four steps, which drifts the collage beside it off centre.
+**One cloud bitmap, three looks.** Home, Studio and About all fill their
+clouds from the same raw image, adjusted differently per frame. `download_assets`
+returns the raw, unadjusted file for every one of them (byte-identical), so
+it is the wrong source; `get_design_context`'s image URL has the adjustments
+baked in. Studio's and About's adjusted images are byte-identical, which is
+`HeroBackdrop`'s `page` variant; home's is `home`.
 
-**The scorecard's meters are not `score / 10`.** Figma draws each fill as an
-overlong bar clipped by its track, landing at 94.7 / 98 / 88.1 percent for
-scores of 8.5 / 9.0 / 8.0. The measured values are stored so the card matches
-the frame; `talent.ts` says so, because the numbers look like a bug otherwise.
+**The diagram is placed, not laid out.** Figma positions every piece inside
+a 1240 x 504 box. The two curved branches are one export, the lower flipped
+about its own centre; each export carries 0.6px of stroke above its node.
+The "next step" mark's halo is a 20px *outside* stroke on a 40px disc —
+`box-shadow: 0 0 0 20px`, not a border.
 
-**The scorecard overhang has to be claimed.** It is absolutely positioned and
-hangs ~40px below the photo, so it adds no height; Figma reserves the space by
-making the row 550 against a 500 photo. Without a matching 50px on the media
-box the next section rides up into the card.
+**An `<Icon>` in an absolutely placed wrapper needs a flex wrapper, not
+`display: block` + `line-height: 0`.** The inline icon still sat on a text
+baseline: the 1.2px trunk line dropped 4.8px inside a 6px box and smeared
+grey over two rows, reading as a different line from Figma's.
 
-**The collage drifts; Figma draws it static.** The frame fades 240 of the
-collage's 630px away top and bottom, which is a "content continues" cue, and
-the user confirmed the columns should scroll behind those veils.
-`scripts/talent-collage.ts` runs them at 30px/s in opposite directions — left
-up, right down. The drift is deliberately non-interactive and ignores the
-cursor: a hover pause was built and the user asked for it out. It still stops
-while off screen, and is skipped entirely under reduced motion.
+**The diagram moves** (`scripts/about-paths.ts`, approved by the user): each
+dot travels its line into the mark — top, middle, bottom, 0.5s apart, 1.6s
+each — and the mark glows as it lands (`.paths__pulse`, a brighter ring over
+the static one). A 5s loop that pauses off screen. Dots fade in at the head
+of their line and out before the ring, so the lap starts and ends empty and
+has no seam. Positions come from `getPointAtLength` on a hidden copy of the
+three routes (`routes` in `data/about.ts`, stage coordinates) — MotionPath is
+*not* registered in `gsap.ts`, whatever the plugin list above says. Without
+JS or under reduced motion the dots rest at Figma's spots. Verify by finding
+the timeline (`repeat() === -1`, `duration() === 5`) and stepping it with
+`.progress()`.
 
-**The lap must equal the rendered distance, not the sum of the heights.**
-`COLLAGE_LOOP` is 1292: the four cell heights (1228) *plus all four gaps*. The
-fourth gap is the one that closes the first set onto its duplicate, and
-leaving it out puts the reset 64px early — which reads as a stutter, not a
-seam, so it is easy to miss. Verify by measuring cell 1's top against cell 5's
-and checking it equals `COLLAGE_LOOP`.
+**Give a measuring-only SVG `width="0" height="0" fill="none"` attributes**,
+not just a class: when the dev server served stale CSS, the hidden routes
+rendered at the default 300 x 150 with black fill over the copy.
 
-**Each column carries the whole photo set, not Figma's two.** Four photos in a
-different order per column means the two never show the same shot side by side
-and a photo only returns after a full lap. More photos in `talent.ts` lengthen
-the cycle with no change to the script — but `COLLAGE_LOOP` is hardcoded from
-the heights, so update it too.
+**The card tags are tilted -0.65deg like the pills** — Figma rotates the
+label, not the row, so the shield icon stays level. The row is 21.58 tall,
+the label's rotated bounding box.
 
-**Refresh ScrollTrigger on every tab switch.** Panels differ enormously in
-height — the Talent pitch is several times a card grid — so every trigger below
-the panel is measured against the wrong page height until it re-measures.
-`studio-tabs.ts` does this; the collage's own off-screen trigger depends on it,
-because on load the panel is `display: none` and measures nothing.
-
-**The Talent tab carries its own CTA copy** (501:3810). The CTA sits outside
-the tab panel, so `CtaFooter` takes `title`/`body` props and `studio-tabs.ts`
-swaps the text on selection, capturing the default on load to restore it.
-
-**`eyebrow` on `SectionHeader`/`KeyHighlights` is `string | null`, deliberately.**
-The Talent stat band has no badge, and `undefined` would fall through to
-Astro's default parameter and silently reinstate the home page's eyebrow —
-which is exactly what happened first time. Pass `null` to mean "no badge".
-
-**Both Key Highlights bands share one component.** It defaults to the home
-copy, so `index.astro` passes nothing; the Talent band overrides the copy,
-stats, `gap` (64 against 80) and `size` (`md`, a 32px heading against 40px).
-
-**These illustration exports carried two background plates**, not one: Figma's
-`#1E1E1E` canvas rect *and* the section's own `#F5F3FF` ground, the latter
-clipped to the icon box so it painted a solid light square behind each glyph.
-Strip both, then confirm with `getBBox()` that the ink survived and that no
-`clipPath` or `mask` was emptied.
+**Copy reproduced as drawn**: "We Look beyond the brief" (capital L), and the
+hero's straight apostrophe in "what's".
 
 
-## Deck-viewer chrome
+## Contact Us page
 
-`src/components/studio/DeckChrome.astro` is the counterpart to `BrowserChrome`
-for deck screenshots — Figma 493:3116. Figma sets it in Open Sans 9px; it ships
-in the site's Inter rather than pulling a third webfont in for ~40 glyphs of
-decorative UI. The only visible consequence is that a long filename ellipsises
-a little earlier than the frame shows; Figma already truncates the longest one.
+`src/pages/contact.astro` — Figma 672:3795, 2474 tall and matched to it. The
+nav's "Get Started" lands here, and so does every "talk to us" button that
+used to point at an inert `#contact` (the CTA card's "Start a Conversation",
+the capability heroes' primaries, home and About CTAs, the old home hero).
+`CentredHero` (554 tall, copy 29.8 below centre, no italic tail),
+`sections/ContactDiscuss`, `sections/ContactForm`, then `CtaFooter
+cta={false}`. Copy in `data/contact.ts`.
+
+**The page ends on the footer alone.** `CtaFooter`'s `cta={false}` drops the
+card and its 258px overlap; the footer content sits 141 down (1px rule + 140)
+instead of 241.
+
+**The form has no backend yet.** The site is static, so submitting validates
+natively and then opens the visitor's mail client addressed to
+`contact@nulyfttech.com`, pre-filled. `deliver()` in the component's script
+is the one function to swap for a real endpoint. "Book a Call" scrolls to the
+form (`#contact-form`) until there is a booking link.
+
+**Field heights are Figma's with an inside stroke:** 51 and 214 including the
+1px border, so the padding is 15 rather than 16; labels set at a 19px line or
+the field stack runs 3px long.
+
+**Both decorative pieces are rasters, on purpose.** The form's line pattern
+was an SVG export of 23 curves, each 2,000+px long, under an alpha mask; the
+discuss band's curves a 14-path group at 10% opacity. As inline SVG they made
+this the one page the user found dragging while scrolling — the same failure
+as the home hero's blurred glow. Each is now rendered once at 2x over its
+section's own flat ground (`images/contact/form-lines.png`,
+`abstract-curves.png`) and served through `<Image>` as WebP. Headless Chrome
+could not reproduce the lag (it rasterises differently), so the fix was made
+on the cause, and pixel-diffed against the frame afterwards. Keep large
+masked, filtered or group-opacity SVG art off the page; rasterise it.
+
+**Placeholders are as drawn**, including "John Doe" on the company and
+message fields — a stray copy in the frame, flagged to the user. The frame's
+nav is the five-link variant again; the shared nav is used.
 
 
 ## Page heroes
 
-`components/PageHero.astro` + `PageHeroPattern.astro` serve every inner page.
-The heroes differ only in copy and height — same grid, same two hatched
-squares, same mask — so they are one component with props rather than a copy
-per page.
+Studio, About Us, Careers and Contact Us all use `sections/CentredHero` — the
+redesign's 600-tall centred hero over `ui/HeroBackdrop` (`page` clouds).
+Careers has no redesigned frame; the user asked for it to match the other two,
+so it carries its existing copy ("Join Our Journey" / "Shape Your Future with
+*nuLyft*"). Copy is centred on the frame, so a shorter block sits lower.
 
-**Only the height varies, and only downwards.** The copy is pinned by the mask
-behind it and the mask is pinned to the grid: the hatched square at (91, 163)
-fills exactly one 126px cell, and the mask's top edge at 289 lands on that
-square's bottom. Raising the copy drags the mask over the square; raising the
-square puts it off the rules. So the empty band under the copy is the only
-slack, and a hero can only be cut from the bottom.
-
-| page | height | note |
-| --- | --- | --- |
-| Studio | 700 | Figma draws 816; trimmed so the filter tabs clear the fold |
-| Careers | 605 | as drawn — cut exactly at the mask's lowest edge |
-
-**Figma's font name for the Careers headline is wrong.** `get_design_context`
-reports `Inter:Semi_Bold` where the render is plainly IBM Plex Sans, same as
-every other heading. Check the screenshot before believing a font switch.
-Careers also sets its italic tail in the body ink at weight 500, where Studio
-sets its tail in the accent purple — hence `emphasisTone`.
+The old grid-and-mask `PageHero` is deleted. Its pattern,
+`PageHeroPattern.astro`, lives on behind the LMS and Recruitment case-study
+heroes, which still clear the old 83px bar via `--nav-h`.
 
 
 ## Careers page
@@ -1095,6 +1168,242 @@ below before the rule.
 and a UI Screens intro that still says "learning experience". Flagged, not
 silently corrected.
 
+## Capability pages
+
+Three routes, one per capability — `/product-design` (Figma 637:2092),
+`/product-engineering` (646:5614) and `/ai-automation` (647:6301, with the
+AI Agents and Workflow state boards 647:7514 / 647:7155). **Nav, footer
+links and routes are deliberately not wired to them yet** — the user will
+say how; do not touch the header or footer for these pages.
+
+| page | data | components | scripts |
+| --- | --- | --- | --- |
+| Product Design | `data/capProductDesign.ts` | `sections/Cap*.astro`, `cap/*` | `cap-approach(-geometry).ts`, `cap-features.ts`, `cap-outcomes.ts`, `cap-webwork.ts`, `cap-pin.ts` |
+| Product Engineering | `data/capProductEngineering.ts` | `sections/Pe*.astro` | `pe-hero.ts`, `pe-services.ts` |
+| AI & Automation | `data/capAi.ts` | `sections/Ai*.astro`, `ai/*Art.astro` | `ai-hero.ts`, `ai-agents.ts`, `ai-workflow.ts`, `ai-doc.ts`, `ai-voice.ts`, `ai-industries.ts` |
+
+All three end on the shared `CtaFooter` with page copy (`title`/`body`
+props; AI passes `copyWidth={642}` so its longer body sets in two lines).
+
+### Shared pieces
+
+**`fit.ts` scales a fixed composition to its column** — a tilted browser
+card, a browser fan, a phone row, a diagram with no text. `<div class="fit"
+data-fit="W" style="--fit-w:W;--fit-h:H"><div class="fit__inner">`; the
+script writes `--fit` and CSS in `global.css` does the rest. Two traps
+found the hard way:
+
+- **Measure with `getBoundingClientRect().width`, not `clientWidth`.**
+  `clientWidth` rounds, so a 568.419 box measured 568 and scaled by 0.9993 —
+  invisible, but it re-rasterised a desktop picture. Anything within 0.2% of
+  1 snaps to 1.
+- **Never put `data-animate` on the `.fit__inner`.** The reveal writes an
+  inline transform that fights the scale. It goes on the `.fit` wrapper.
+
+Text is never fitted. If scaling a composition would put its text under
+~11px, re-proportion it for the phone instead (see each page below).
+
+**Pins start centred under the nav** (`pinStart()` in `cap-pin.ts`) — at
+`top top` the 83px nav covered the first line and the frame sat high. The
+user asked for this explicitly.
+
+**`PillButton` has `flat` (solid accent, no gradient) and `arrowIcon`.**
+The headline italics on all three heroes are **Inter 3.19 Medium Italic**,
+self-hosted (`public/fonts/inter-latin-500-italic.woff2`) — Google's Inter 4
+italic set 5px wider with a single-storey "a" and did not match Figma.
+
+**Inside strokes are `box-shadow: inset`, not `border`,** on every eyebrow,
+icon chip and bento card here; as borders they grew each box 1-2px and
+pushed every label out of place (eyebrows 33 tall against 32, AI cards 473
+against 471).
+
+**`BrowserChrome`'s URL is `.chrome__url-text`.** It was a bare `span`
+selector, which also caught the lock `<Icon>` and gave it `flex: 1` — every
+browser frame on the site centred its URL. Same trap as the two below.
+
+### Breakpoints
+
+`>= 1440` is Figma. **1280-1439 is fitted, not redesigned** — every page
+had sections cut off at 1280 (Approach copy, project screenshots, right-hand
+Outcomes cards, Website card, PE hero diagram and Process ladder, AI hero
+target, Engineer zig-zag). Each now gives way: copy columns shrink
+(`flex: 0 1 W; min-width: 0`), right-hand pieces anchor right instead of
+taking Figma's left offset, and placed compositions fit. Below 1280 each
+section is redesigned (tablet), and again at 560 (phone). The AI
+illustrations add a third step at 700, where their panels drop under their
+drawn width.
+
+**Pins and hover exist only from 1280.** Below, `gsap.matchMedia` swaps
+them for tap: Key Features rows, Outcomes cards and PE service cards become
+`role="button"` with Enter/Space, and the desktop's lit default is the
+starting state. **The user rejected auto-advancing / auto-cycling as the
+mobile replacement** — nothing may change on its own where desktop needs a
+scroll or hover to change it.
+
+### Product Design
+
+**Design Approach** pins through six states. The ring's slots are not evenly
+spaced (-33.1 / -15.8 / 0 / 15.8 / 33.0 degrees), so positions are
+interpolated as an angle on the ring; the photo stack is a three-slot queue.
+Both are pure functions in `cap-approach-geometry.ts`, shared by the server
+render (state 01 with JS off) and the script. Copy is a hand-off fade
+(`1 - |d| * 2`), not a cross-fade — overlapping read as two paragraphs.
+
+Below 1280 it is a vertical timeline: number on a rail, each step lighting
+as it reaches 65% of the viewport (`once`). **`render()` writes inline
+styles on the steps**; the desktop context's cleanup must strip them, or
+five of six steps stay hidden in the timeline.
+
+**Key Features** pins one tab per scroll band on desktop; below 1280 the
+screen sits on top and a tap selects a row. The rail fills to the measured
+bottom of the active row there, since rows wrap to different heights.
+
+**Product Outcomes**: hover via `:has()` on desktop, tap below 1280
+(`cap-outcomes.ts`, class `is-tap`). Cards and connectors are anchored to
+the centre (`50% + 188px`, `50% + 35px`, `50% - 190/192px`) rather than
+Figma's left offsets, which only hold at a 1240 column; the lit connector
+art is 2px wider than the idle one.
+
+**Websites Featured (marquee)**: the lap is measured from the DOM, not baked
+in — phones run 280x194 cards. **`--lap` is declared on the track, not the
+section**, because `--n` is set on the track and a custom property resolves
+where it is declared; on `.ww` it was silently invalid and the rows lost
+their Figma offsets.
+
+**The hero's tool chips must not sit over the screen fans on mobile** — the
+user caught it. They stack under the fans (`--vs` / `--ts` / `--gap`).
+
+**Copy update — Figma 673:3980 (Oct 2026).** Content only; the layout is
+untouched apart from what the new copy needed: the hero copy column 654 -> 694
+(the headline sets in two lines), the Asterdata lead body 788 -> 964 and its
+outcomes body 695 -> 787 (both two lines in the frame), the lead title's
+`capitalize` dropped (every heading here is now set as typed — only the two
+website headings stay Title Case), the Design Approach tag lines removed (the
+new steps have none; `CapApproach` renders one only if a step carries it), and
+an optional `tagline` under the Skill Wagon and Automotive names. The page CTA
+carries its own copy. Desktop height is still the frame's 11,519.
+
+Read the copy with `use_figma` (`characters` of every visible TEXT node), not
+`get_metadata` — layer names here are stale ("Three core product categories
+engineered for enter" names half the paragraphs). The frame and its state
+boards disagree in three places; the page frame wins: approach title, Skill
+Wagon tab 5 ("Assessments Experience" vs board "Assessments and Quizzes") and
+Automotive tab 3 ("Immersive Bike Details" vs board "Detailed Vehicle
+Information"). The facts swap Technology and Scope values against the old
+copy — as drawn. Two Figma paragraphs break mid-word ("corpo / rate"): the
+text carries non-breaking spaces; the site wraps normally.
+
+### Product Engineering
+
+**Hero diagram.** Desktop: Figma's five connector exports, each drawn hub ->
+card, carry a pulse that makes the card's chip glow. 1280-1439: the diagram
+anchors right and fits. Tablet: under the copy at full size. **Phone: the
+same composition re-proportioned, not scaled** (scaled, the card text was
+6px) — 150 halo, compact title-only cards in their desktop places, and
+elbow wires drawn by `pe-hero.ts` from the laid-out positions (redrawn on
+resize). The user asked for the desktop pattern here after a grid version;
+that preference is in `HANDOFF.md`. Every phone width 320-560 was checked
+for card/halo overlap — Infrastructure sits at top 90, and <= 360 the hub
+steps down.
+
+**`.peh__diagram > *` outranks a plain card rule**, and the cards' inline
+`left`/`top` still offset a `position: relative` box — phone overrides are
+`.peh__diagram > .peh__card` with `!important` on the offsets.
+
+**`getTotalLength()` is guarded** — engines may refuse to measure a path
+under `display: none`.
+
+**What We Do** keeps three columns down to 901; 900-561 turns each card
+sideways (screen left, copy right) so no card sits orphaned in a 2-up
+grid; phones stack upright. **Process** becomes stacked boxes joined by a
+line through their icon chips. **Proof** is copy over media.
+
+**Copy update — Figma 673:9086 (Oct 2026).** Content only. What the copy
+needed: hero copy column 481 -> 518 (two-line headline), the proof intro 788
+-> 892, `capitalize` dropped from the What We Do and proof titles (every
+heading is set as typed now), the hero's second button removed (`secondary:
+null`, rendered only when set) and the CTA button relabelled "Discuss Your
+Project" (`CtaFooter` takes `button`). The Automotive proof entry is now
+"Motorcycle Discovery Platform". Left as built, and flagged: the new frame's
+hero is 799 tall against our 931, and its proof section 2,347 against our
+2,155 — spacing changes, not copy.
+
+### AI & Automation
+
+**Hero burst.** Dashed lines shoot from the hub to all nine logos at once
+and run *forward* through them — never drawing back, by request. A dashed
+stroke cannot be drawn on by dash offset, so each line is masked by a solid
+copy whose dasharray is `L L`: offset L hides it, 0 shows it, -L has slid it
+past the far end, so one tween L -> 0 -> -L is out-and-through.
+
+**The four What We Do illustrations are live DOM**, and below 700 each has
+its own phone composition at full text size:
+
+| art | phone version |
+| --- | --- |
+| Agents | elbows 120 -> 24 via `preserveAspectRatio="none"` + `vector-effect: non-scaling-stroke`; right-hand tools and labels follow |
+| Workflow | every x is Figma's from the 460 panel's left edge; `--ox: calc(50% - 230px)` re-centres it (0 at 460) |
+| Document | page drawn at 0.76 from its left-middle; the links SVG **translates** 41px (a translate keeps the pulse dots round), fields 191 -> 150 |
+| Voice | the flow turned 90 degrees — channels on top, card, outcomes in a row — with a second path set `data-vo-links="m"`; `ai-voice.ts` builds per breakpoint in `gsap.matchMedia` and rebuilds on change |
+
+They are laid out for a 330 panel; under 375 they `zoom: 0.86`. On phones
+the panel runs to the card's edges.
+
+**Industries carousel** renders the set three times and steps one card
+every 3.2s, dropping back a whole set at the wrap; the highlight follows the
+card nearest centre mid-slide. Dots and arrows were removed by request. It
+auto-plays on desktop too, so it is not a hover replacement.
+
+**How We Engineer It**: 1280-1439 fits the 1240x455 stage; below 1280 the
+zig-zag runs down — cards at 82% alternating sides, joined by a dashed
+S-elbow drawn in the card's own width units (18% of the column is 21.95% of
+a card).
+
+**The technology ecosystem replaced "What we've been building"** (Figma
+673:10175, Oct 2026). `sections/AiTechnology.astro`, data `technology` in
+`capAi.ts`, logos in `icons/ai-tech/`, hub `brand/ai/tech-hub.svg`;
+`AiProjects.astro` and its data are deleted. 24 tiles at Figma's stage
+coordinates, read per tile with `use_figma` (they sit in nested, offset
+groups). The rings are SVG circles with a vertical white gradient stroke at
+0.36 — the design context reports that stroke as flat transparent white, so
+it reads as "no rings" unless you check `strokes` directly. Below 1240 the
+stage scales via `fit.ts` (no text in it); its mobile layout is still to do.
+The AI hero's "Explore Our Work" pointed at `#ai-work`, which went with the
+old section — it now opens `/studio`.
+
+**Its hover (`scripts/ai-tech.ts`):** the tile lifts, glows and names
+itself, and its ring brightens — CSS classes the script toggles; touch
+devices toggle with a tap. A line to the hub with a travelling dot and a hub
+pulse was built first and removed at the user's request, so don't bring it
+back. The dev server once served this component's CSS stale (labels showed
+inline beside every logo) — `touch` the component before believing it.
+
+**The tiles float (user-approved), as a CSS animation — not GSAP.** Each bobs
+4-6px over a 4-7s cycle, a third also 1-2px sideways, phases spread by a
+seeded hash so no two move together; vars are set per tile at build time.
+Paused under hover (`.is-on`), off screen (`.is-idle`, an IntersectionObserver
+in `ai-tech.ts`) and reduced motion — which needs `animation: none`, because
+the global reduced-motion rule only shortens animations and would park every
+tile at the end of its drift. The first version drove the same motion from
+GSAP: on a 2x, 4x-throttled run it pushed long frames from ~12% to 30-44%,
+because 24 main-thread transform writes repainted the inline logos. As a
+compositor animation it costs ~21% in the same test (software compositing);
+on a GPU the layers are close to free.
+
+### Testing these pages
+
+- **Never return a GSAP timeline from `page.evaluate`.** `tl.pause(0)` and
+  `tl.seek(t)` return the timeline, Playwright tries to serialise its cyclic
+  graph and the call hangs forever — two "frozen page" diagnoses here were
+  this. Wrap the call in braces.
+- The widths swept: 1440 1366 1280 1279 1260 1240 1200 1180 1160 1100 1060
+  1024 1000 960 920 901 900 880 840 834 800 768 700 640 600 561 560 500 460
+  430 414 390 375 360 340 320 — `scrollWidth === clientWidth`, and no
+  heading or paragraph past the viewport.
+- 1440 must stay pixel-identical: diff each section against a capture taken
+  before the change. A `scale(1)` fit wrapper still changes text
+  anti-aliasing in the strip it covers; that is the only accepted residue.
+
 ## Mobile
 
 The five sections the user designed mobile frames for are built from Figma
@@ -1296,54 +1605,23 @@ PNG reads as black on a fresh canvas, so count alpha, not luminance.
 
 ### Studio page — mobile
 
-No Figma frame for this one; it is adapted in code. It was the only page that
-**actually scrolled sideways** (1261px of document in a 375 viewport), from
-three separate causes, each worth knowing:
+No Figma frame; adapted in code before the redesign, and the card rules carry
+over. The new hero has not had a mobile pass yet. What still applies:
 
-- **`.pcard__meta` is `nowrap` on purpose** — on desktop the longest line is
-  582.5 against the 580 the caption leaves it, and wrapping there drops "2025"
-  onto a second row and makes that card 19px taller than its neighbour. At 341
-  it has 572px of text in a 311 box, so below 900 it has to wrap.
-- **The phone row lays out against a four-slot 1251-wide stage** whatever the
-  project holds. Its slots were inline px; they are custom properties now, and
-  below 900 the row is a flex row instead — which also fixes a three-shot card
-  sitting left-aligned with a quarter of the card empty.
-- **The four filter tabs lay out ~984 wide.** The bar scrolls below 900.
-
-**The filter bar is a disclosure below 1240, not a scrolling row.** The four
-labels come to a natural 1032, which only fits once the gutters leave 1032 —
-about 1232 up. A scrolling row was tried first and is the wrong answer twice
-over: it carries no affordance, and **ScrollSmoother's Observer swallows the
-horizontal swipe**, so on a device it reads as stuck. The trigger shows the
-current filter and `.tabs__row` becomes the menu — the existing tab buttons
-are reused as its options, so there is still one source of truth for the
-active filter. The sliding indicator and its rule are dropped there; the
-indicator lives in a sibling track that could never have followed a scroll.
-
-**The menu has to be lifted above the whole tab block.** The cards below open
-their own stacking contexts (reveal.ts leaves a transform on them), so a
-z-index on `.tabs__row` alone is not enough — `.projects__tabs` gets the
-z-index and the row sits inside it.
+- **`.pcard__meta` is `nowrap` on desktop on purpose** (see above). At 341 it
+  has 572px of text in a 311 box, so below 1240 it wraps at 11px.
+- **The phone row is a flex row below 900** instead of the slotted stage, so
+  the shots fill the card.
 
 **`.cta` is a fixed 1240 centred with `translate: -50%`,** so under that width
 it overhangs both edges — at 1100 it sat at left -70 and scrolled the page
-sideways on *every* page that uses `CtaFooter`, the home page included. It is
-fluid below 1240 now. Worth remembering that the 900-1240 band was never
-audited: both defects found on Studio lived there, not on phones.
+sideways on *every* page that uses `CtaFooter`. It is fluid below 1240 now.
+The 900-1240 band is the one nobody audits; check it.
 
-**Mobile block rhythm is 40, and two rules hold the desktop's 100.** The
-section keeps `padding-top: 100` and the panel `padding-bottom: 100`, which put
-the hero 156 clear of the filter and the last card 140 clear of the CTA. Note
-the panel's rule is `.projects__panel:not([data-panel="talent"])` — a media
-query does not beat specificity, so the override has to carry the same
-`:not()` or it silently loses.
-
-**`PageHero`'s copy is absolutely placed and must join the flow.** Its frame
-reserves `--phero-h` (700 Studio / 605 Careers) and the copy sits at a fixed
-`top`, so at mobile the frame is sized to its content and the copy goes
-static — but `left` stops applying while **`translate: -50%` does not**, and
-the -50% alone drags the copy off the left edge. Reset it. Hero comes down
-from 700 to 421 at 375, with the heading at 30 rather than 48.
+**An absolutely placed, `translate`-centred block that goes static on mobile
+keeps its translate** — `left` stops applying, `translate: -50%` does not, and
+drags it off the left edge. Bit the old `PageHero`; `CentredHero` will need
+the same reset in its mobile pass.
 
 ### Careers page — mobile
 

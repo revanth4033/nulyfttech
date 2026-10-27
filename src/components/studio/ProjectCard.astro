@@ -2,20 +2,21 @@
 import { Image } from "astro:assets";
 import PillButton from "../ui/PillButton.astro";
 import BrowserChrome from "../ui/BrowserChrome.astro";
-import DeckChrome from "./DeckChrome.astro";
+import favicon from "../../assets/images/browser/favicon-google.png";
+import avatar from "../../assets/images/browser/avatar.png";
 import type { Project } from "../../data/studio";
 
 /**
  * One Studio project — media over a caption.
  *
- * Two of the three media kinds sit on the same frosted plate: 612x400 with a
- * 12px pad to an inner 588x376 shell, then another 12px to the 564x352 window
- * that holds the chrome and the screenshot. The phone kind has no plate — the
- * devices stand free on the page ground.
+ * A browser shot sits on a frosted plate: 612x400 with a 12px pad to an
+ * inner 588x376 shell, then another 12px to the 564x352 window that holds the
+ * chrome and the screenshot. The phone kind has no plate — the devices stand
+ * free on the page ground.
  *
  * Each card is its own `data-section` so `reveal.ts` gives it its own trigger.
- * One trigger for the whole 3,400px grid would fire every card at once, most
- * of them still far below the fold.
+ * One trigger for the whole grid would fire every card at once, the lower
+ * ones still far below the fold.
  */
 interface Props {
   project: Project;
@@ -24,21 +25,20 @@ interface Props {
 const { project } = Astro.props;
 const { media } = project;
 
-/** The button names what it opens; Narrative's cards are decks, not studies. */
-const ctaLabel = project.ctaLabel ?? (media.kind === "deck" ? "View Pitch Deck" : "Full Case Study");
-
 /** Figma slot x positions; the artwork overflows each slot by 5.67px a side. */
 const PHONE_SLOTS = [0, 330, 660, 990];
+const PHONE_SLOT_W = 250;
 const PHONE_BLEED = 5.67;
 const PHONE_W = 261.33;
 
 /**
- * The stage the four phones are placed against. Their slots were inline px,
- * which meant the row laid out ~1251 wide whatever the card was — at 375 that
- * was most of a second screen of horizontal page scroll. Expressed as
- * percentages of this box, the whole composition scales with its card.
+ * The stage the four phones are placed against: the slot row itself, 1240 x
+ * 542 — Figma's row height. The phones hang 5.67 past it on every side, as
+ * drawn. (Sizing the stage to the artwork instead, 1251.33 wide, left the row
+ * 5px short at 1240.) Slots are percentages of this box so the composition
+ * scales with its card.
  */
-const PHONE_STAGE_W = PHONE_SLOTS[PHONE_SLOTS.length - 1] + PHONE_W;
+const PHONE_STAGE_W = PHONE_SLOTS[PHONE_SLOTS.length - 1] + PHONE_SLOT_W;
 const PHONE_STAGE_H = 542;
 const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
 ---
@@ -46,15 +46,11 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
 <article class:list={["pcard", `pcard--${project.span}`]} data-section data-project={project.id}>
   <div class="pcard__media" data-animate>
     {
-      (media.kind === "browser" || media.kind === "deck") && (
+      media.kind === "browser" && (
         <div class="plate">
           <div class="plate__inner">
             <div class="plate__window">
-              {media.kind === "browser" ? (
-                <BrowserChrome />
-              ) : (
-                <DeckChrome file={media.file} pages={media.pages} />
-              )}
+              <BrowserChrome favicon={favicon} avatar={avatar} />
 
               <Image
                 src={media.src}
@@ -73,7 +69,7 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
 
     {
       media.kind === "phones" && (
-        <div class="phones" role="img" aria-label={media.alt}>
+        <div class="phones" role="img" aria-label={media.alt} style={`--stage:${PHONE_STAGE_W} / ${PHONE_STAGE_H}`}>
           {media.shots.map((shot, i) => (
             <Image
               src={shot}
@@ -94,20 +90,9 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
     <div class="pcard__head">
       <h3 class="pcard__title">{project.title}</h3>
 
-      {
-        project.href ? (
-          <PillButton href={project.href} variant="outline" arrow={20}>
-            {ctaLabel}
-          </PillButton>
-        ) : (
-          /* The case-study pages do not exist yet — the button is present in
-             the design, so it renders, but it goes nowhere and is skipped by
-             the keyboard until it has a destination. */
-          <PillButton variant="outline" arrow={20} disabled>
-            {ctaLabel}
-          </PillButton>
-        )
-      }
+      <PillButton href={project.href} variant="outline" arrow={20}>
+        Full Case Study
+      </PillButton>
     </div>
 
     <p class="pcard__meta">{project.meta}</p>
@@ -186,7 +171,7 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
   .phones {
     position: relative;
     width: 100%;
-    aspect-ratio: 1251.33 / 542;
+    aspect-ratio: var(--stage);
   }
 
   /* Slots reach the CSS as custom properties rather than inline `left`/`width`
@@ -210,11 +195,14 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
     padding: 16px;
   }
 
+  /* 50.06 is the tilted pill's bounding box, which is what Figma sizes the
+     row by; at the pill's own 48 the caption came out 1px short of 117. */
   .pcard__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
+    min-height: 50.06px;
   }
 
   .pcard__title {
@@ -234,22 +222,12 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
   .pcard__meta {
     font-weight: 500;
     font-size: var(--fs-body);
-    line-height: normal;
+    line-height: 19px;
     letter-spacing: var(--tr-meta);
     margin-right: calc(-1 * var(--tr-meta));
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--c-muted);
-  }
-
-  /* A button with nowhere to go should not advertise itself as pressable. */
-  .pcard__head :global(.pill[disabled]) {
-    cursor: default;
-  }
-
-  .pcard__head :global(.pill[disabled]:hover) {
-    transform: none;
-    background: transparent;
   }
 
   /* --- responsive --------------------------------------------------------- */
@@ -277,6 +255,7 @@ const pctW = (v: number) => `${(v / PHONE_STAGE_W) * 100}%`;
   @media (max-width: 1240px) {
     .pcard__meta {
       font-size: 11px;
+      line-height: normal;
       letter-spacing: 1px;
       margin-right: 0;
       white-space: normal;

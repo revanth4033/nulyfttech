@@ -42,7 +42,7 @@ import { hero } from "../../data/capProductEngineering";
 
       <div class="peh__actions" data-animate>
         <PillButton href={hero.primary.href} arrow={20} flat>{hero.primary.label}</PillButton>
-        <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>
+        {hero.secondary && <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>}
       </div>
     </div>
 
@@ -118,7 +118,7 @@ import { hero } from "../../data/capProductEngineering";
     display: flex;
     flex-direction: column;
     gap: 40px;
-    width: 481px;
+    width: 518px; /* 518 since the 673:9086 copy update — the headline sets in two lines */
     translate: 0 calc(-50% - 0.5px);
   }
 

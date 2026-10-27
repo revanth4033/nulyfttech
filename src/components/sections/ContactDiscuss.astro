@@ -1,0 +1,92 @@
+---
+import { Image } from "astro:assets";
+import PillButton from "../ui/PillButton.astro";
+import curves from "../../assets/images/contact/abstract-curves.png";
+import { discuss } from "../../data/contact";
+
+/**
+ * "Let's discuss your use-case together" — Figma 672:3835, 1440 x 589.
+ *
+ * Copy and a button beside an abstract curves illustration, 147 apart. The
+ * frame also holds the six vertical grid rules every light band uses, but
+ * hidden, so they are left out. "Book a Call" scrolls to the form below.
+ *
+ * The illustration is a 2x raster of Figma's 14-path vector over the
+ * section's ground — see ContactForm for why this page avoids live SVG art.
+ */
+---
+
+<section class="discuss" data-section="contact-discuss">
+  <div class="discuss__inner container">
+    <div class="discuss__copy">
+      <h2 class="discuss__title" data-animate>{discuss.title}</h2>
+      <p class="discuss__body" data-animate>{discuss.body}</p>
+      <div class="discuss__cta" data-animate>
+        <PillButton href={discuss.cta.href} flat arrow={20}>{discuss.cta.label}</PillButton>
+      </div>
+    </div>
+
+    <Image
+      class="discuss__art"
+      src={curves}
+      alt=""
+      widths={[448, 896]}
+      sizes="448px"
+      aria-hidden="true"
+      data-animate
+    />
+  </div>
+</section>
+
+<style>
+  .discuss {
+    background: var(--c-bg-light);
+    padding-block: 80px;
+  }
+
+  .discuss__inner {
+    display: flex;
+    align-items: center;
+    gap: 147px;
+  }
+
+  .discuss__copy {
+    flex: 0 1 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .discuss__title {
+    max-width: 484px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: var(--c-ink);
+    /* Figma breaks after "use -"; balance would even the two lines out. */
+    text-wrap: wrap;
+  }
+
+  .discuss__body {
+    max-width: 558px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* The pill's rotated box is 146.76 x 49.66. */
+  .discuss__cta {
+    display: flex;
+    align-items: center;
+    height: 49.662px;
+  }
+
+  .discuss :global(.discuss__art) {
+    flex: none;
+    width: 448px;
+    height: 429px;
+  }
+</style>

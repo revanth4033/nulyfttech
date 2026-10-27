@@ -3,44 +3,86 @@ import Icon from "../components/ui/Icon.astro";
 import PillButton from "./ui/PillButton.astro";
 
 /**
- * The section links are root-relative so they resolve from any page, not just
- * the home page. `anchors.ts` only intercepts links whose pathname matches the
- * current page, so from /studio these navigate home natively and the hash is
- * resolved on load once ScrollSmoother has measured.
+ * Site navigation — Figma 664:2984, from the redesigned home page (664:2977).
  *
- * `#contact` has no destination yet and stays inert.
+ * A floating card rather than a full-width bar: 1240 x 72, 48px down, radius
+ * 14, on the light ground with a soft purple drop. Its three children are
+ * spaced by `justify-content: space-between`, which is what puts the link row
+ * at x=297.64 in the frame — the row is not centred on the card.
+ *
+ * Capabilities carries a chevron in the design but no open state. The menu
+ * under it is ours: the three capability pages, in the order the footer lists
+ * them.
+ *
+ * "Get Started" opens the Contact Us page.
  */
-const links = [
-  { label: "Work", href: "/#work" },
-  { label: "Capabilities", href: "/#capabilities" },
-  { label: "Process", href: "/#process" },
-  { label: "Studio", href: "/studio" },
+const capabilities = [
+  { label: "Product Design", href: "/product-design" },
+  { label: "Product Engineering", href: "/product-engineering" },
+  { label: "AI & Automation", href: "/ai-automation" },
+];
+
+type Link = { label: string; href: string } | { label: string; menu: typeof capabilities };
+
+const links: Link[] = [
+  { label: "Home", href: "/" },
+  { label: "Work", href: "/studio" },
+  { label: "Capabilities", menu: capabilities },
+  { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
-  { label: "Contact Us", href: "#contact" },
 ];
 
 /** Mark the page we are on, for both styling and assistive tech. */
 const here = Astro.url.pathname.replace(/\/$/, "") || "/";
-const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "") === here;
+const isCurrent = (href: string) => !href.includes("#") && (href.replace(/\/$/, "") || "/") === here;
+const inMenu = capabilities.some((c) => isCurrent(c.href));
 ---
 
 <header class="nav" data-nav>
   <div class="nav__inner">
-    <a class="nav__logo" href="/" aria-label="nuLyft — home">
+    <a class="nav__logo" href="/" aria-label="nuLyft technologies — home">
       <Icon name="brand/nulyft-logo" width={64.72} height={32.36} />
     </a>
 
     <nav class="nav__links" aria-label="Primary">
       <ul>
-        {links.map((l) => (
-          <li>
-            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>{l.label}</a>
-          </li>
-        ))}
+        {
+          links.map((l) =>
+            "menu" in l ? (
+              <li class="nav__menu" data-nav-menu>
+                <button
+                  class:list={["nav__link", "nav__menu-btn", { "is-current": inMenu }]}
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="nav-capabilities"
+                  data-nav-menu-btn
+                >
+                  <span class="nav__label">{l.label}</span>
+                  <Icon name="icons/home/chevron" size={20} class="nav__chevron" />
+                </button>
+                <ul class="nav__sub" id="nav-capabilities">
+                  {l.menu.map((m) => (
+                    <li>
+                      <a href={m.href} aria-current={isCurrent(m.href) ? "page" : undefined}>
+                        {m.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li>
+                <a class="nav__link" href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+                  <span class="nav__label">{l.label}</span>
+                </a>
+              </li>
+            ),
+          )
+        }
       </ul>
     </nav>
 
-    <PillButton href="#contact" variant="outline" class="nav__cta">Build With Us</PillButton>
+    <PillButton href="/contact" variant="outline" class="nav__cta">Get Started</PillButton>
 
     <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
       <span class="visually-hidden">Menu</span>
@@ -50,54 +92,72 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
 
   <div class="nav__drawer" id="nav-menu" data-nav-drawer hidden>
     <ul>
-      {links.map((l) => (
-        <li>
-          <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>{l.label}</a>
-        </li>
-      ))}
+      {
+        links.flatMap((l) => ("menu" in l ? l.menu : [l])).map((l) => (
+          <li>
+            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
     </ul>
-    <PillButton href="#contact" variant="outline">Build With Us</PillButton>
+    <PillButton href="/contact" variant="outline">Get Started</PillButton>
   </div>
 </header>
 
 <style>
   .nav {
     position: fixed;
-    inset: 0 0 auto;
     z-index: var(--z-nav);
+    top: var(--nav-top);
+    left: 50%;
+    width: min(var(--content-w), calc(100% - 2 * var(--gutter)));
+    translate: -50% 0;
     background: var(--c-bg-light);
-    box-shadow: var(--sh-nav);
+    border-radius: var(--r-nav);
+    box-shadow: var(--sh-nav-card);
   }
 
   .nav__inner {
     display: flex;
     align-items: center;
-    gap: 32px;
-    height: var(--nav-h);
-    max-width: var(--frame-w);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
+    justify-content: space-between;
+    height: var(--nav-card-h);
+    padding: 12px 24px;
   }
 
+  /* --- logo -------------------------------------------------------------- */
+
+  /* The logo frame also holds a "technologies / Pvt Ltd" lockup, but it sits
+     at 102.33% across a frame that clips — Figma never shows it, so it is
+     left out. */
   .nav__logo {
-    display: flex;
+    position: relative;
+    display: block;
     flex: none;
+    width: 64.78px;
+    height: 32px;
+    line-height: 0;
   }
 
-  .nav__links {
-    flex: 1;
-  }
+  /* --- links ------------------------------------------------------------- */
 
-  .nav__links ul {
+  .nav__links > ul {
     display: flex;
     align-items: center;
     gap: 40px;
+    padding: 8px 16px;
   }
 
-  .nav__links a {
+  .nav__link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--font-sans);
     font-weight: 500;
     font-size: var(--fs-body);
+    line-height: normal;
     letter-spacing: var(--tr-nav);
     text-transform: capitalize;
     color: var(--c-ink);
@@ -105,24 +165,102 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
     transition: color var(--dur-fast) var(--ease-out);
   }
 
-  .nav__links a:hover,
-  .nav__links a[aria-current="page"],
-  .nav__drawer ul a[aria-current="page"] {
+  /* CSS adds the 2px tracking after the last glyph too; Figma's text boxes
+     end at the glyph, so without this the row runs 8px long. */
+  .nav__label {
+    margin-right: calc(-1 * var(--tr-nav));
+  }
+
+  /* The current page is set heavier, in the accent, and underlined. */
+  .nav__link[aria-current="page"],
+  .nav__link.is-current {
+    font-weight: 600;
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+  }
+
+  .nav__link:hover,
+  .nav__menu-btn[aria-expanded="true"] {
     color: var(--c-accent);
   }
+
+  .nav__link :global(.nav__chevron) {
+    flex: none;
+    transition: rotate var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__menu-btn[aria-expanded="true"] :global(.nav__chevron) {
+    rotate: 180deg;
+  }
+
+  /* --- capabilities menu ------------------------------------------------- */
+
+  .nav__menu {
+    position: relative;
+  }
+
+  .nav__sub {
+    position: absolute;
+    top: calc(100% + 26px);
+    left: -16px;
+    display: grid;
+    min-width: 240px;
+    padding: 8px;
+    background: var(--c-surface);
+    border-radius: 12px;
+    box-shadow: var(--sh-nav-card), 0 0 0 1px var(--c-perk-border);
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 -6px;
+    transition:
+      opacity var(--dur-fast) var(--ease-out),
+      translate var(--dur-fast) var(--ease-out),
+      visibility 0s linear var(--dur-fast);
+  }
+
+  .nav__menu-btn[aria-expanded="true"] + .nav__sub {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+
+  .nav__sub a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: var(--fs-body);
+    line-height: normal;
+    color: var(--c-ink);
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__sub a:hover,
+  .nav__sub a:focus-visible,
+  .nav__sub a[aria-current="page"] {
+    background: var(--c-eyebrow-bg);
+    color: var(--c-accent);
+  }
+
+  /* --- CTA --------------------------------------------------------------- */
 
   .nav :global(.nav__cta) {
     flex: none;
     height: 44px;
   }
 
-  /* --- mobile ----------------------------------------------------------- */
+  /* --- narrow ------------------------------------------------------------ */
 
   .nav__toggle {
     display: none;
     width: 44px;
     height: 44px;
-    margin-left: auto;
     place-items: center;
   }
 
@@ -137,16 +275,13 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
     height: 2px;
     background: var(--c-ink);
     border-radius: 2px;
-    transition: transform var(--dur-fast) var(--ease-out);
   }
 
   .nav__drawer {
     display: none;
     flex-direction: column;
     gap: 20px;
-    padding: 8px var(--gutter) 28px;
-    background: var(--c-bg-light);
-    border-top: 1px solid var(--c-rule);
+    padding: 4px 24px 24px;
   }
 
   .nav__drawer ul {
@@ -155,15 +290,16 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
   }
 
   /* Scoped to the list, not `.nav__drawer a` — `PillButton` renders an `<a>`
-     when it carries an href, so the bare selector caught the "Build With Us"
-     CTA as well: `display: block` killed its flex centring and `padding: 10px
-     0` its horizontal padding, so the label sat hard against the left edge of
-     the pill. Same trap as `.deck__title span` catching `<Icon>`. */
+     when it carries an href, so the bare selector would catch the CTA too. */
   .nav__drawer ul a {
     display: block;
     padding: 10px 0;
     font-weight: 500;
     color: var(--c-ink);
+  }
+
+  .nav__drawer ul a[aria-current="page"] {
+    color: var(--c-accent);
   }
 
   @media (max-width: 1080px) {
@@ -203,4 +339,46 @@ const isCurrent = (href: string) => !href.includes("#") && href.replace(/\/$/, "
       drawer.hidden = true;
     }
   });
+
+  /* Capabilities menu: opens on hover for a mouse, on click/Enter for
+     everything else, and closes on Escape, an outside click, or focus
+     leaving it. */
+  const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
+  const btn = menu?.querySelector<HTMLButtonElement>("[data-nav-menu-btn]");
+
+  if (menu && btn) {
+    const set = (open: boolean) => btn.setAttribute("aria-expanded", String(open));
+    const isOpen = () => btn.getAttribute("aria-expanded") === "true";
+    const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
+    let closeTimer = 0;
+
+    btn.addEventListener("click", () => set(!isOpen()));
+
+    menu.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse" || !hover.matches) return;
+      window.clearTimeout(closeTimer);
+      set(true);
+    });
+
+    menu.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse" || !hover.matches) return;
+      // A short grace period so the pointer can cross the gap to the panel.
+      closeTimer = window.setTimeout(() => set(false), 160);
+    });
+
+    menu.addEventListener("focusout", (e) => {
+      if (!menu.contains(e.relatedTarget as Node | null)) set(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen()) {
+        set(false);
+        btn.focus();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (isOpen() && !menu.contains(e.target as Node)) set(false);
+    });
+  }
 </script>

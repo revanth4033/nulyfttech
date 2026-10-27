@@ -1,0 +1,189 @@
+---
+import Icon from "../ui/Icon.astro";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import { why, whyCards, whyLinks, whyPlatform, whyMark, WHY_STAGE } from "../../data/home";
+
+/**
+ * "Why businesses choose nuLyft" — Figma 664:3136, 1440 x 1107, dark band.
+ *
+ * Four cards wired by connector lines to a brand mark standing on a two-tier
+ * platform. The diagram is Figma's own absolute composition inside a
+ * 1240 x 635 box, so it is reproduced as placed rather than laid out.
+ *
+ * The cards' rings are gradient strokes, which the design context reports as
+ * a flat 2px #834dfb: measured off the render, each fades to nothing on the
+ * side facing away from the mark — left on the two left cards, right on the
+ * two right ones.
+ */
+const px = (n: number) => `${n}px`;
+---
+
+<section class="hwhy" data-section="home-why">
+  <div class="hwhy__inner container">
+    <header class="hwhy__head">
+      <div class="hwhy__lead">
+        <EyebrowBadge variant="dark" data-animate>{why.eyebrow}</EyebrowBadge>
+        <h2 class="hwhy__title" data-animate>{why.title}</h2>
+      </div>
+      <p class="hwhy__body" data-animate>{why.body}</p>
+    </header>
+
+    <div class="hwhy__stage" style={`--stage-h:${px(WHY_STAGE.h)}`} data-animate>
+      <span
+        class="hwhy__piece hwhy__platform"
+        style={`left:${px(whyPlatform.x)};top:${px(whyPlatform.y)}`}
+        aria-hidden="true"
+      >
+        <Icon name="brand/home/platform" width={whyPlatform.w} height={whyPlatform.h} />
+      </span>
+
+      {
+        whyLinks.map((l) => (
+          <span class="hwhy__piece" style={`left:${px(l.x)};top:${px(l.y)}`} aria-hidden="true">
+            <Icon name={`brand/home/${l.name}`} width={l.w} height={l.h} />
+          </span>
+        ))
+      }
+
+      <span
+        class="hwhy__piece hwhy__mark"
+        style={`left:${px(whyMark.x)};top:${px(whyMark.y)};--mark:${px(whyMark.size)}`}
+        aria-hidden="true"
+      >
+        <Icon name="brand/home/why-mark" size={40} />
+      </span>
+
+      <ul class="hwhy__cards">
+        {
+          whyCards.map((c) => (
+            <li
+              class:list={["hwhy__card", `hwhy__card--${c.side}`]}
+              style={`left:${px(c.x)};top:${px(c.y)};width:${px(c.w)}`}
+            >
+              <h3 class="hwhy__card-title">{c.title}</h3>
+              <p class="hwhy__card-body" style={"bodyW" in c ? `width:${px(c.bodyW)}` : undefined}>
+                {c.body}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hwhy {
+    background: var(--c-bg-dark);
+    padding-block: 100px 99.83px;
+  }
+
+  .hwhy__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  .hwhy__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 208px;
+  }
+
+  .hwhy__lead {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 0 1 596px;
+  }
+
+  .hwhy__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    text-transform: capitalize;
+    color: #fff;
+    /* Figma breaks after "A"; balance would move it down a line. */
+    text-wrap: wrap;
+  }
+
+  .hwhy__body {
+    flex: 0 1 506px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  /* --- diagram ----------------------------------------------------------- */
+
+  .hwhy__stage {
+    position: relative;
+    height: var(--stage-h);
+  }
+
+  .hwhy__piece {
+    position: absolute;
+    display: block;
+    line-height: 0;
+  }
+
+  .hwhy__mark {
+    display: grid;
+    place-items: center;
+    width: var(--mark);
+    height: var(--mark);
+    border-radius: 16px;
+    background: linear-gradient(135deg, #905ffb 0%, var(--c-accent) 50%, #905ffb 100%);
+    box-shadow: 0 6.039px 14.091px rgba(131, 77, 251, 0.24);
+  }
+
+  .hwhy__cards {
+    list-style: none;
+  }
+
+  /* Gradient ring: the fill is painted to the padding box and the gradient
+     to the border box, so only the 2px border shows the ramp. Figma strokes
+     inside without the ring taking space, so the padding gives the 2px back —
+     at a full 20 the text column is 4px narrow and two bodies wrap a line
+     early. */
+  .hwhy__card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background:
+      linear-gradient(var(--c-bg-dark), var(--c-bg-dark)) padding-box,
+      linear-gradient(var(--ring-dir), rgba(131, 77, 251, 0), var(--c-accent)) border-box;
+  }
+
+  .hwhy__card--left {
+    --ring-dir: 90deg;
+  }
+
+  .hwhy__card--right {
+    --ring-dir: 270deg;
+  }
+
+  .hwhy__card-title {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: var(--lh-card);
+    letter-spacing: -0.36px;
+    color: #fff;
+  }
+
+  .hwhy__card-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+</style>

@@ -8,16 +8,18 @@ read it and trust it.
 
 Read this file once at the start of the session, then work from `AGENTS.md`.
 
-**Where things stand right now:** the home page, three inner pages and **all
-three case studies** are built and pushed, and the home page now has a **mobile
-version** built from the user's own Figma frames. The live thread is
-micro-interactions on the case studies: three are built (the Overview stack
-swap, and the Colorography draw-in + hover on all three) and the rest of those
-sections are still static, awaiting the user's notes section by section.
+**Where things stand right now:** the home page, Studio, Careers, all three
+case studies and the **three capability pages** (`/product-design`,
+`/product-engineering`, `/ai-automation`) are built, responsive from 1440 down
+to 320, and merged to `main` (PR #4). The capability pages were the last thread
+of work: built from Figma, their interactions added on the user's notes, then a
+tablet + phone pass per page that the user reviewed and approved.
 
-Two things to raise unprompted: the **inner pages have no mobile pass at all**
-(Studio, Careers and the three case studies — section 6), and the remaining
-LMS spacing audit (section 7).
+Things to raise unprompted: the capability pages are **not linked from the
+nav or footer yet** (the user said they would say how — section 7), the
+**footer's "Work" column overflows between 901 and 960** on every page (left
+alone because the user said not to touch the footer), and the remaining LMS
+spacing audit (section 7).
 
 ---
 
@@ -27,9 +29,9 @@ A static marketing site for **nuLyft Technologies Pvt Ltd**, built
 section-by-section from a Figma design, with heavy GSAP animation. Astro 7,
 no UI framework, scoped CSS + tokens. The **home page is structurally
 complete** — eleven sections, all animated, all verified against Figma — and
-three inner pages are built: **Studio** (`/studio`), **Careers**
-(`/careers`) and the first **case study**
-(`/work/lms-education-saas`).
+the inner pages are built: **Studio** (`/studio`), **Careers**
+(`/careers`), three **case studies** (`/work/...`) and three **capability
+pages** (`/product-design`, `/product-engineering`, `/ai-automation`).
 
 Working directory: `/Users/revanthb-3905/Downloads/Revanth/nulyft-website`
 
@@ -63,6 +65,12 @@ process and expects it followed:
 - They write quickly and with typos; read for intent, and if two readings
   would produce materially different work, ask.
 
+- **Build the whole page first, then the interactions.** On the capability
+  pages the user pushed back hard when a session spent half an hour on one
+  hero: they want every section built statically, then they describe the
+  interactions. (This is the exception to "one section at a time" — for a
+  new page, follow what they say in the request.)
+
 ### Things they have corrected, worth not repeating
 - Building an animation before explaining it.
 - Claiming something was fixed when only part of it was (the "Workflow
@@ -70,6 +78,17 @@ process and expects it followed:
   mid-motion). Verify the whole cycle, not the resting frame.
 - A scrubber that rewound right-to-left on loop; they wanted the restart to
   carry no backwards motion.
+- **Mobile passes that just scale the desktop down.** They expect each section
+  analysed and re-designed for the small screen, type re-set, only pictures
+  scaled. Specifically rejected on the capability pages:
+  - auto-advancing / auto-cycling as the mobile stand-in for a scroll pin or
+    hover — **make it tap-driven**;
+  - decorative pieces overlapping content (tool chips over the hero
+    screenshots);
+  - swapping a diagram for a different layout — they want **the desktop
+    pattern kept**, re-proportioned for the phone (the Product Engineering
+    hero), as long as its text stays readable (~11px+).
+  The same notes are saved in Claude's memory for this project.
 
 ---
 
@@ -225,6 +244,30 @@ with flex; Figma places every piece at its own coordinate inside a 1240x543
 box. See the warning at the top of "Not done yet" — the same mistake may be
 sitting in the other sections.
 
+### The capability pages — `/product-design`, `/product-engineering`, `/ai-automation`
+Built this round from the user's Figma links, then given interactions on their
+notes, then a responsive pass reviewed page by page. `AGENTS.md` ("Capability
+pages") carries the file map and every technical trap; this is what the user
+asked for.
+
+| page | interactions the user specified or approved |
+| --- | --- |
+| Product Design | Design Approach pins through 6 states, centred under the nav; Key Features (×3 projects) pins through 5 states, scroll only, tabs not clickable on desktop; Outcomes hover with the top-right card lit by default; Websites Featured rows auto-drift with edge washes that track the screen edges |
+| Product Engineering | hero: pulses run hub -> card and each chip glows, dashed ring turns; What We Do: hover moves the lift off the middle card, tag lines marquee; Process left static by request |
+| AI & Automation | hero: dashed lines burst from the hub to all nine logos at once and run on through them, logos drift; AI Agents and Workflow step through Figma's state boards; Document (scan -> fields type in) and Voice (live conversation) are our recommendations, approved; industries carousel auto-steps, highlight on the centred card, dots/arrows removed |
+
+**Mobile.** Below 1280 every pin and hover becomes tap (rows/cards are
+buttons there); nothing that needed a scroll or hover on desktop changes on
+its own on a phone. Diagrams keep their desktop pattern re-proportioned — the
+PE hero hub with its five cards and wires, the four AI illustrations (Voice
+turns vertical). Verified at ~35 widths 1440 -> 320 with no sideways scroll, and
+1440 diffed pixel-for-pixel against the pre-change captures.
+
+**Content flagged to the user, left as drawn:** Product Design Approach step
+04's description repeats step 03's; "Reliaable" on the PE Infrastructure card;
+PE Process eyebrow reads "OUR DESIGN"; the three AI project rows all use the
+same screenshot; Figma's footer still has "About".
+
 ---
 
 ## 5. How to verify work in this repo
@@ -260,6 +303,10 @@ The user expects claims to be backed by measurement, not by eyeballing.
   sibling image rects each gave a byte-identical `rawImages[0]`. Use the
   per-node `export` for anything in a shared frame, and `md5` the results —
   identical file sizes are the tell.
+- **Playwright in the scratchpad is the fastest harness** for the capability
+  pages: load at a width, capture each `section`, diff 1440 against a capture
+  taken before the change, and sweep widths for `scrollWidth`. Never return a
+  GSAP timeline from `page.evaluate` — it hangs serialising it.
 - **To check a 1440px viewport**, the OS will not shrink the window below the
   screen width, so load the page in a **1440px iframe**. Put the harness in
   `public/` (a plain HTML file with no HMR client) rather than rewriting the
@@ -511,6 +558,15 @@ Every section height matches the frame exactly (1130 / 698 / 677 / 1639 / 795 /
   button renders `disabled`. The user has the designs and will hand them over.
   Wiring is one `href` per entry.
 - Nav links with no destination: Contact Us, Blogs.
+- **The capability pages are reachable only by URL.** The user said not to
+  touch the header, footer or routes for them — "I'll tell you later". Wire
+  them when asked (nav Capabilities, footer capability links).
+- **The footer's "Work" column runs 28px past the screen between 901 and
+  960**, on every page including home. Flagged; not fixed, because the user
+  asked for the footer to be left alone.
+- **The AI & Automation hero has no hover/tap interaction beyond the burst**,
+  and the industries carousel cannot be swiped (ScrollSmoother's
+  `normalizeScroll` swallows horizontal swipes) — fine unless the user asks.
 - **The Careers role listing ships empty**, at the user's request — the six
   Figma cards were one placeholder repeated. It shows a "No Openings Right Now"
   empty state instead. Adding entries to `jobs` in `data/careers.ts` brings the
@@ -534,8 +590,11 @@ Every section height matches the frame exactly (1130 / 698 / 677 / 1639 / 795 /
 
 ## 8. Git and deployment
 
-Pushed to **github.com/revanth4033/nulyfttech** (private), `main`, tracking
-`origin/main`. One commit on top of the original Astro scaffold.
+Pushed to **github.com/revanth4033/nulyfttech** (private). Work goes up on a
+branch and lands on `main` through a pull request the user merges: #1-#3 from
+`case-studies-and-palette-motion`, **#4 from `capability-pages`** (the three
+capability pages, merged). Claude Code's auto mode will not merge a PR itself
+— push, open the PR, and hand the merge to the user.
 
 `references/` is **gitignored on purpose** — it holds a 34MB screen recording,
 and git history is permanent. The file is still on the user's disk. `.vercel/`

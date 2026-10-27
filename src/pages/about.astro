@@ -1,0 +1,31 @@
+---
+/**
+ * About Us — Figma 669:3594. "About Us" in the nav and footer lands here.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
+import AboutPaths from "../components/sections/AboutPaths.astro";
+import AboutPartner from "../components/sections/AboutPartner.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { hero, cta } from "../data/about";
+---
+
+<BaseLayout
+  title="About Us — nuLyft"
+  description="A new lift for what's next. NuLyft helps businesses take their next step — a new idea to explore, a challenge to overcome, or a new direction to take."
+>
+  <Nav slot="overlay" />
+
+  <CentredHero {...hero} />
+  <AboutPaths />
+  <AboutPartner />
+  <CtaFooter title={cta.title} body={cta.body} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/cta-fan.ts";
+  import "../scripts/about-paths.ts";
+</script>

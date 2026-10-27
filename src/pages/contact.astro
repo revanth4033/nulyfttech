@@ -1,0 +1,30 @@
+---
+/**
+ * Contact Us — Figma 672:3795. The nav's "Get Started" and every "talk to
+ * us" button on the site land here.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
+import ContactDiscuss from "../components/sections/ContactDiscuss.astro";
+import ContactForm from "../components/sections/ContactForm.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { hero } from "../data/contact";
+---
+
+<BaseLayout
+  title="Contact Us — nuLyft"
+  description="Ready when you are. Tell us about your project, challenge, or idea — we'll respond within 24 hours."
+>
+  <Nav slot="overlay" />
+
+  <CentredHero {...hero} />
+  <ContactDiscuss />
+  <ContactForm />
+  <CtaFooter cta={false} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+</script>

@@ -1,0 +1,6 @@
+<svg width="191" height="192" viewBox="0 0 191 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="stroke0_0_6" fill="white">
+<path d="M191 96C191 149.019 148.243 192 95.5 192C42.7568 192 0 149.019 0 96C0 42.9807 42.7568 0 95.5 0C148.243 0 191 42.9807 191 96Z"/>
+</mask>
+<path id="Inner orbit" d="M191 96C191 149.019 148.243 192 95.5 192C42.7568 192 0 149.019 0 96C0 42.9807 42.7568 0 95.5 0C148.243 0 191 42.9807 191 96Z" stroke-width="2" stroke="#EEE6FE" mask="url(#stroke0_0_6)"/>
+</svg>

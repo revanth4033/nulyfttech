@@ -1,0 +1,292 @@
+---
+import { Image } from "astro:assets";
+import PillButton from "../ui/PillButton.astro";
+import lines from "../../assets/images/contact/form-lines.png";
+import { form, CONTACT_EMAIL } from "../../data/contact";
+
+/**
+ * "Let's build something together" — Figma 672:3866, 1440 x 869, dark band.
+ *
+ * A centred heading over a four-field form, on a pattern of fine decorative
+ * lines. The lines are a raster, not Figma's SVG: that export is 23 curves,
+ * each 2,000+px long, under an alpha mask, and repainting it while scrolling
+ * made this the one page that dragged. Rendered once at 2x over the section's
+ * own ground, it is a flat image the browser never has to redraw.
+ *
+ * The site is static, so there is no server to post to yet. Submitting
+ * validates the fields natively and then opens the visitor's mail client
+ * with the message addressed to the studio and pre-filled — honest, and it
+ * works today. Swap `deliver()` in the script for a real endpoint when one
+ * exists.
+ *
+ * Fields: Figma strokes them inside, so the drawn 51 / 214 heights hold with
+ * the 1px border and the padding gives the pixel back (15, not 16).
+ */
+const f = form.fields;
+---
+
+<section class="cform" id="contact-form" data-section="contact-form">
+  <Image
+    class="cform__lines"
+    src={lines}
+    alt=""
+    widths={[1440, 2880]}
+    sizes="1440px"
+    quality={80}
+    aria-hidden="true"
+  />
+
+  <div class="cform__inner container">
+    <header class="cform__head">
+      <h2 class="cform__title" data-animate>{form.title}</h2>
+      <p class="cform__body" data-animate>{form.body}</p>
+    </header>
+
+    <form class="cform__form" data-contact-form data-email={CONTACT_EMAIL} novalidate data-animate>
+      <div class="cform__fields">
+        <div class="cform__row">
+          <label class="cform__field">
+            <span class="cform__label">{f.name.label}</span>
+            <input class="cform__input" type="text" name="name" autocomplete="name" placeholder={f.name.placeholder} required />
+          </label>
+          <label class="cform__field">
+            <span class="cform__label">{f.email.label}</span>
+            <input class="cform__input" type="email" name="email" autocomplete="email" placeholder={f.email.placeholder} required />
+          </label>
+        </div>
+
+        <label class="cform__field">
+          <span class="cform__label">{f.company.label}</span>
+          <input class="cform__input" type="text" name="company" autocomplete="organization" placeholder={f.company.placeholder} />
+        </label>
+
+        <label class="cform__field cform__field--message">
+          <span class="cform__label">{f.message.label}</span>
+          <textarea class="cform__input cform__input--area" name="message" placeholder={f.message.placeholder} required></textarea>
+        </label>
+      </div>
+
+      <p class="cform__status" data-form-status role="status" aria-live="polite"></p>
+
+      <div class="cform__submit">
+        <PillButton type="submit" flat arrow={20}>{form.submit}</PillButton>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  .cform {
+    position: relative;
+    overflow: hidden;
+    background: var(--c-bg-footer);
+    /* Figma ends the section 4px under the button; the footer below carries
+       the breathing room. */
+    padding-block: 100px 4.03px;
+  }
+
+  /* The art starts 42 down the section and is 1440 x 889, centred. */
+  .cform :global(.cform__lines) {
+    position: absolute;
+    top: 42px;
+    left: 50%;
+    width: 1440px;
+    height: 889px;
+    max-width: none;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .cform__inner {
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .cform__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .cform__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-hero);
+    line-height: normal;
+    letter-spacing: var(--tr-h2);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .cform__body {
+    max-width: 420px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-eyebrow-text-dark);
+  }
+
+  /* --- form -------------------------------------------------------------- */
+
+  .cform__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+  }
+
+  .cform__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 100%;
+  }
+
+  .cform__row {
+    display: flex;
+    gap: 20px;
+  }
+
+  .cform__row > .cform__field {
+    flex: 1 0 0;
+    min-width: 0;
+  }
+
+  .cform__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cform__label {
+    font-weight: 600;
+    font-size: var(--fs-body);
+    line-height: 19px;
+    color: var(--c-bg-light);
+  }
+
+  .cform__input {
+    width: 100%;
+    height: 51px;
+    padding: 0 15px;
+    border: 1px solid #6c6878;
+    border-radius: var(--r-card);
+    background: #322c3e;
+    font: inherit;
+    font-size: var(--fs-body);
+    line-height: 19px;
+    color: var(--c-bg-light);
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .cform__input::placeholder {
+    color: rgba(245, 243, 255, 0.4);
+  }
+
+  .cform__input:focus-visible {
+    outline: none;
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(131, 77, 251, 0.35);
+  }
+
+  .cform__input[aria-invalid="true"] {
+    border-color: #e5677a;
+  }
+
+  .cform__input--area {
+    height: 214px;
+    padding-block: 15px;
+    resize: none;
+  }
+
+  /* Holds no height until there is something to say, so the drawn rhythm
+     between the fields and the button is untouched. */
+  .cform__status {
+    margin-block: -24px;
+    min-height: 0;
+    font-size: var(--fs-sm);
+    line-height: 24px;
+    color: var(--c-eyebrow-text-dark);
+    text-align: center;
+  }
+
+  .cform__status:empty {
+    display: none;
+  }
+
+  .cform__status[data-tone="error"] {
+    color: #ff9fae;
+  }
+
+  /* The pill's rotated box is 173.76 x 49.97. */
+  .cform__submit {
+    display: flex;
+    align-items: center;
+    height: 49.97px;
+  }
+</style>
+
+<script>
+  /**
+   * No backend yet: validate, then hand the message to the visitor's mail
+   * client. Replace `deliver` with a fetch to a form endpoint when one exists.
+   */
+  const formEl = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const status = formEl?.querySelector<HTMLElement>("[data-form-status]");
+
+  const say = (text: string, tone: "info" | "error" = "info") => {
+    if (!status) return;
+    status.textContent = text;
+    status.dataset.tone = tone;
+  };
+
+  const deliver = (data: FormData, to: string) => {
+    const name = String(data.get("name") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const company = String(data.get("company") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
+    const subject = `New enquiry from ${name}${company ? ` (${company})` : ""}`;
+    const signature = [`— ${name}`, email, company].filter(Boolean).join("\n");
+    const body = `${message}\n\n${signature}`;
+
+    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  formEl?.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const fields = Array.from(formEl.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea"));
+    let firstBad: HTMLElement | null = null;
+    for (const field of fields) {
+      const ok = field.checkValidity() && (!field.required || field.value.trim() !== "");
+      field.setAttribute("aria-invalid", ok ? "false" : "true");
+      if (!ok && !firstBad) firstBad = field;
+    }
+
+    if (firstBad) {
+      say("Please add your name, a valid email address and a short message.", "error");
+      firstBad.focus();
+      return;
+    }
+
+    deliver(new FormData(formEl), formEl.dataset.email ?? "");
+    say("Your email app should open with the message ready to send.");
+  });
+
+  // Clear an error as soon as the field is fixed.
+  formEl?.addEventListener("input", (e) => {
+    const field = e.target as HTMLInputElement;
+    if (field.getAttribute("aria-invalid") === "true" && field.checkValidity() && field.value.trim() !== "") {
+      field.setAttribute("aria-invalid", "false");
+    }
+  });
+</script>
