@@ -1080,6 +1080,37 @@ them in the box the layout reserves, or `<Icon size={20}>` silently scales the
 glyph up to fill it.
 
 
+## Legal pages — Privacy Policy and Terms and Conditions
+
+`src/pages/privacy-policy.astro` and `terms-and-conditions.astro` — no Figma
+frames; copy supplied by the user. `CentredHero` (`privacyHero` /
+`termsHero`) over `sections/LegalDoc.astro`, then
+`CtaFooter cta={false}` like Contact. Everything is data in `src/data/legal.ts`
+— sections of paragraphs / lists (with optional bold leads) / subsections,
+numbered at render (01, 2.1). Running text takes `[[label|/href]]` for a
+link (Terms links the Privacy Policy). The footer's "Support" link is
+removed; "Terms" and "Privacy" land on the two pages. Both carry the same
+effective and last-updated date, `PUBLISHED` in the data (28 October 2026,
+by request) — change it there when either policy is revised.
+
+**The supplied copy leaves "[Insert …]" placeholders** — registered office,
+privacy email, the Terms' contact email, website, CIN and the Terms'
+jurisdiction city. They live once in `company` — all filled in now by the
+user (office, `contact@nulyfttech.com` for both emails, `nulyfttech.com`,
+the CIN, courts at Hyderabad). Set any of them back to `null` and it renders
+visibly as "[Insert …]" in italics again (inside running text too).
+
+**The contents rail is pinned, not sticky** (`scripts/legal-toc.ts`).
+ScrollSmoother scrolls a transformed wrapper, so `position: sticky` does not
+engage — and left on under the pin it *doubled* the offset (the rail sat at
+288 instead of 144). Sticky is the reduced-motion path only (no smoother);
+`html.gsap-ready` turns it off. The pin runs for `doc height - rail height`
+rather than to an `endTrigger` position: the 7,000px document rewraps a
+little after first measure, which left the rail releasing 21px past the
+card, and a `ResizeObserver` on the card refreshes on any change. The active
+entry follows the section crossing 40% of the viewport. Below 1081 the rail
+becomes an "On this page" disclosure that closes when a link is chosen.
+
 ## Case study — LMS / Education SaaS
 
 `src/pages/work/lms-education-saas.astro` — Figma 505:4185, ~9,800px over

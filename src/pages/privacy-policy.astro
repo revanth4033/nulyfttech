@@ -1,0 +1,30 @@
+---
+/**
+ * Privacy Policy — no Figma frame. The site's centred page hero over the
+ * shared legal document; copy in `data/legal.ts`. The footer's "Privacy"
+ * link lands here.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
+import LegalDoc from "../components/sections/LegalDoc.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { privacyHero, privacy } from "../data/legal";
+---
+
+<BaseLayout
+  title="Privacy Policy — nuLyft"
+  description="How nuLyft Technologies collects, uses, stores and protects information when you visit our website, explore our services or get in touch with us."
+>
+  <Nav slot="overlay" />
+
+  <CentredHero {...privacyHero} />
+  <LegalDoc doc={privacy} />
+  <CtaFooter cta={false} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/legal-toc.ts";
+</script>

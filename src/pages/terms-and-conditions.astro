@@ -1,0 +1,30 @@
+---
+/**
+ * Terms and Conditions — no Figma frame. The site's centred page hero over the
+ * shared legal document; copy in `data/legal.ts`. The footer's "Terms"
+ * link lands here.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import CentredHero from "../components/sections/CentredHero.astro";
+import LegalDoc from "../components/sections/LegalDoc.astro";
+import CtaFooter from "../components/sections/CtaFooter.astro";
+import { termsHero, terms } from "../data/legal";
+---
+
+<BaseLayout
+  title="Terms and Conditions — nuLyft"
+  description="The terms that govern access to and use of the nuLyft Technologies website, and how they relate to any professional services we agree."
+>
+  <Nav slot="overlay" />
+
+  <CentredHero {...termsHero} />
+  <LegalDoc doc={terms} />
+  <CtaFooter cta={false} />
+</BaseLayout>
+
+<script>
+  import "../scripts/reveal.ts";
+  import "../scripts/anchors.ts";
+  import "../scripts/legal-toc.ts";
+</script>
