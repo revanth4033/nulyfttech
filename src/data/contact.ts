@@ -9,9 +9,6 @@ export const hero = {
   eyebrow: "Get in touch",
   title: { lead: "Ready when you are" },
   body: ["Whether it’s a question or a concrete plan, we’re happy to talk."],
-  /** Shorter than the other centred heroes, with the copy below centre. */
-  height: 554,
-  offset: 29.8,
 };
 
 /* --- Let's discuss (672:3835) ---------------------------------------------- */

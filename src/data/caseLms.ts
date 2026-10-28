@@ -29,7 +29,7 @@ export const hero = {
   eyebrow: "LMS Platform (in home) - Case Study",
   /** Italic accent lead, then the roman remainder. */
   titleLead: "Skill Wagon",
-  title: " - Redefining the Learning Experience",
+  title: " - Redefining the learning experience",
   body: "Skill Wagon is a scalable SaaS-based learning platform that brings courses, learners, assessments, and insights together in one seamless experience making learning management simpler, smarter, and more connected.",
   /**
    * One card, not a carousel. Figma parks two overlapping slides here, but the
@@ -44,7 +44,7 @@ export const hero = {
 
 export const overview = {
   eyebrow: "About The Project",
-  title: "Where Learning Becomes Seamless, Scalable, and Smart",
+  title: "Where learning becomes seamless, scalable, and smart",
   body: "Skill Wagon is a modern SaaS-based Learning Management System that unifies courses, learners, instructors, and assessments into one powerful platform. It removes complexity from learning operations and delivers a smooth, engaging experience for both administrators and learners.",
   modules: ["Student Module", "Mentor Module", "Admin Module", "Desktop + Mobile"],
   facts: [
@@ -139,11 +139,11 @@ export interface Phase {
 
 export const approach = {
   eyebrow: "Our Approach",
-  title: "From Understanding to Experience",
+  title: "From understanding to experience",
   body: "We approached Skill Wagon by deeply understanding users, workflows, and LMS challenges, then translating them into a scalable product experience.",
   phases: [
     {
-      title: "Phase 01 - Discover & Define",
+      title: "Phase 01 - Discover & define",
       items: [
         {
           title: "Understand the Problem",
@@ -160,7 +160,7 @@ export const approach = {
       ],
     },
     {
-      title: "Phase 02 - Structure & Design",
+      title: "Phase 02 - Structure & design",
       items: [
         {
           title: "Wireframe the Flow",
@@ -179,7 +179,7 @@ export const approach = {
       mediaSide: "left",
     },
     {
-      title: "Phase 03 - Build & Refine",
+      title: "Phase 03 - Build & refine",
       items: [
         {
           title: "Design the Product",
@@ -208,7 +208,7 @@ export const approach = {
  */
 export const typography = {
   eyebrow: "Typography",
-  title: "A Type System for Learning",
+  title: "A type system for learning",
   body: "Open Sans provides a flexible foundation for the LMS, supporting a consistent hierarchy across courses, dashboards, analytics, navigation, and system messages.",
   specimen: {
     name: "illustrations/lms-typescale",
@@ -226,7 +226,7 @@ export const typography = {
 /** Exported whole: the figure, its four leader lines and their labels. */
 export const palette = {
   eyebrow: "Colorography",
-  title: "A Palette With Purpose",
+  title: "A palette with purpose",
   body: "Every color has a role from highlighting actions and progress to creating hierarchy across dashboards, courses, and learning journeys.",
   art: {
     name: "illustrations/lms-palette",
@@ -249,7 +249,7 @@ const CARD_OFF = { x: -61, y: -29 };
 
 export const screens = {
   eyebrow: "UI Screens",
-  title: "Designed for Every Learning Journey",
+  title: "Designed for every learning journey",
   body: "Explore the core screens of Skill Wagon, designed to simplify navigation and create a seamless learning experience for both admins and learners.",
   blocks: [
     /**
@@ -275,7 +275,7 @@ export const screens = {
     {
       src: showcaseCourses,
       alt: "The All Courses screen",
-      title: "All Courses Screen",
+      title: "All courses screen",
       body: "The Courses screen centralizes course creation and management, allowing admins to create, edit, publish, unpublish, and delete courses from one streamlined workspace.",
       layout: "left",
       node: { w: 608, h: 394 },
@@ -285,7 +285,7 @@ export const screens = {
     {
       src: showcaseEnrollments,
       alt: "The Students Enrollments screen",
-      title: "Students Enrollments Screen",
+      title: "Students enrollments screen",
       body: "The Student Enrollments screen lets administrators manage enrolled students, view enrollment details, monitor access, and revoke access when needed.",
       layout: "right",
       node: { w: 608, h: 394 },

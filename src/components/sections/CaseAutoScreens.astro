@@ -90,7 +90,7 @@ const { rowA, rowC, features } = screens;
     width: 100%;
     max-width: 1240px;
     margin-inline: auto;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   /* The body is a placed box: 3198 tall, everything inside it positioned. */
@@ -212,9 +212,6 @@ const { rowA, rowC, features } = screens;
   }
 
   @media (max-width: 900px) {
-    .ascr__frame {
-      padding-block: 64px;
-    }
 
     .ascr__title {
       font-size: 20px;
@@ -229,9 +226,6 @@ const { rowA, rowC, features } = screens;
 
   /* Mobile */
   @media (max-width: 560px) {
-    .ascr__frame {
-      padding-block: 40px;
-    }
 
     .ascr__body {
       gap: 40px;

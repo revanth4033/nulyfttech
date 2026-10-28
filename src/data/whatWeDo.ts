@@ -42,7 +42,7 @@ export interface CapabilityRow {
 export const lightRows: CapabilityRow[] = [
   {
     id: "ai-automation",
-    title: "AI & Intelligent Automation",
+    title: "AI & intelligent automation",
     body: "AI agents, RAG, and automation turn complex operations into systems that think, adapt, and act.",
     tags: [
       { icon: "icons/wwd/ai-agents", label: "AI Agents" },
@@ -55,7 +55,7 @@ export const lightRows: CapabilityRow[] = [
   },
   {
     id: "product-design",
-    title: "Product Design & Engineering",
+    title: "Product design & engineering",
     body: "We turn complex ideas into intuitive, scalable products—from first interaction to full-cycle delivery.",
     tags: [
       { icon: "icons/wwd/ux-strategy", label: "UX Strategy" },
@@ -74,7 +74,7 @@ export const lightRows: CapabilityRow[] = [
 export const darkRows: CapabilityRow[] = [
   {
     id: "narrative",
-    title: "Narrative Intelligence",
+    title: "Narrative intelligence",
     body: "We turn data, strategy, and ideas into visual stories that capture attention and drive decisions.",
     tags: [
       { icon: "icons/wwd/data-storytelling", label: "Data Storytelling" },
@@ -86,7 +86,7 @@ export const darkRows: CapabilityRow[] = [
   },
   {
     id: "talent",
-    title: "Talent Intelligence",
+    title: "Talent intelligence",
     body: "We help teams hire smarter structured interviews, automated screening, and workflows that surface the right candidate faster, with less manual review.",
     tags: [
       { icon: "icons/wwd/talent", label: "Candidate Screening" },

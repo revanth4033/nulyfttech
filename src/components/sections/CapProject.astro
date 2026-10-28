@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * One project showcase on a capability page — three Figma frames stacked:
  * the intro row ("Featured Work"), Key Features and Product Outcomes.
@@ -62,9 +63,9 @@ const CONNECTORS = [
         p.lead && (
           <header class="proj__lead">
             <div class="proj__lead-head">
-              <span class="proj__eyebrow" data-animate>
+              <EyebrowBadge variant="section" class="proj__eyebrow" data-animate>
                 {p.lead.eyebrow}
-              </span>
+              </EyebrowBadge>
               <h2 class="proj__lead-title" data-animate>
                 {p.lead.title}
               </h2>
@@ -150,7 +151,7 @@ const CONNECTORS = [
   <section class="proj__features" data-features>
     <div class="proj__inner">
       <header class="proj__head">
-        <span class="proj__kicker">Key Features</span>
+        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker">Key Features</EyebrowBadge>
         <h2 class="proj__title">{p.features.title}</h2>
       </header>
 
@@ -226,7 +227,7 @@ const CONNECTORS = [
   <section class="proj__outcomes" data-section>
     <div class="proj__inner">
       <header class="proj__head">
-        <span class="proj__kicker" data-animate>Product Outcomes</span>
+        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker" data-animate>Product Outcomes</EyebrowBadge>
         <div class="proj__head-copy">
           <h2 class="proj__title" data-animate>{p.outcomes.title}</h2>
           <p class="proj__head-body" style={`width:${p.outcomes.bodyW}px`} data-animate>
@@ -299,8 +300,6 @@ const CONNECTORS = [
     --proj-rail: #ebebeb;
     --proj-card: var(--c-surface);
     --proj-card-icon: var(--c-accent-tint);
-    --proj-kicker: var(--c-accent);
-    --proj-kicker-bg: var(--c-case-eyebrow-bg);
     --proj-out-title: #000;
 
     background: var(--proj-bg);
@@ -320,8 +319,6 @@ const CONNECTORS = [
     --proj-rail: #21163b;
     --proj-card: #21163b;
     --proj-card-icon: var(--c-bg-dark);
-    --proj-kicker: #fff;
-    --proj-kicker-bg: transparent;
     --proj-out-title: #fff;
   }
 
@@ -334,7 +331,7 @@ const CONNECTORS = [
   /* --- intro row -------------------------------------------------------- */
 
   .proj__intro {
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .proj__intro--lead .proj__inner {
@@ -356,18 +353,6 @@ const CONNECTORS = [
     flex-direction: column;
     align-items: center;
     gap: 8px;
-  }
-
-  .proj__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15); /* inside stroke: the pill is 32 tall */
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-accent);
   }
 
   .proj__lead-title {
@@ -563,7 +548,7 @@ const CONNECTORS = [
 
   .proj__features,
   .proj__outcomes {
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .proj__features .proj__inner,
@@ -579,18 +564,6 @@ const CONNECTORS = [
     align-items: center;
     gap: 8px;
     text-align: center;
-  }
-
-  .proj__kicker {
-    padding-block: 8px;
-    border-radius: var(--r-eyebrow);
-    background: var(--proj-kicker-bg);
-    font-weight: 500;
-    font-size: var(--fs-sm);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
-    color: var(--proj-kicker);
   }
 
   .proj__title {
@@ -921,9 +894,6 @@ const CONNECTORS = [
   @media (max-width: 1279px) {
     .proj__intro,
     .proj__features,
-    .proj__outcomes {
-      padding-block: 72px;
-    }
 
     .proj__intro--lead .proj__inner,
     .proj__features .proj__inner,
@@ -1070,19 +1040,11 @@ const CONNECTORS = [
   @media (max-width: 560px) {
     .proj__intro,
     .proj__features,
-    .proj__outcomes {
-      padding-block: 48px;
-    }
 
     .proj__intro--lead .proj__inner,
     .proj__features .proj__inner,
     .proj__outcomes .proj__inner {
       gap: 32px;
-    }
-
-    .proj__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .proj__lead-title {
@@ -1138,12 +1100,6 @@ const CONNECTORS = [
       line-height: 20px;
       letter-spacing: 0.4px;
       white-space: normal;
-    }
-
-    .proj__kicker {
-      padding-block: 4px;
-      font-size: 12px;
-      letter-spacing: 1.8px;
     }
 
     .proj__title {
@@ -1208,6 +1164,27 @@ const CONNECTORS = [
 
     .out__card-title {
       font-size: 16px;
+    }
+  }
+
+  /* The outcomes composition leaves ~22px of its own under the cards, at
+     every width. */
+  .proj__outcomes {
+    padding-bottom: calc(var(--section-y) - 22px);
+  }
+
+  /* The phone row's box is ~21px taller than its phones top and bottom. */
+  @media (min-width: 1241px) {
+    .proj__intro:has(.proj__phones) {
+      padding-block: calc(var(--section-y) - 21px);
+    }
+  }
+
+  /* The dark project's outcomes carry no extra space once stacked. */
+  @media (max-width: 1240px) {
+    .proj--dark .proj__outcomes,
+    .proj--dark.proj__outcomes {
+      padding-bottom: var(--section-y);
     }
   }
 </style>

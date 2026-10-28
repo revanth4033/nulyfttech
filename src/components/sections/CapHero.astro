@@ -156,7 +156,9 @@ const renderW = (s: HeroScreen) =>
 <style>
   .chero {
     position: relative;
-    height: var(--chero-h);
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 104px at the drawn height). */
+    height: calc(var(--chero-h) - 104px + var(--section-y));
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -393,7 +395,7 @@ const renderW = (s: HeroScreen) =>
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: var(--pad-top) var(--gutter) 64px;
+      padding: var(--pad-top) var(--gutter) var(--section-y);
     }
 
     /* The X still centres on the hub: the hub sits 128px into the bands. */
@@ -481,10 +483,6 @@ const renderW = (s: HeroScreen) =>
   @media (max-width: 560px) {
     .chero {
       --pad-top: calc(var(--nav-h) + 24px);
-    }
-
-    .chero__frame {
-      padding-bottom: 48px;
     }
 
     .chero__hub {

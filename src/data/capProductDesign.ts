@@ -268,7 +268,7 @@ export const projects: Project[] = [
       title: "Digital products built around real needs",
       body: "We design digital products that make tasks easier for users and help businesses meet their objectives. From simplifying complex workflows to improving everyday interactions, our focus is on making products more useful, intuitive, and effective.",
     },
-    name: "AI-Powered Recruitment Platform",
+    name: "AI-powered recruitment platform",
     body: "An AI-powered recruitment platform that connects job requirements with relevant candidates and brings recruitment activities into one place. From candidate discovery and interview management to hiring workflows and analytics, it gives recruitment teams a clearer view of the process and helps them work more efficiently.",
     // The redesign swaps these two values between the labels; as drawn.
     facts: [
@@ -292,35 +292,35 @@ export const projects: Project[] = [
       items: [
         {
           icon: "icons/cap/feat-ai-search",
-          title: "AI-Powered Candidate Search",
+          title: "AI-powered candidate search",
           sub: "Find relevant candidates without starting from scratch",
           shot: { src: asterFeature, alt: "Ranked candidates matched against a job description", crop: { w: 100, h: 171.55, left: 0.15, top: 0.05 } },
           caption: "Match job descriptions against the existing candidate database to identify profiles with relevant skills and experience, making candidate discovery and shortlisting more efficient.",
         },
         {
           icon: "icons/cap/feat-id-management",
-          title: "Centralized Candidate Management",
+          title: "Centralized candidate management",
           sub: "Every candidate, organized in one place",
           shot: { src: asterFeature2, alt: "Candidate list with profiles and stages", crop: { w: 100, h: 148.36, left: 0.02, top: 0.09 } },
           caption: "Keep candidate profiles, details, and recruitment activity organized in one place.",
         },
         {
           icon: "icons/cap/feat-job-status",
-          title: "Interview & Hiring Workflow",
+          title: "Interview & hiring workflow",
           sub: "Keep every hiring stage connected",
           shot: { src: asterFeature3, alt: "Hiring pipeline for a requirement", crop: { w: 100, h: 138.26, left: 0, top: 0.1 } },
           caption: "Manage interview stages and track candidate progress throughout the hiring process.",
         },
         {
           icon: "icons/cap/feat-analytics",
-          title: "Recruitment Analytics & Reporting",
+          title: "Recruitment analytics & reporting",
           sub: "Turn hiring activity into actionable insights",
           shot: { src: asterHero, alt: "Recruitment dashboard with hiring pipeline chart", crop: { w: 100, h: 230.88, left: 0.06, top: -0.01 } },
           caption: "Monitor recruitment activity and access insights to support hiring decisions.",
         },
         {
           icon: "icons/cap/feat-batch-job",
-          title: "Job Posting & Requirement Management",
+          title: "Job posting & requirement management",
           sub: "Keep every hiring requirement organized",
           shot: { src: asterFeature5, alt: "Requirement editor", crop: { w: 100, h: 154.27, left: 0.11, top: 0.11 } },
           caption: "Create and manage job postings and keep hiring requirements organized across open positions.",
@@ -333,10 +333,10 @@ export const projects: Project[] = [
       bodyW: 787,
       hub: { icon: "icons/cap/hub-recruitment", w: 42.42, h: 39.91 },
       items: [
-        { icon: "icons/cap/out-podium", title: "Faster Candidate Shortlisting", body: "AI-powered candidate search helps recruiters to get relevant profiles from their existing database, reducing the need for repetitive manual searches." },
-        { icon: "icons/cap/out-eye-spark", title: "Better Recruitment Visibility", body: "Centralized candidate information and pipeline tracking give hiring teams a clearer view of recruitment progress and pending actions." },
-        { icon: "icons/cap/out-process", title: "A More Connected Hiring Process", body: "Integrated interview coordination and workflow management help teams manage each stage of recruitment with greater continuity." },
-        { icon: "icons/cap/out-job-search", title: "More Informed Hiring Decisions", body: "Recruitment analytics help teams assess pipeline performance, understand progress, and prioritize their next steps." },
+        { icon: "icons/cap/out-podium", title: "Faster candidate shortlisting", body: "AI-powered candidate search helps recruiters to get relevant profiles from their existing database, reducing the need for repetitive manual searches." },
+        { icon: "icons/cap/out-eye-spark", title: "Better recruitment visibility", body: "Centralized candidate information and pipeline tracking give hiring teams a clearer view of recruitment progress and pending actions." },
+        { icon: "icons/cap/out-process", title: "A more connected hiring process", body: "Integrated interview coordination and workflow management help teams manage each stage of recruitment with greater continuity." },
+        { icon: "icons/cap/out-job-search", title: "More informed hiring decisions", body: "Recruitment analytics help teams assess pipeline performance, understand progress, and prioritize their next steps." },
       ],
     },
   },
@@ -367,35 +367,35 @@ export const projects: Project[] = [
       items: [
         {
           icon: "icons/cap/feat-dashboard",
-          title: "Personalized Learning Dashboard",
+          title: "Personalized learning dashboard",
           sub: "Your Entire Learning Journey, at a Glance",
           shot: { src: skillFeature, alt: "Learner dashboard with weekly activity and course progress", crop: { w: 113.61, h: 251.92, left: -13.21, top: 0.11 } },
           caption: "A central view of courses, learning activity, progress, assessments, and upcoming tasks.",
         },
         {
           icon: "icons/cap/feat-play-lesson",
-          title: "Course and Content Management",
+          title: "Course and content management",
           sub: "Every Lesson Has Its Place",
           shot: { src: skillFeature2, alt: "Course player with lesson modules", crop: { w: 100, h: 261.43, left: 0.51, top: 0.14 } },
           caption: "Organized course materials and learning resources that make it easier for students to navigate their learning.",
         },
         {
           icon: "icons/cap/feat-live-tv",
-          title: "Live & Recorded Learning",
+          title: "Live & recorded learning",
           sub: "Learning That Goes Beyond the Classroom",
           shot: { src: skillFeature3, alt: "Live and recorded sessions", crop: { w: 100.24, h: 98.48, left: -0.06, top: 0.17 } },
           caption: "Access live sessions and recorded content to support different learning schedules and needs.",
         },
         {
           icon: "icons/cap/feat-chart-performance",
-          title: "Progress & Performance Tracking",
+          title: "Progress & performance tracking",
           sub: "Every Milestone, Clearly in View",
           shot: { src: skillFeature4, alt: "Progress and performance charts", crop: { w: 100, h: 321.11, left: 0.06, top: -1.37 } },
           caption: "Track course completion, assessment results, and learning activity to understand progress over time.",
         },
         {
           icon: "icons/cap/feat-exam",
-          title: "Assessments Experience",
+          title: "Assessments and quizzes",
           sub: "Quick Quizzes, Meaningful Progress",
           shot: { src: skillFeature5, alt: "Assessment question screen", crop: { w: 100.15, h: 93.98, left: 0.03, top: 2.04 } },
           caption: "Complete assessments and quizzes to test understanding and evaluate learning progress.",
@@ -408,10 +408,10 @@ export const projects: Project[] = [
       bodyW: 628,
       hub: { icon: "icons/cap/hub-learning", w: 40, h: 40 },
       items: [
-        { icon: "icons/cap/out-connected", title: "One Connected Learning Journey", body: "Courses, live sessions, assessments, and projects are available within one platform, reducing the need to move between disconnected learning tools." },
-        { icon: "icons/cap/out-navigation-person", title: "Clearer Next Steps", body: "Structured navigation and visible learning activities help students identify what to complete and where to focus next." },
-        { icon: "icons/cap/out-progress-check", title: "Visible Learning Progress", body: "Course completion, assessment results, and learning activity help students understand how far they have progressed." },
-        { icon: "icons/cap/out-online-course", title: "Learning Applied Through Projects", body: "Practical projects give students opportunities to apply the course concepts through the hands-on work." },
+        { icon: "icons/cap/out-connected", title: "One connected learning journey", body: "Courses, live sessions, assessments, and projects are available within one platform, reducing the need to move between disconnected learning tools." },
+        { icon: "icons/cap/out-navigation-person", title: "Clearer next steps", body: "Structured navigation and visible learning activities help students identify what to complete and where to focus next." },
+        { icon: "icons/cap/out-progress-check", title: "Visible learning progress", body: "Course completion, assessment results, and learning activity help students understand how far they have progressed." },
+        { icon: "icons/cap/out-online-course", title: "Learning applied through projects", body: "Practical projects give students opportunities to apply the course concepts through the hands-on work." },
       ],
     },
   },
@@ -423,7 +423,7 @@ export const projects: Project[] = [
     body: "NxtDealer is a marketplace designed to help users discover motorcycles through image-rich listings, detailed vehicle information, and intuitive search. The mobile experience also incorporates AI-powered reel creation, giving listings an additional way to present motorcycles through engaging visual content.",
     facts: [
       { label: "Technology", value: "Mobile App" },
-      { label: "Scope", value: "NxtDealer" },
+      { label: "Scope", value: "Automotive Marketplace" },
       { label: "Business Type", value: "B2C" },
     ],
     href: "/work/nxtdealer",
@@ -442,35 +442,35 @@ export const projects: Project[] = [
       items: [
         {
           icon: "icons/cap/feat-phone-person",
-          title: "Visual Bike Discovery",
+          title: "Visual bike discovery",
           sub: "Find your next ride in a scroll",
           shot: { src: autoFeature, alt: "Marketplace feed of motorcycle listings", crop: { w: 100, h: 194.09, left: 0.42, top: 0.03 } },
           caption: "Browse image-rich motorcycle listings that make it easier to explore available bikes and compare options.",
         },
         {
           icon: "icons/cap/feat-ai-search-2",
-          title: "Smart Search & Filtering",
+          title: "Smart search & filtering",
           sub: "Narrow the search. Find your kind of ride",
           shot: { src: autoFeature2, alt: "Brand and category filters", crop: { w: 100, h: 113.21, left: 0.18, top: 0.08 } },
           caption: "Refine motorcycle listings based on relevant criteria to find bikes that match individual preferences.",
         },
         {
           icon: "icons/cap/feat-info-feed",
-          title: "Immersive Bike Details",
+          title: "Detailed vehicle information",
           sub: "Every vehicle has a story. Get the full picture",
           shot: { src: autoPhone2, alt: "Bike detail page", crop: { w: 100, h: 140.16, left: 0, top: 0 } },
           caption: "Explore dedicated vehicle pages with essential details and imagery to support informed consideration.",
         },
         {
           icon: "icons/cap/feat-movie-ai",
-          title: "AI-Powered Reel Creation",
+          title: "AI-powered reel creation",
           sub: "Turn every vehicle into a story worth watching",
           shot: { src: autoFeature4, alt: "AI reel creator", crop: { w: 100, h: 113.21, left: 0.24, top: 0.12 } },
           caption: "Turn motorcycle images into reel-style promotional content to present listings in a more engaging format.",
         },
         {
           icon: "icons/cap/feat-gui-management",
-          title: "Listing Management",
+          title: "Listing management",
           sub: "From adding a bike to putting it in the spotlight",
           shot: { src: autoFeature5, alt: "Add a listing form", crop: { w: 100, h: 194.09, left: 0.15, top: 0.12 } },
           caption: "Create and manage motorcycle listings, bringing vehicle details and visual content together in one place.",
@@ -483,10 +483,10 @@ export const projects: Project[] = [
       bodyW: 791,
       hub: { icon: "icons/cap/hub-motorcycle", w: 40, h: 40 },
       items: [
-        { icon: "icons/cap/out-discovery", title: "Simplified Motorcycle Discovery", body: "Image-led browsing and search filters help users navigate available motorcycles and narrow their options." },
-        { icon: "icons/cap/out-data-exploration", title: "Better-Informed Vehicle Exploration", body: "Detailed vehicle pages combine key information and imagery, helping users assess motorcycles before taking the next step." },
-        { icon: "icons/cap/out-search-visual", title: "More Engaging Listing Presentation", body: "AI-powered reel creation gives motorcycle listings another way to showcase vehicles through dynamic visual content." },
-        { icon: "icons/cap/out-rds", title: "A More Connected Marketplace", body: "Listings, vehicle details, and the listing management are brought together within a single mobile experience." },
+        { icon: "icons/cap/out-discovery", title: "Simplified motorcycle discovery", body: "Image-led browsing and search filters help users navigate available motorcycles and narrow their options." },
+        { icon: "icons/cap/out-data-exploration", title: "Better-informed vehicle exploration", body: "Detailed vehicle pages combine key information and imagery, helping users assess motorcycles before taking the next step." },
+        { icon: "icons/cap/out-search-visual", title: "More engaging listing presentation", body: "AI-powered reel creation gives motorcycle listings another way to showcase vehicles through dynamic visual content." },
+        { icon: "icons/cap/out-rds", title: "A more connected marketplace", body: "Listings, vehicle details, and the listing management are brought together within a single mobile experience." },
       ],
     },
   },
@@ -520,7 +520,7 @@ export const websites = {
     front: { src: webFront, alt: "Smart AI Resume Builder template picker", crop: { w: 100, h: 127.89, left: 0, top: 0.05 } },
   } satisfies Record<string, Shot>,
   card: {
-    title: "AI Resume Builder",
+    title: "AI resume builder",
     body: "A resume-building tool that helps users create tailored resumes, check ATS compatibility, and manage multiple resume versions. It combines customizable templates, resume scoring, and organized storage in one interface.",
     points: ["Customizable Resume Templates", "ATS Compatibility Check", "Resume Version Management"],
   },
@@ -539,7 +539,7 @@ import work7 from "../assets/images/cap-design/work-7.jpg";
 const resumeShot: Shot = { src: webFront, alt: "Resume builder", crop: { w: 100, h: 102.56, left: -0.04, top: 0.68 } };
 
 export const webWork = {
-  title: "Digital Experiences Built for Business",
+  title: "Digital experiences built for business",
   rows: [
     [
       resumeShot,

@@ -171,6 +171,13 @@ const contact = [
     background: var(--c-bg-light);
   }
 
+  /* The CTA card starts at the outro's own top edge, so without this it sat
+     one section-pad (not two) under the last section's content. A margin,
+     not padding: the card is absolutely placed against the padding box. */
+  .outro:not(.outro--plain) {
+    margin-top: var(--section-y);
+  }
+
   /* --- CTA --------------------------------------------------------------- */
 
   /* Sits over the seam: the footer's 240px top padding clears its lower half. */
@@ -404,7 +411,7 @@ const contact = [
   }
 
   .outro--plain .foot__top {
-    padding-top: 140px;
+    padding-top: var(--section-y);
   }
 
   .foot__top {
@@ -760,17 +767,7 @@ const contact = [
      content is a screen's worth of nothing on a phone. The rule above is
      `.outro--plain .foot__top`, which outranks the plain `.foot__top`
      mobile padding, so it is re-pointed with the same selector. */
-  @media (max-width: 900px) {
-    .outro--plain .foot__top {
-      padding-top: 80px;
-    }
-  }
-
   @media (max-width: 560px) {
-    .outro--plain .foot__top {
-      padding-top: 56px;
-    }
-
     .foot__col:first-child {
       flex: 1 0 0;
     }

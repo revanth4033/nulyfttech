@@ -82,7 +82,7 @@ import { about } from "../../data/home";
 <style>
   .habout {
     background: var(--c-bg-light);
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .habout__inner {
@@ -369,9 +369,6 @@ import { about } from "../../data/home";
 
   /* The statement stacks over its lede. */
   @media (max-width: 900px) {
-    .habout {
-      padding-block: 64px;
-    }
 
     .habout__inner {
       gap: 40px;
@@ -403,9 +400,6 @@ import { about } from "../../data/home";
   }
 
   @media (max-width: 560px) {
-    .habout {
-      padding-block: 40px;
-    }
 
     .habout__inner {
       gap: 32px;

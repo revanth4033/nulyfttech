@@ -37,6 +37,10 @@ const { eyebrow, title, body, class: className } = Astro.props;
   }
 
   .chead {
+    /* Above the screenshots beside it: their baked drop shadow (~60px a
+       side) overhangs this column and painted over the first words. */
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;

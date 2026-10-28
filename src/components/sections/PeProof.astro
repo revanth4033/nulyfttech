@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * Proof — Figma 646:5936 (2155 tall): three project rows, each in its own
  * 1440 frame (865 with the section header, then 645, 645). Copy and media
@@ -22,9 +23,9 @@ import { proof } from "../../data/capProductEngineering";
           {i === 0 && (
             <header class="pf__head">
               <div class="pf__head-top">
-                <span class="pf__eyebrow" data-animate>
+                <EyebrowBadge variant="section" class="pf__eyebrow" data-animate>
                   {proof.eyebrow}
-                </span>
+                </EyebrowBadge>
                 <h2 class="pf__title" data-animate>
                   {proof.title}
                 </h2>
@@ -97,7 +98,7 @@ import { proof } from "../../data/capProductEngineering";
   }
 
   .pf__frame {
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .pf__inner {
@@ -122,18 +123,6 @@ import { proof } from "../../data/capProductEngineering";
     flex-direction: column;
     align-items: center;
     gap: 8px;
-  }
-
-  .pf__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-accent);
   }
 
   .pf__title {
@@ -258,9 +247,6 @@ import { proof } from "../../data/capProductEngineering";
   /* --- narrower: copy over media ----------------------------------------- */
 
   @media (max-width: 1279px) {
-    .pf__frame {
-      padding-block: 72px;
-    }
 
     .pf__frame + .pf__frame {
       padding-top: 24px;
@@ -305,9 +291,6 @@ import { proof } from "../../data/capProductEngineering";
   }
 
   @media (max-width: 560px) {
-    .pf__frame {
-      padding-block: 48px;
-    }
 
     .pf__frame + .pf__frame {
       padding-top: 16px;
@@ -315,11 +298,6 @@ import { proof } from "../../data/capProductEngineering";
 
     .pf__inner {
       gap: 32px;
-    }
-
-    .pf__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .pf__title {
@@ -350,6 +328,42 @@ import { proof } from "../../data/capProductEngineering";
     .pf__item dt {
       font-size: 12px;
       letter-spacing: 1.2px;
+    }
+  }
+
+  /* Each row's media hangs ~50px past its frame's foot (and the rows'
+     media overlap across the seam, so the gap is fitted from three
+     measured settings, not one): +50 under every frame and +16 over the
+     later ones keeps the section rhythm between projects and into the CTA. */
+  @media (min-width: 1241px) {
+    .pf__frame {
+      padding-bottom: calc(var(--section-y) + 50px);
+    }
+
+    .pf__frame + .pf__frame {
+      padding-top: calc(var(--section-y) + 16px);
+    }
+  }
+
+  /* Stacked, the rows overlap across the seam by ~12px (fitted from two
+     measured settings): +4 under each frame, +8 over the later ones. */
+  @media (max-width: 1240px) {
+    .pf__frame {
+      padding-bottom: calc(var(--section-y) + 4px);
+    }
+
+    .pf__frame + .pf__frame {
+      padding-top: calc(var(--section-y) + 8px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .pf__frame {
+      padding-bottom: calc(var(--section-y) + 2px);
+    }
+
+    .pf__frame + .pf__frame {
+      padding-top: calc(var(--section-y) + 4px);
     }
   }
 </style>

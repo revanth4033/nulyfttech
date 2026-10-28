@@ -90,6 +90,10 @@
   --content-w: 1240px;        /* frame minus 100px gutters */
   --gutter: 100px;
   --nav-h: 83px;              /* the old full-width bar; inner heroes still clear it */
+  /* The one vertical rhythm between sections (by request — 100 a side made
+     ~200px gaps). Every section pads top and bottom by this, so any two
+     neighbours sit 2x apart; steps down in global.css at 900 and 560. */
+  --section-y: 64px;
   --nav-top: 48px;            /* the floating nav card (Figma 664:2984) */
   --nav-card-h: 72px;
   --hero-h: 882px;

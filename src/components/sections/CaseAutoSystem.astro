@@ -16,7 +16,6 @@ import { typography, colorography } from "../../data/caseAuto";
  * The 100 is the container inset: it is the frame's padding, and an absolute
  * child resolves `top` against the border box, so it has to be added back.
  */
-const INSET = 100;
 ---
 
 <section class="asys" data-section>
@@ -30,7 +29,7 @@ const INSET = 100;
       widths={[typography.figure.w, typography.figure.w * 2]}
       sizes={`${typography.figure.w}px`}
       class="asys__figure"
-      style={`left:${typography.figure.x}px;top:${typography.figure.y + INSET}px;width:${typography.figure.w}px`}
+      style={`left:${typography.figure.x}px;top:calc(${typography.figure.y}px + var(--section-y));width:${typography.figure.w}px`}
       data-animate
     />
 
@@ -82,15 +81,16 @@ const INSET = 100;
     width: 100%;
     max-width: 1240px;
     margin-inline: auto;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
+  /* Drawn 795 and 758; the compositions end at 654 and 511. */
   .asys__frame {
-    height: 795px;
+    height: calc(654px + var(--section-y));
   }
 
   .acol__frame {
-    height: 758px;
+    height: calc(511px + var(--section-y));
   }
 
   /* Placed at the frame's own coordinates — these are drawn compositions, so
@@ -147,16 +147,10 @@ const INSET = 100;
 
   @media (max-width: 900px) {
     .asys__frame,
-    .acol__frame {
-      padding-block: 64px;
-    }
   }
 
   /* Mobile */
   @media (max-width: 560px) {
     .asys__frame,
-    .acol__frame {
-      padding-block: 40px;
-    }
   }
 </style>

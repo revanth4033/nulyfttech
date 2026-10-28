@@ -47,14 +47,14 @@ export const hero = {
   // only when it is set.
   secondary: null as { label: string; href: string } | null,
 
-  hub: { title: "The Engineering Layer", flow: "idea → Product →impact" },
+  hub: { title: "The engineering layer", flow: "idea → Product →impact" },
 
   cards: [
     { icon: "icons/pe/layer-arch", title: "Architecture", sub: "Scalable systems built for growth", x: 429, y: 0 },
-    { icon: "icons/pe/layer-ai", title: "AI & Automation", sub: "Smarter process, real intelligence", x: 4, y: 111 },
+    { icon: "icons/pe/layer-ai", title: "AI & automation", sub: "Smarter process, real intelligence", x: 4, y: 111 },
     { icon: "icons/pe/layer-infra", title: "Infrastructure", sub: "Reliaable, secure, always on", x: 443, y: 139 },
     { icon: "icons/pe/layer-integ", title: "Integrations", sub: "Connected tools, seamless workflows", x: 0, y: 407 },
-    { icon: "icons/pe/layer-data", title: "Data Intelligence", sub: "Better data, better decisions", x: 463, y: 464 },
+    { icon: "icons/pe/layer-data", title: "Data intelligence", sub: "Better data, better decisions", x: 463, y: 464 },
   ] satisfies LayerCard[],
 
   // Elbow lines from each card to the rings; exports carry their own dots.
@@ -87,13 +87,13 @@ export const services = {
   body: "Whether you're building a new product, improving existing systems, or exploring AI, we bring together design and engineering to develop practical solutions around your business needs.",
   cards: [
     {
-      title: "Product Development",
+      title: "Product development",
       tags: "SaaS Platforms · Web Applications · Mobile Applications",
       body: "From initial concept to launch, we design and build products around your requirements, with a focus on usability, functionality, and long-term growth.",
       shot: { src: skillDashboard, alt: "Learner dashboard", crop: { w: 112.2, h: 306.61, left: -12.1, top: -0.58 } },
     },
     {
-      title: "Custom Solutions",
+      title: "Custom solutions",
       tags: "Business Applications · System Integrations · API Development",
       body: "We develop solutions tailored to your business processes, helping simplify complex workflows and connect the systems your teams rely on.",
       shot: { src: asterDashboard, alt: "Recruitment dashboard", crop: { w: 100, h: 284.54, left: -0.16, top: -0.29 } },
@@ -101,7 +101,7 @@ export const services = {
       featured: true,
     },
     {
-      title: "AI & Automation",
+      title: "AI & automation",
       tags: "AI Integration · RAG & Intelligent Search · Workflow Automation",
       body: "We integrate AI into products & business workflows to automate repetitive tasks, make information easier to access, and support better decisions.",
       shot: { src: webBack1, alt: "Component library", crop: { w: 100, h: 157.06, left: -0.04, top: -8.07 } },
@@ -117,11 +117,11 @@ export const process = {
   body: "Whether you're starting with an idea or bringing us an existing system, we find what needs to change, shape the right solution, and engineer it into a product built to move forward.",
   // Staggered: odd steps sit 64px in. Tops are Figma's.
   steps: [
-    { icon: "icons/pe/step-bulb", title: "Understand & Unblock", body: "We explore your business, users, existing systems, and technical challenges to identify what's working, what's holding you back, and what needs solving first.", top: 0, inset: false },
-    { icon: "icons/pe/step-design", title: "Define & Design", body: "We translate business needs into clear requirements, define the right scope, and shape product experiences and technical architecture around your goals.", top: 139, inset: true },
-    { icon: "icons/pe/step-merge", title: "Build & Integrate", body: "We engineer the application, APIs, data systems, integrations, and AI capabilities, connecting every component into a cohesive product built for real-world use.", top: 277, inset: false },
-    { icon: "icons/pe/step-test", title: "Test & Refine", body: "We validate functionality, security, performance, and critical workflows, uncovering weaknesses early and refining the product to deliver reliable, consistent experiences.", top: 415, inset: true },
-    { icon: "icons/pe/step-rocket", title: "Launch & Evolve", body: "We deploy the product, monitor real-world performance, address emerging issues, and continuously improve its capabilities as user needs and business priorities evolve.", top: 553, inset: false },
+    { icon: "icons/pe/step-bulb", title: "Understand & unblock", body: "We explore your business, users, existing systems, and technical challenges to identify what's working, what's holding you back, and what needs solving first.", top: 0, inset: false },
+    { icon: "icons/pe/step-design", title: "Define & design", body: "We translate business needs into clear requirements, define the right scope, and shape product experiences and technical architecture around your goals.", top: 139, inset: true },
+    { icon: "icons/pe/step-merge", title: "Build & integrate", body: "We engineer the application, APIs, data systems, integrations, and AI capabilities, connecting every component into a cohesive product built for real-world use.", top: 277, inset: false },
+    { icon: "icons/pe/step-test", title: "Test & refine", body: "We validate functionality, security, performance, and critical workflows, uncovering weaknesses early and refining the product to deliver reliable, consistent experiences.", top: 415, inset: true },
+    { icon: "icons/pe/step-rocket", title: "Launch & evolve", body: "We deploy the product, monitor real-world performance, address emerging issues, and continuously improve its capabilities as user needs and business priorities evolve.", top: 553, inset: false },
   ],
 };
 
@@ -138,7 +138,7 @@ export const proof = {
   body: "A closer look at the products we've built, the engineering behind them, and how we've addressed specific business and user needs.",
   projects: [
     {
-      name: "AI Powered Recruitment Platform",
+      name: "AI powered recruitment platform",
       href: "/work/ai-recruitment-platform",
       items: [
         { label: "Intelligent candidate discovery", text: "Matches job requirements with relevant candidate profiles to support candidate search and shortlisting." },
@@ -166,7 +166,7 @@ export const proof = {
       reverse: true,
     },
     {
-      name: "Motorcycle Discovery Platform",
+      name: "NxtDealer",
       href: "/work/nxtdealer",
       items: [
         { label: "Structured Vehicle Listings", text: "Organizes vehicle details, specifications, images, and listing information." },

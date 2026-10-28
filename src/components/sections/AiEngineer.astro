@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * How we engineer it — Figma 647:7044 (895 tall). Four step cards in a
  * zig-zag across a 1240 x 455 stage, joined by dashed arrows that fade in
@@ -18,7 +19,7 @@ import { engineer } from "../../data/capAi";
 <section class="aen" data-section>
   <div class="aen__inner">
     <header class="aen__head">
-      <span class="aen__eyebrow" data-animate>{engineer.eyebrow}</span>
+      <EyebrowBadge variant="section" class="aen__eyebrow" data-animate>{engineer.eyebrow}</EyebrowBadge>
       <div class="aen__head-copy">
         <h2 class="aen__title" data-animate>{engineer.title}</h2>
         <p class="aen__body" data-animate>{engineer.body}</p>
@@ -62,7 +63,7 @@ import { engineer } from "../../data/capAi";
 
 <style>
   .aen {
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
     overflow-x: clip;
   }
@@ -82,19 +83,6 @@ import { engineer } from "../../data/capAi";
     align-items: center;
     gap: 8px;
     text-align: center;
-  }
-
-  .aen__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--c-accent);
   }
 
   .aen__head-copy {
@@ -195,9 +183,6 @@ import { engineer } from "../../data/capAi";
   /* --- narrower: the zig-zag runs down ------------------------------------- */
 
   @media (max-width: 1279px) {
-    .aen {
-      padding-block: 72px;
-    }
 
     .aen__inner {
       gap: 48px;
@@ -288,17 +273,9 @@ import { engineer } from "../../data/capAi";
   }
 
   @media (max-width: 560px) {
-    .aen {
-      padding-block: 48px;
-    }
 
     .aen__inner {
       gap: 32px;
-    }
-
-    .aen__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .aen__title {
@@ -315,6 +292,13 @@ import { engineer } from "../../data/capAi";
     .aen__card {
       gap: 12px;
       padding: 16px;
+    }
+  }
+
+  /* The zig-zag's lower cards run 24px into the section's foot. */
+  @media (min-width: 1241px) {
+    .aen {
+      padding-bottom: calc(var(--section-y) + 24px);
     }
   }
 </style>

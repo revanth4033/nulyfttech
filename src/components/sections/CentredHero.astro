@@ -12,23 +12,21 @@ import EyebrowBadge from "../ui/EyebrowBadge.astro";
  * centred 728-wide column: badge, headline with an italic tail, and a
  * paragraph. Figma centres the column on the frame, which puts its top at 200.
  *
- * Contact Us (672:3796) draws it shorter — 554 — with the copy 29.8 below
- * centre and no italic tail, hence `height`, `offset` and an optional `em`.
+ * Contact Us (672:3796) draws it with no italic tail, hence the optional
+ * `em`. The frames' fixed heights (600, Contact 554) are no longer used: the
+ * hero is sized by its copy with the site's section rhythm under it.
  */
 interface Props {
   eyebrow: string;
   title: { lead: string; em?: string };
   /** One entry per line Figma breaks by hand. */
   body: string[];
-  height?: number;
-  /** How far below the frame's centre the copy column sits. */
-  offset?: number;
 }
 
-const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
+const { eyebrow, title, body } = Astro.props;
 ---
 
-<section class="phead" data-section="page-hero" style={`--phead-h:${height}px;--phead-dy:${offset}px`}>
+<section class="phead" data-section="page-hero">
   <HeroBackdrop variant="page" />
 
   <div class="phead__copy">
@@ -45,19 +43,21 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
 </section>
 
 <style>
+  /* Sized by its copy, not the frame's fixed 600 (554 on Contact): the copy
+     sits 80 under the nav card as before, and the band under it is the
+     section rhythm — the fixed frame left 175-225px of empty hero there
+     (by request: even spacing between sections). */
   .phead {
     position: relative;
-    height: var(--phead-h);
+    padding: calc(var(--nav-top) + var(--nav-card-h) + 80px) 0 var(--section-y);
     overflow: hidden;
     background: var(--c-bg-light);
   }
 
   .phead__copy {
-    position: absolute;
+    position: relative;
     z-index: var(--z-content);
-    left: 50%;
-    top: calc(50% + var(--phead-dy));
-    translate: -50% -50%;
+    margin-inline: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -97,29 +97,13 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
 
   /* --- tablet and phone -------------------------------------------------- */
 
-  /* The frame is a fixed height with the copy centred in it; narrower, the
-     copy grows taller than the frame allows for under the nav, so the hero
-     sizes to its copy instead. The copy joins the flow — and a block that
-     leaves `position: absolute` keeps its `translate`, which would drag it
-     half its width off the left edge, so that is reset too. It stays
-     `relative` so it still paints over the backdrop.
-
-     Figma's hand-set line breaks are for a 728 column; in a narrow one they
+  /* Narrower, the copy sits a little closer under the nav. Figma's hand-set line breaks are for a 728 column; in a narrow one they
      strand a word or two on a line, so they give way to normal wrapping (the
      space after each break keeps the words apart; at desktop a space at the
      start of a line collapses, so the frame is untouched). */
   @media (max-width: 900px) {
     .phead {
-      height: auto;
-      padding: calc(var(--nav-top) + var(--nav-card-h) + 72px) 0 80px;
-    }
-
-    .phead__copy {
-      position: relative;
-      left: auto;
-      top: auto;
-      translate: none;
-      margin-inline: auto;
+      padding-top: calc(var(--nav-top) + var(--nav-card-h) + 72px);
     }
 
     .phead__title {
@@ -134,7 +118,7 @@ const { eyebrow, title, body, height = 600, offset = -0.2 } = Astro.props;
 
   @media (max-width: 560px) {
     .phead {
-      padding: calc(var(--nav-top) + var(--nav-card-h) + 48px) 0 56px;
+      padding-top: calc(var(--nav-top) + var(--nav-card-h) + 48px);
     }
 
     .phead__copy {

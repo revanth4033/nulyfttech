@@ -78,7 +78,7 @@ const [discover, ...paired] = approach.phases;
     display: flex;
     flex-direction: column;
     gap: 64px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .appr__phases {
@@ -178,6 +178,10 @@ const [discover, ...paired] = approach.phases;
   }
 
   .phase__copy {
+    /* Above the screenshots beside it: their baked drop shadow (~60px a
+       side) overhangs this column and painted over the first words. */
+    position: relative;
+    z-index: 1;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -220,9 +224,6 @@ const [discover, ...paired] = approach.phases;
   }
 
   @media (max-width: 900px) {
-    .appr__inner {
-      padding-block: 64px;
-    }
 
     .phase__title {
       font-size: 20px;
@@ -239,7 +240,6 @@ const [discover, ...paired] = approach.phases;
   @media (max-width: 560px) {
     .appr__inner {
       gap: 32px;
-      padding-block: 40px;
     }
 
     .appr__phases {

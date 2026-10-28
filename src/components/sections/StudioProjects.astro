@@ -20,7 +20,7 @@ import { projects } from "../../data/studio";
 <style>
   .projects {
     position: relative;
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
   }
 
@@ -33,13 +33,17 @@ import { projects } from "../../data/studio";
 
   /* 40 is the block rhythm the home page's mobile frames use throughout. */
   @media (max-width: 900px) {
-    .projects {
-      padding-block: 40px;
-    }
 
     .projects__grid {
       grid-template-columns: minmax(0, 1fr);
       gap: 64px;
+    }
+  }
+
+  /* The grid's last row carries 20px of its own below the cards. */
+  @media (min-width: 1241px) {
+    .projects {
+      padding-bottom: calc(var(--section-y) - 20px);
     }
   }
 </style>

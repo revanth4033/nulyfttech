@@ -44,7 +44,7 @@ export const heroSlides: HeroSlide[] = [
   },
   {
     id: "product-engineering",
-    title: { lead: "From Idea To ", em: "Finished Product" },
+    title: { lead: "From idea to ", em: "finished product" },
     body: "We build web applications, mobile apps, and software products around what your business needs, turning ideas and requirements into products people can actually use.",
     // As written in the mock ("Build", not "Built") — flagged to the user.
     cta: { label: "Products We\u2019ve Build", href: "/product-engineering" },
@@ -53,7 +53,7 @@ export const heroSlides: HeroSlide[] = [
   },
   {
     id: "ai-automation",
-    title: { lead: "Improve The Way Your ", em: "Business Operates" },
+    title: { lead: "Improve the way your ", em: "business operates" },
     body: "We build AI-powered automation solutions that connect business processes, reduce manual work, and help teams manage their operations more efficiently.",
     cta: { label: "Discover Our Capabilities", href: "/ai-automation" },
     photo: heroAi,
@@ -131,7 +131,7 @@ export const craft = {
   photo: {
     alt: "Two colleagues smiling at a laptop together at a shared table",
     eyebrow: "From Complexity to Clarity",
-    title: "Make Better Things Possible",
+    title: "Make better things possible",
     cta: { label: "Let’s Build Together", href: "/contact" },
   },
 };

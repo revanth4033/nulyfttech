@@ -95,7 +95,9 @@ import { hero } from "../../data/capProductEngineering";
 <style>
   .peh {
     position: relative;
-    height: var(--peh-h);
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 207px at the drawn height). */
+    height: calc(var(--peh-h) - 207px + var(--section-y));
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -357,7 +359,7 @@ import { hero } from "../../data/capProductEngineering";
       flex-direction: column;
       align-items: center;
       gap: 56px;
-      padding: calc(var(--nav-h) + 56px) var(--gutter) 72px;
+      padding: calc(var(--nav-h) + 56px) var(--gutter) var(--section-y);
     }
 
     .peh__copy {
@@ -391,7 +393,7 @@ import { hero } from "../../data/capProductEngineering";
   @media (max-width: 560px) {
     .peh__frame {
       gap: 40px;
-      padding: calc(var(--nav-h) + 40px) var(--gutter) 56px;
+      padding: calc(var(--nav-h) + 40px) var(--gutter) var(--section-y);
     }
 
     .peh__copy {

@@ -56,7 +56,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: "lms-education-saas",
-    title: "LMS / Education SaaS",
+    title: "LMS / education SaaS",
     meta: "Product Design & Engineering · SaaS Platform · 2025",
     href: "/work/lms-education-saas",
     span: "half",
@@ -69,7 +69,7 @@ export const projects: Project[] = [
   },
   {
     id: "ai-recruitment-platform",
-    title: "AI Powered Recruitment Platform",
+    title: "AI powered recruitment platform",
     meta: "Product Design & Engineering · HR Recruitment · 2026",
     href: "/work/ai-recruitment-platform",
     span: "half",

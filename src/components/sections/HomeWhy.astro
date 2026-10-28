@@ -140,7 +140,7 @@ const px = (n: number) => `${n}px`;
 <style>
   .hwhy {
     background: var(--c-bg-dark);
-    padding-block: 100px 99.83px;
+    padding-block: var(--section-y);
   }
 
   .hwhy__inner {
@@ -154,7 +154,6 @@ const px = (n: number) => `${n}px`;
     align-items: center;
     justify-content: space-between;
     gap: 32px;
-    min-height: 208px;
   }
 
   .hwhy__lead {
@@ -171,7 +170,6 @@ const px = (n: number) => `${n}px`;
     font-size: var(--fs-h2);
     line-height: normal;
     letter-spacing: var(--tr-h2);
-    text-transform: capitalize;
     color: #fff;
     /* Figma breaks after "A"; balance would move it down a line. */
     text-wrap: wrap;
@@ -415,9 +413,6 @@ const px = (n: number) => `${n}px`;
   }
 
   @media (max-width: 900px) {
-    .hwhy {
-      padding-block: 64px;
-    }
 
     .hwhy__inner {
       gap: 40px;
@@ -445,9 +440,6 @@ const px = (n: number) => `${n}px`;
   }
 
   @media (max-width: 560px) {
-    .hwhy {
-      padding-block: 40px;
-    }
 
     .hwhy__inner {
       gap: 32px;

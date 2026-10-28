@@ -107,7 +107,7 @@ const { phase1, phase2, phase3 } = approach;
     width: 100%;
     max-width: 1240px;
     margin-inline: auto;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .aph__body {
@@ -239,9 +239,6 @@ const { phase1, phase2, phase3 } = approach;
   }
 
   @media (max-width: 900px) {
-    .aph__frame {
-      padding-block: 64px;
-    }
 
     .aph__title {
       font-size: 20px;
@@ -256,9 +253,6 @@ const { phase1, phase2, phase3 } = approach;
 
   /* Mobile */
   @media (max-width: 560px) {
-    .aph__frame {
-      padding-block: 40px;
-    }
 
     .aph__title {
       font-size: 18px;

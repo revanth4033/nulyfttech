@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * Where can we help — Figma 647:6886. A row of 292-wide industry cards,
  * 24 apart, clipped to the 1240 column with the centred one lifted.
@@ -23,7 +24,7 @@ const start = n + industries.active;
 <section class="aind" data-section>
   <div class="aind__inner">
     <header class="aind__head">
-      <span class="aind__eyebrow" data-animate>{industries.eyebrow}</span>
+      <EyebrowBadge variant="section" class="aind__eyebrow" data-animate>{industries.eyebrow}</EyebrowBadge>
       <div class="aind__head-copy">
         <h2 class="aind__title" data-animate>{industries.title}</h2>
         <p class="aind__body" data-animate>{industries.body}</p>
@@ -63,7 +64,7 @@ const start = n + industries.active;
 
 <style>
   .aind {
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
     overflow-x: clip;
   }
@@ -83,18 +84,6 @@ const start = n + industries.active;
     align-items: center;
     gap: 8px;
     text-align: center;
-  }
-
-  .aind__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-accent);
   }
 
   .aind__head-copy {
@@ -210,11 +199,7 @@ const start = n + industries.active;
     white-space: nowrap;
   }
 
-
   @media (max-width: 1279px) {
-    .aind {
-      padding-block: 72px;
-    }
 
     .aind__inner {
       gap: 48px;
@@ -228,17 +213,9 @@ const start = n + industries.active;
   }
 
   @media (max-width: 560px) {
-    .aind {
-      padding-block: 48px;
-    }
 
     .aind__inner {
       gap: 32px;
-    }
-
-    .aind__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .aind__title {

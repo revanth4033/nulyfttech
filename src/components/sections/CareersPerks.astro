@@ -77,7 +77,7 @@ const [growth, empowering] = perks;
     flex-direction: column;
     /* Figma: 100 top + 106 header + 64 + 470 bento + 100 bottom = 840 */
     gap: 64px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   /* 795 + 16 + 429 = 1240. The tall photo spans both rows. */
@@ -250,7 +250,6 @@ const [growth, empowering] = perks;
   @media (max-width: 560px) {
     .perks__inner {
       gap: 32px;
-      padding-block: 40px;
     }
 
     .bento {

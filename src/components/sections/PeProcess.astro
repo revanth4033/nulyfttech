@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * Process — Figma 646:5874 (dark, 1109 tall).
  *
@@ -29,7 +30,7 @@ const elbows = [
 <section class="pep" data-section>
   <div class="pep__inner">
     <header class="pep__head">
-      <span class="pep__eyebrow" data-animate>{process.eyebrow}</span>
+      <EyebrowBadge variant="dark" class="pep__eyebrow" data-animate>{process.eyebrow}</EyebrowBadge>
       <div class="pep__head-copy">
         <h2 class="pep__title" data-animate>{process.title}</h2>
         <p class="pep__body" data-animate>{process.body}</p>
@@ -66,7 +67,7 @@ const elbows = [
 
 <style>
   .pep {
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-dark);
     /* Fixed Figma widths; never let them scroll the page sideways. */
     overflow-x: clip;
@@ -87,18 +88,6 @@ const elbows = [
     align-items: center;
     gap: 8px;
     text-align: center;
-  }
-
-  .pep__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-eyebrow-text-dark);
   }
 
   /* Capped at the column: a centred column hugs the body's 677px and
@@ -216,9 +205,6 @@ const elbows = [
   /* --- narrower: a connected stack ---------------------------------------- */
 
   @media (max-width: 1279px) {
-    .pep {
-      padding-block: 72px;
-    }
 
     .pep__inner {
       gap: 48px;
@@ -266,17 +252,9 @@ const elbows = [
   }
 
   @media (max-width: 560px) {
-    .pep {
-      padding-block: 48px;
-    }
 
     .pep__inner {
       gap: 32px;
-    }
-
-    .pep__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .pep__title {

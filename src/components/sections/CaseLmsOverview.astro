@@ -91,7 +91,7 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
     display: flex;
     align-items: flex-start;
     gap: 48px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .cover__inner {
@@ -264,9 +264,6 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
   }
 
   @media (max-width: 900px) {
-    .cover__inner {
-      padding-block: 64px;
-    }
 
     .cover__title {
       font-size: 26px;
@@ -283,9 +280,6 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(4)}%`;
   /* Mobile */
   @media (max-width: 560px) {
     .cover__inner,
-    .cover .container {
-      padding-block: 40px;
-    }
 
     /* `--tr-h2` is -2px, which is a 40px heading's tracking. At 20 it closes
        the words up by a tenth of their width and the line reads as one word. */

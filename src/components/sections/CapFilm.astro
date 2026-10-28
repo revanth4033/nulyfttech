@@ -80,7 +80,7 @@ const poster = await getImage({ src: film.poster, width: 1920, format: "webp", q
 <style>
   .film {
     background: var(--c-bg-dark);
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .film__inner {
@@ -215,9 +215,6 @@ const poster = await getImage({ src: film.poster, width: 1920, format: "webp", q
   /* --- narrower ---------------------------------------------------------- */
 
   @media (max-width: 900px) {
-    .film {
-      padding-block: 64px;
-    }
 
     .film__inner {
       gap: 32px;
@@ -230,9 +227,6 @@ const poster = await getImage({ src: film.poster, width: 1920, format: "webp", q
   }
 
   @media (max-width: 560px) {
-    .film {
-      padding-block: 40px;
-    }
 
     .film__inner {
       gap: 24px;

@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * What we do — Figma 646:5733 (817 tall). Header over three service cards.
  *
@@ -25,7 +26,7 @@ const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
   <div class="pes__inner">
     <header class="pes__head">
       <div class="pes__head-top">
-        <span class="pes__eyebrow" data-animate>{services.eyebrow}</span>
+        <EyebrowBadge variant="section" class="pes__eyebrow" data-animate>{services.eyebrow}</EyebrowBadge>
         <h2 class="pes__title" data-animate>{services.title}</h2>
       </div>
       <p class="pes__body" data-animate>{services.body}</p>
@@ -64,7 +65,7 @@ const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
 
 <style>
   .pes {
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
     /* Fixed Figma widths; never let them scroll the page sideways. */
     overflow-x: clip;
@@ -92,18 +93,6 @@ const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-  }
-
-  .pes__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15);
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-accent);
   }
 
   .pes__title {
@@ -254,9 +243,6 @@ const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
   /* --- narrower ------------------------------------------------------------ */
 
   @media (max-width: 1279px) {
-    .pes {
-      padding-block: 72px;
-    }
 
     .pes__inner {
       gap: 48px;
@@ -333,17 +319,9 @@ const loop = (tags: string) => `${tags.replace(/[\s·]+$/, "")} · `;
 
   /* Phone: upright again, full width. */
   @media (max-width: 560px) {
-    .pes {
-      padding-block: 48px;
-    }
 
     .pes__inner {
       gap: 32px;
-    }
-
-    .pes__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .pes__title {

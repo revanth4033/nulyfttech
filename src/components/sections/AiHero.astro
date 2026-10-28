@@ -35,7 +35,7 @@ import { hero } from "../../data/capAi";
       </div>
       <div class="aih__actions" data-animate>
         <PillButton href={hero.primary.href} arrow={20} flat>{hero.primary.label}</PillButton>
-        <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>
+        {hero.secondary && <PillButton href={hero.secondary.href} variant="outline">{hero.secondary.label}</PillButton>}
       </div>
     </div>
 
@@ -71,7 +71,9 @@ import { hero } from "../../data/capAi";
 <style>
   .aih {
     position: relative;
-    height: var(--aih-h);
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 97px at the drawn height). */
+    height: calc(var(--aih-h) - 97px + var(--section-y));
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -261,7 +263,7 @@ import { hero } from "../../data/capAi";
       flex-direction: column;
       align-items: center;
       gap: 48px;
-      padding: calc(var(--nav-h) + 56px) var(--gutter) 72px;
+      padding: calc(var(--nav-h) + 56px) var(--gutter) calc(var(--section-y) - 28px);
     }
 
     .aih__copy {
@@ -292,7 +294,7 @@ import { hero } from "../../data/capAi";
   @media (max-width: 560px) {
     .aih__frame {
       gap: 40px;
-      padding: calc(var(--nav-h) + 40px) var(--gutter) 56px;
+      padding: calc(var(--nav-h) + 40px) var(--gutter) calc(var(--section-y) - 28px);
     }
 
     .aih__copy {

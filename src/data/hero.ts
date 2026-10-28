@@ -87,7 +87,7 @@ export const heroScenes: HeroScene[] = [
     cards: [
       {
         kind: "preview",
-        title: "Experience Simulation",
+        title: "Experience simulation",
         media: {
           src: previewExperience,
           alt: "A Figma canvas with frames, components and a text panel",
@@ -104,7 +104,7 @@ export const heroScenes: HeroScene[] = [
       },
       {
         kind: "preview",
-        title: "Product Design",
+        title: "Product design",
         media: {
           src: previewProductDesign,
           alt: "Three linked mobile screens on a prototype canvas",
@@ -126,26 +126,26 @@ export const heroScenes: HeroScene[] = [
     cards: [
       {
         kind: "preview",
-        title: "Product Engineering",
+        title: "Product engineering",
         media: {
           src: previewProductEng,
           alt: "A mobile app screen under construction",
           w: 220,
           h: 133.363,
         },
-        name: "Mobile App Development",
+        name: "Mobile app development",
         body: "Build high-performing apps that engage users and expand reach.",
       },
       {
         kind: "preview",
-        title: "Scalable Infrastructure",
+        title: "Scalable infrastructure",
         media: {
           src: previewScalableInfra,
           alt: "Rows of service cards drifting across a cloud dashboard",
           w: 228,
           h: 133,
         },
-        name: "SaaS Development",
+        name: "SaaS development",
         body: "Build scalable cloud software for reliable, automated experiences.",
       },
     ],
@@ -159,7 +159,7 @@ export const heroScenes: HeroScene[] = [
     cards: [
       {
         kind: "pipeline",
-        title: "AI & Intelligent Automation",
+        title: "AI & intelligent automation",
         steps: [
           {
             title: "Email Trigger",
@@ -180,7 +180,7 @@ export const heroScenes: HeroScene[] = [
       },
       {
         kind: "pipeline",
-        title: "Autonomous Operations",
+        title: "Autonomous operations",
         steps: [
           {
             title: "Save To DB",
@@ -210,26 +210,26 @@ export const heroScenes: HeroScene[] = [
     cards: [
       {
         kind: "preview",
-        title: "Knowledge Systems",
+        title: "Knowledge systems",
         media: {
           src: previewKnowledge,
           alt: "A Skill Wagon course-platform landing page",
           w: 220,
           h: 133.363,
         },
-        name: "Course Platform & E-Learning",
+        name: "Course platform & e-learning",
         body: "Launch branded learning hubs, monetize content seamlessly, and automate student enrollment end-to-end.",
       },
       {
         kind: "preview",
-        title: "Narrative Intelligence",
+        title: "Narrative intelligence",
         media: {
           src: previewNarrative,
           alt: "A candidate-pipeline landing page with a funnel diagram",
           w: 228,
           h: 133,
         },
-        name: "Intelligent Candidate Pipelines",
+        name: "Intelligent candidate pipelines",
         body: "Streamline your hiring funnel from initial outreach to final placement with data-driven recruitment strategies.",
       },
     ],

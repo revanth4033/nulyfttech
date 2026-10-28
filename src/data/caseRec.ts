@@ -34,8 +34,8 @@ import screen5 from "../assets/images/case-rec/screen-5.png";
 export const hero = {
   eyebrow: "AI powered recruitment platform - Case Study",
   /** Roman lead, then an italic tail. */
-  title: "Every Requirement. Every Candidate. ",
-  titleTail: "One Hiring Engine.",
+  title: "Every requirement. Every candidate. ",
+  titleTail: "One hiring engine.",
   body: "From client requirements to final hiring decisions, every step moves through one intelligent system. Built to keep hiring faster, clearer, and connected.",
   /**
    * Figma parks two overlapping cards here and draws five carousel dots, the
@@ -47,7 +47,7 @@ export const hero = {
 
 export const overview = {
   eyebrow: "About The Project",
-  title: "Making Recruitment Easier to Manage, From Start to Finish",
+  title: "Making recruitment easier to manage, from start to finish",
   body: "A recruitment platform built to help teams handle client requirements, manage candidates, track hiring progress, and stay on top of everything through reports and dashboards all in one place.",
   modules: ["Requirements Module", "Candidates Module", "Reports Module", "Dashboard Mobile"],
   facts: [
@@ -101,11 +101,11 @@ export interface Phase {
 
 export const approach = {
   eyebrow: "our approch",
-  title: "From Chaos to Intelligent Automation",
+  title: "From chaos to intelligent automation",
   body: "We tackled this project by diving deep into the day-to-day friction of recruiters, hiring managers, and clients transforming scattered workflows into a single, cohesive experience.",
   phases: [
     {
-      title: "Phase 01 - Discover & Uncover",
+      title: "Phase 01 - Discover & uncover",
       items: [
         {
           title: "Map Recruitment Bottlenecks",
@@ -122,7 +122,7 @@ export const approach = {
       ],
     },
     {
-      title: "Phase 02 - Wireframe & Systemize",
+      title: "Phase 02 - Wireframe & systemize",
       items: [
         {
           title: "Blueprint the Core Flows",
@@ -142,7 +142,7 @@ export const approach = {
       mediaSide: "left",
     },
     {
-      title: "Phase 03 - Build, Test & Refine",
+      title: "Phase 03 - Build, test & refine",
       items: [
         {
           title: "Craft High-Fidelity Experience",
@@ -178,7 +178,7 @@ export const approach = {
  */
 export const typography = {
   eyebrow: "Typography",
-  title: "A Type System Built for Speed & Precision",
+  title: "A type system built for speed & precision",
   body: "Roboto provides a flexible foundation for the platform, supporting a consistent hierarchy across candidate profiles, dashboards, analytics, navigation, and system messages.",
   figure: {
     src: typographyFigure,
@@ -212,7 +212,7 @@ export const typography = {
 /** Exported whole: the figure, its four leader lines and their labels. */
 export const palette = {
   eyebrow: "Colorography",
-  title: "A Color System Built for Focus & Clarity",
+  title: "A color system built for focus & clarity",
   body: "Provides a cohesive foundation using functional accents and neutral tones to ensure clear hierarchy across dashboards, statuses, and workflows.",
   /**
    * Inlined as SVG, not a flattened export — the draw-in and the hover both
@@ -245,14 +245,14 @@ export interface Screen {
 
 export const screens = {
   eyebrow: "UI Screens",
-  title: "An Intuitive Interface Built for Seamless Hiring",
+  title: "An intuitive interface built for seamless hiring",
   body: "Presents an end-to-end visual experience designed to streamline candidate tracking, simplify complex requirements, and deliver actionable hiring insights.",
   blocks: [
     { src: screen1, alt: "The recruitment dashboard on desktop and mobile", layout: "full", node: { w: 1240, h: 700 }, exp: { w: 1354, h: 865 } },
     {
       src: screenJd,
       alt: "The JD Search and candidate ranking screen",
-      title: "JD Search & Candidates Ranking",
+      title: "JD search & candidates ranking",
       body: "JD Search automatically matches client job descriptions against your database to score and rank candidates instantly. It cuts out manual resume screening, letting recruiters spot and prioritize top talent in seconds.",
       layout: "left",
       node: { w: 608, h: 394 },
@@ -261,7 +261,7 @@ export const screens = {
     {
       src: screenReq,
       alt: "The requirements management screen",
-      title: "Requirements Management",
+      title: "Requirements management",
       body: "The Requirements hub lets teams easily post new roles, track open positions, & manage candidate pipelines. It gives recruiters a clean view to monitor hiring progress & instantly jump into candidate details for any active role.",
       layout: "right",
       node: { w: 608, h: 394 },

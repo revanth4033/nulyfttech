@@ -141,7 +141,7 @@ const px = (n: number) => `${n}px`;
 <style>
   .paths {
     background: var(--c-bg-light);
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   /* The stage is the fit wrapper's 1240 x 504 inner box; a position here
@@ -364,9 +364,6 @@ const px = (n: number) => `${n}px`;
   }
 
   @media (max-width: 900px) {
-    .paths {
-      padding-block: 64px;
-    }
 
     .flow {
       grid-template-columns: minmax(0, 320px) minmax(96px, 1fr) auto;
@@ -409,9 +406,6 @@ const px = (n: number) => `${n}px`;
   }
 
   @media (max-width: 560px) {
-    .paths {
-      padding-block: 40px;
-    }
 
     .paths__chip {
       width: 40px;

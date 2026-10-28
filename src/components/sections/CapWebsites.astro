@@ -1,4 +1,5 @@
 ---
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
 /**
  * Website Capability — Figma 637:2843 (826 tall).
  *
@@ -34,7 +35,7 @@ const browsers = [
 <section class="web" data-section>
   <header class="web__head">
     <div class="web__head-top">
-      <span class="web__eyebrow" data-animate>{websites.eyebrow}</span>
+      <EyebrowBadge variant="section" class="web__eyebrow" data-animate>{websites.eyebrow}</EyebrowBadge>
       <h2 class="web__title" data-animate>{websites.title}</h2>
     </div>
     <p class="web__body" data-animate>{websites.body}</p>
@@ -106,7 +107,7 @@ const browsers = [
 <style>
   .web {
     position: relative;
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -130,25 +131,12 @@ const browsers = [
     gap: 8px;
   }
 
-  .web__eyebrow {
-    padding: 8px 16px;
-    box-shadow: inset 0 0 0 0.8px rgba(131, 77, 251, 0.15); /* inside stroke: the pill is 32 tall */
-    border-radius: var(--r-eyebrow);
-    background: rgba(131, 77, 251, 0.08);
-    font-weight: 600;
-    font-size: var(--fs-xs);
-    line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    color: var(--c-accent);
-  }
-
   .web__title {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--fs-h2);
     line-height: normal;
     letter-spacing: var(--tr-h2);
-    text-transform: capitalize;
     color: var(--c-heading);
     white-space: nowrap;
   }
@@ -341,9 +329,6 @@ const browsers = [
   /* --- tablet + phone: picture over card --------------------------------- */
 
   @media (max-width: 1279px) {
-    .web {
-      padding-block: 72px;
-    }
 
     .web__head {
       margin-bottom: 48px;
@@ -390,18 +375,10 @@ const browsers = [
   }
 
   @media (max-width: 560px) {
-    .web {
-      padding-block: 48px;
-    }
 
     .web__head {
       gap: 12px;
       margin-bottom: 32px;
-    }
-
-    .web__eyebrow {
-      padding: 6px 12px;
-      font-size: 12px;
     }
 
     .web__title {

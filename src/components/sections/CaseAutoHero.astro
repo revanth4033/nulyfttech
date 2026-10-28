@@ -54,7 +54,9 @@ const { phones } = hero;
 <style>
   .ahero {
     position: relative;
-    height: 1130px;
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 115px at the drawn height). */
+    height: calc(1130px - 115px + var(--section-y));
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -64,13 +66,15 @@ const { phones } = hero;
     z-index: var(--z-content);
     width: 100%;
     max-width: var(--frame-w);
-    height: 1130px;
+    height: calc(1130px - 115px + var(--section-y));
     margin-inline: auto;
   }
 
   /* Figma: block at y=183.03, badge 2px into it, then 8px to the headline and
      16px to the paragraph. */
   .ahero__copy {
+    /* Above the phones beside it, whose baked shadow overhangs the copy. */
+    z-index: 1;
     position: absolute;
     top: 185.03px;
     left: 50%;
@@ -194,6 +198,13 @@ const { phones } = hero;
 
     .ahero__phones {
       margin-top: 32px;
+    }
+  }
+
+  /* At tablet width the phones' export leaves 28px of its own under them. */
+  @media (max-width: 900px) and (min-width: 561px) {
+    .ahero__phones {
+      margin-bottom: -28px;
     }
   }
 </style>

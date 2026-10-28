@@ -1,5 +1,6 @@
 /**
- * AI & Automation capability page — Figma 647:6302, 1440 x 6671:
+ * AI & Automation capability page — Figma 647:6302, 1440 x 6671; copy
+ * updated to 673:9776 (Oct 2026).
  * Hero (707), What we do (1386), dark project rows (803 + 607 + 607),
  * Where can we help (812), How we engineer it (895), CTA + footer.
  *
@@ -12,14 +13,13 @@
 
 export const hero = {
   height: 707,
-  eyebrow: "NULYFT STUDIO · AI & automation",
-  title: "Make AI part of how your",
-  emphasis: "business works",
-  body: "We engineer AI agents, intelligent workflows, and connected automation that take work beyond experimentation into systems your teams can actually use.",
-  primary: { label: "Build Your AI Workflow", href: "/contact" },
-  // Pointed at #ai-work until that section was replaced by the technology
-  // ecosystem; the work now lives on the Work page.
-  secondary: { label: "Explore Our Work", href: "/studio" },
+  eyebrow: "AI & automation",
+  title: "Turning AI into ",
+  emphasis: "practical solutions",
+  body: "We build AI agents, intelligent workflows, and AI-powered applications that simplify complex tasks, connect systems, and bring AI into everyday operations.",
+  primary: { label: "Discuss Your AI Project", href: "/contact" },
+  // The copy update (673:9776) drops the second button; rendered only when set.
+  secondary: null as { label: string; href: string } | null,
   /** Logo discs on the 460px target, top-left positions and disc size. */
   logos: [
     { icon: "icons/ai/logo-n8n", x: 77.05, y: 26.45, d: 73.6, w: 36.8, h: 36.8 },
@@ -41,9 +41,9 @@ export const services = {
   title: "AI that moves work forward",
   body: "From answering questions to executing workflows, we build AI systems around the work your business already does.",
   agents: {
-    kicker: "AI AGENTS",
-    title: "Give AI a role, not just a prompt",
-    body: "Agents that understand context, make decisions, use tools, and take action across everyday business workflows.",
+    kicker: "LangChain · LLMs · Tool Calling · RAG",
+    title: "AI agents & custom solutions",
+    body: "Build AI agents and custom AI applications that understand context, retrieve relevant information, use tools, and carry out tasks.",
     role: "Sales Ops Assistant",
     goal: "Qualify new leads and book demos",
     // Each task is done by the tool of the same index lighting up.
@@ -58,9 +58,9 @@ export const services = {
     restState: 4,
   },
   workflow: {
-    kicker: "INTELLIGENT WORKFLOW AUTOMATION",
-    title: "Connect the steps. Remove the repetition",
-    body: "We orchestrate apps, data, APIs, and AI to turn manual processes into connected workflows that keep moving.",
+    kicker: "n8n · Make · Microsoft Power Automate · RPA",
+    title: "Workflow automation",
+    body: "Connect applications, automate repetitive processes, & move information across business systems with less manual effort.",
     perInvoice: "30 min per invoice",
     steps: [
       { icon: "icons/ai/wf-email", title: "New invoice email", time: "You - 6 min", kind: "Trigger" },
@@ -81,9 +81,10 @@ export const services = {
     automated: [0, 1, 2, 3].map((i) => ({ x: 225.5, y: 101.25 + i * 50.75, r: 0 })),
   },
   doc: {
-    kicker: "DOCUMENT & DATA INTELLIGENCE",
-    title: "Turn business information to usable intelligence",
-    body: "Extract, classify, & reason across documents & structured data to make information easier to access & act on.",
+    kicker: "Document Processing · Data Extraction · Intelligent Search",
+    title: "Document & data intelligence",
+    // "can searched" is the frame's own wording, kept as drawn — flagged.
+    body: "Turn documents & business data into structured information that can searched, analyzed, & used in business processes.",
     caption: "Document → Usable Data",
     /** Each field is read from the document line its number marks. */
     fields: [
@@ -93,9 +94,9 @@ export const services = {
     ],
   },
   voice: {
-    kicker: "VOICE & CONVERSATIONAL AI",
-    title: "Make every conversation part of the workflow",
-    body: "AI voice and chat systems that handle enquiries, follow-ups, qualification, and customer interactions with the right context.",
+    kicker: "AI Voice Agents · Chatbots · Speech Integration",
+    title: "Voice & conversational AI",
+    body: "Develop AI-powered voice and chat experiences for customer enquiries, lead qualification, follow-ups, and other interactions.",
     channels: [
       { icon: "icons/ai/voice-call", label: "Voice Call" },
       { icon: "icons/ai/voice-chat", label: "Chat" },
@@ -124,7 +125,7 @@ export const services = {
  */
 export const technology = {
   eyebrow: "The technology ecosystem",
-  title: "Different technologies. One Solution",
+  title: "Different technologies. One solution",
   // Copy as drawn, including "Automation. Integrations".
   body: "We bring together the best in AI, Automation. Integrations and Modern infrastructure to build solutions that work for your business",
   stage: { w: 1240, h: 1183.771, top: 136 },
@@ -164,14 +165,14 @@ export const technology = {
 
 export const industries = {
   eyebrow: "WHERE CAN WE HELP",
-  title: "Start with the workflow. We'll find the AI opportunity",
-  body: "AI becomes valuable when it solves a real operational problem. We identify the repetitive, information-heavy, and decision-driven work where intelligent systems can create measurable change.",
+  title: "AI solutions for everyday business challenges",
+  body: "AI creates value when it solves a real operational problem. We identify repetitive tasks, information-heavy processes, and decisions that can be improved with AI, automation, and connected systems.",
   cards: [
-    { icon: "icons/ai/ind-finance", size: 20, title: "Finance & Accounting", items: ["Invoice processing", "Reconciliation", "Payment follow-ups", "Expense auditing"] },
-    { icon: "icons/ai/ind-supply", size: 20, title: "Supply Chain & Logistics", items: ["Inventory monitoring", "Supplier coordination", "Order tracking", "Delay detection"] },
+    { icon: "icons/ai/ind-finance", size: 20, title: "Finance & accounting", items: ["Invoice processing", "Reconciliation", "Payment follow-ups", "Expense auditing"] },
+    { icon: "icons/ai/ind-supply", size: 20, title: "Supply chain & logistics", items: ["Inventory monitoring", "Supplier coordination", "Order tracking", "Delay detection"] },
     { icon: "icons/ai/ind-health", size: 20, title: "Healthcare", items: ["Appointment handling", "Patient enquiries", "Document processing", "Claims workflows"] },
-    { icon: "icons/ai/ind-hr", size: 24, title: "HR & Recruitment", items: ["Resume intelligence", "AI interviews", "Interview scheduling", "Candidate workflows"] },
-    { icon: "icons/ai/ind-sales", size: 20, title: "Sales & Marketing", items: ["Lead qualification", "AI calling", "CRM Updates", "Sales follow-ups"] },
+    { icon: "icons/ai/ind-hr", size: 24, title: "HR & recruitment", items: ["Resume intelligence", "AI interviews", "Interview scheduling", "Candidate workflows"] },
+    { icon: "icons/ai/ind-sales", size: 20, title: "Sales & marketing", items: ["Lead qualification", "AI calling", "CRM Updates", "Sales follow-ups"] },
     { icon: "icons/ai/ind-manuf", size: 20, title: "Manufacturing", items: ["Quality monitoring", "Maintenance alerts", "Production reporting", "Operations support"] },
     { icon: "icons/ai/ind-enterprise", size: 20, title: "Enterprise & IT", items: ["IT support agents", "Incident triage", "Access workflows", "Operational automation"] },
   ],
@@ -183,14 +184,14 @@ export const industries = {
 
 export const engineer = {
   eyebrow: "How We Engineer It",
-  title: "From business problem to working intelligence",
-  body: "We don't start with a model. We start with the work that needs to change.",
+  title: "From problem to practical solution",
+  body: "We start by understanding the work that needs to change. Then we design, build, and integrate the right combination of AI, automation, and systems to make it happen.",
   // Zig-zag: x, y inside the 1240 x 455 stage.
   steps: [
-    { icon: "icons/ai/eng-find", title: "Understand", body: "We map the workflow, identify repetitive decisions, understand the data involved, and define the opportunity worth solving.", x: 0, y: 0 },
-    { icon: "icons/ai/eng-model", title: "Architect", body: "We determine where AI, automation, APIs, knowledge systems, and human decisions should work together.", x: 316, y: 228 },
-    { icon: "icons/ai/eng-board", title: "Engineer", body: "We develop agents, retrieval systems, integrations, & supporting infrastructure around the defined workflow.", x: 632, y: 0 },
-    { icon: "icons/ai/eng-rocket", title: "Deploy & Evolve", body: "We connect system to your business, monitor how it performs, & continuously refine its intelligence, & impact.", x: 948, y: 228 },
+    { icon: "icons/ai/eng-find", title: "Understand", body: "We map the workflow, identify repetitive tasks and decisions, understand the data involved, and find where AI can make a meaningful difference.", x: 0, y: 0 },
+    { icon: "icons/ai/eng-model", title: "Architect", body: "We determine how AI models, agents, automation, APIs, knowledge systems, and human decisions should work together to solve the problem.", x: 316, y: 228 },
+    { icon: "icons/ai/eng-board", title: "Engineer", body: "We build the agents, retrieval systems, integrations, and the supporting infrastructure that needed to bring the solutions to life.", x: 632, y: 0 },
+    { icon: "icons/ai/eng-rocket", title: "Deploy & evolve", body: "We integrate the solution into your existing environment, monitor its performance, and refine it over time based on real-world results.", x: 948, y: 228 },
   ],
   // Dashed arrows: the art is a 115 x 170 vertical run turned on its side.
   arrows: [
@@ -201,6 +202,6 @@ export const engineer = {
 };
 
 export const cta = {
-  title: "Have a workflow worth improving?",
-  body: "Tell us what's slowing your team down, what keeps getting repeated, or where your business needs better intelligence. We'll help find where AI can make the difference.",
+  title: "Have an AI opportunity in mind?",
+  body: "Tell us what you're trying to improve, what takes up too much of your team's time, or where your current systems fall short. We'll help you explore the right solution.",
 };

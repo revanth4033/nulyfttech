@@ -36,7 +36,7 @@ import { lightRows } from "../../data/whatWeDo";
     gap: 200px;
     max-width: var(--frame-w);
     margin-inline: auto;
-    padding: 100px var(--gutter);
+    padding: var(--section-y) var(--gutter);
   }
 
   /* Header -> first row is 64px, not the 200px between rows. */
@@ -47,7 +47,6 @@ import { lightRows } from "../../data/whatWeDo";
   @media (max-width: 900px) {
     .wwd__inner {
       gap: 96px;
-      padding-block: 72px;
     }
 
     .wwd__inner :global(.wwd__head) {

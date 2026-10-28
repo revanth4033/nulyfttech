@@ -86,7 +86,7 @@ import { typography, palette } from "../../data/caseRec";
     display: flex;
     flex-direction: column;
     gap: 64px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   /* The body is the full 1240 column, 543 tall, exactly as the frame cuts it. */
@@ -133,17 +133,36 @@ import { typography, palette } from "../../data/caseRec";
     overflow-x: clip;
   }
 
-  @media (max-width: 900px) {
-    .rtypo__inner {
-      padding-block: 64px;
-    }
-  }
-
   /* Mobile */
   @media (max-width: 560px) {
     .rtypo__inner {
       gap: 32px;
-      padding-block: 40px;
+    }
+  }
+
+  /* The typography export and the palette figure both carry empty space at
+     their foot (74 and 60px past their ink); give it back so the section
+     rhythm holds. */
+  @media (min-width: 1241px) {
+    .rtypo__figure {
+      margin-bottom: -74px;
+    }
+
+    .rpal .rtypo__inner {
+      padding-bottom: calc(var(--section-y) - 60px);
+    }
+  }
+
+  /* Stacked, the palette figure carries empty space at its foot. */
+  @media (max-width: 900px) {
+    .rpal .rtypo__inner {
+      padding-bottom: calc(var(--section-y) - 48px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .rpal .rtypo__inner {
+      padding-bottom: calc(var(--section-y) - 24px);
     }
   }
 </style>

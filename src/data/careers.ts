@@ -13,7 +13,7 @@ import teamDesk from "../assets/images/careers/team-desk.png";
 /* --- Culture bento -------------------------------------------------------- */
 
 export const perksHeader = {
-  title: "A Place to Grow, A Team to Thrive",
+  title: "A place to grow, a team to thrive",
   body: "Be part of a team that designs, builds, and ships real products. NuLyft offers an environment where learning, ownership, and impact go hand in hand.",
 };
 
@@ -30,12 +30,12 @@ export interface Perk {
 export const perks: Perk[] = [
   {
     icon: "icons/careers/briefcase",
-    title: "Career Growth",
+    title: "Career growth",
     body: "We invest in your journey structured training, mentorship, and global exposure that help you grow as fast as the company does",
   },
   {
     icon: "icons/careers/briefcase",
-    title: "Empowering Careers",
+    title: "Empowering careers",
     body: "At NuLyft, you don’t just work, you grow. We foster an inclusive culture where ideas matter, contributions are valued, and every role makes a global impact.",
   },
 ];
@@ -73,6 +73,6 @@ export const jobsHeader = { title: "Currently Open Positions" };
 
 export const jobsEmpty = {
   illustration: "illustrations/no-openings",
-  title: "No Openings Right Now",
+  title: "No openings right now",
   body: "We don’t have any roles open at the moment. Check back soon — new positions are posted here as soon as they go live.",
 };

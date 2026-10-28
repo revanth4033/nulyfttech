@@ -12,22 +12,22 @@ export interface WhyItem {
 export const whyItems: WhyItem[] = [
   {
     icon: "icons/why/ai-native",
-    title: "AI-Native Engineering",
+    title: "AI-native engineering",
     body: "AI is designed into the architecture from day one, not bolted on after launch.",
   },
   {
     icon: "icons/why/product",
-    title: "Product Thinking",
+    title: "Product thinking",
     body: "Every engagement is measured against business outcomes, not just technical delivery.",
   },
   {
     icon: "icons/why/engineering",
-    title: "Engineering Depth",
+    title: "Engineering depth",
     body: "Strong capability across frontend, backend, cloud, data, and AI one accountable team.",
   },
   {
     icon: "icons/why/scale",
-    title: "Built to Scale",
+    title: "Built to scale",
     body: "Architecture designed for production load, integration, and growth from the outset.",
   },
 ];

@@ -36,7 +36,7 @@ export const caseStudies: CaseStudy[] = [
   {
     id: "lms",
     category: "Education · SaaS",
-    title: "LMS / Education SaaS",
+    title: "LMS / education SaaS",
     body: "A scalable learning platform that brings course creation, learner management, and engagement into one connected experience.",
     outcomes: [
       "Smart Course Management",
@@ -70,7 +70,7 @@ export const caseStudies: CaseStudy[] = [
   {
     id: "recruitment",
     category: "HR · Recruitment · AI",
-    title: "AI-Powered Recruitment Platform",
+    title: "AI-powered recruitment platform",
     body: "An intelligent recruitment experience that helps teams discover, evaluate, and move the right talent through a more connected hiring journey.",
     outcomes: [
       "45% faster candidate screening",

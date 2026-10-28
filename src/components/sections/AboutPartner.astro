@@ -66,7 +66,7 @@ import { partner } from "../../data/about";
 <style>
   .partner {
     background: var(--c-bg-light);
-    padding-block: 100px 100.03px;
+    padding-block: var(--section-y);
   }
 
   .partner__inner {
@@ -301,9 +301,6 @@ import { partner } from "../../data/about";
   }
 
   @media (max-width: 900px) {
-    .partner {
-      padding-block: 64px;
-    }
 
     .partner__inner {
       grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
@@ -362,9 +359,6 @@ import { partner } from "../../data/about";
   }
 
   @media (max-width: 560px) {
-    .partner {
-      padding-block: 40px;
-    }
 
     .partner__lead {
       gap: 24px;

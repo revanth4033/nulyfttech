@@ -64,7 +64,7 @@ const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
     display: flex;
     flex-direction: column;
     gap: 64px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .scr__blocks {
@@ -104,6 +104,10 @@ const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
   }
 
   .shot__copy {
+    /* Above the screenshots beside it: their baked drop shadow (~60px a
+       side) overhangs this column and painted over the first words. */
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -146,9 +150,6 @@ const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
   }
 
   @media (max-width: 900px) {
-    .scr__inner {
-      padding-block: 64px;
-    }
 
     .shot__copy h3 {
       font-size: 20px;
@@ -165,7 +166,6 @@ const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
   @media (max-width: 560px) {
     .scr__inner {
       gap: 32px;
-      padding-block: 40px;
     }
 
     .scr__blocks {
@@ -180,6 +180,13 @@ const cellOf = (layout: string) => (layout === "full" ? 1240 : 608);
     .shot__copy p {
       font-size: 14px;
       line-height: 22px;
+    }
+  }
+
+  /* The last screenshot hangs 13px into the foot. */
+  @media (min-width: 1241px) {
+    .scr__inner {
+      padding-bottom: calc(var(--section-y) + 13px);
     }
   }
 </style>

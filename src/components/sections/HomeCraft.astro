@@ -82,7 +82,7 @@ import { craft } from "../../data/home";
     position: relative;
     overflow: hidden;
     background: var(--c-bg-light);
-    padding-block: 100px 110px;
+    padding-block: var(--section-y);
   }
 
   .craft__inner {
@@ -99,7 +99,6 @@ import { craft } from "../../data/home";
     font-size: var(--fs-h3);
     line-height: normal;
     letter-spacing: var(--tr-h2);
-    text-transform: capitalize;
     color: var(--c-heading);
   }
 
@@ -364,9 +363,6 @@ import { craft } from "../../data/home";
   }
 
   @media (max-width: 900px) {
-    .craft {
-      padding-block: 64px;
-    }
 
     .craft__inner {
       gap: 32px;
@@ -474,9 +470,6 @@ import { craft } from "../../data/home";
   }
 
   @media (max-width: 560px) {
-    .craft {
-      padding-block: 40px;
-    }
 
     .craft__title {
       font-size: 24px;

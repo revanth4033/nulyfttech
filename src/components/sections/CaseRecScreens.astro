@@ -61,7 +61,7 @@ import { screens } from "../../data/caseRec";
     display: flex;
     flex-direction: column;
     gap: 64px;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .scr__blocks {
@@ -100,6 +100,10 @@ import { screens } from "../../data/caseRec";
   }
 
   .shot__copy {
+    /* Above the screenshots beside it: their baked drop shadow (~60px a
+       side) overhangs this column and painted over the first words. */
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -142,9 +146,6 @@ import { screens } from "../../data/caseRec";
   }
 
   @media (max-width: 900px) {
-    .scr__inner {
-      padding-block: 64px;
-    }
 
     .shot__copy h3 {
       font-size: 20px;
@@ -161,7 +162,6 @@ import { screens } from "../../data/caseRec";
   @media (max-width: 560px) {
     .scr__inner {
       gap: 32px;
-      padding-block: 40px;
     }
 
     .scr__blocks {
@@ -176,6 +176,13 @@ import { screens } from "../../data/caseRec";
     .shot__copy p {
       font-size: 14px;
       line-height: 22px;
+    }
+  }
+
+  /* The last block's screenshot leaves 19px of its own under it. */
+  @media (min-width: 1241px) {
+    .scr__inner {
+      padding-bottom: calc(var(--section-y) - 19px);
     }
   }
 </style>

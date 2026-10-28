@@ -483,6 +483,36 @@ outline variant's accent. The rules are `.nav__drawer ul a` now. Same trap as
 `.deck__title span` catching `<Icon>` on the Studio page: **never select a bare
 element inside a container that also holds a component.**
 
+## Section spacing — one rhythm, `--section-y`
+
+**Every section pads top and bottom by `--section-y` (by request — the 100px
+a side Figma draws made ~200px gaps between sections).** 64px on desktop, 48
+at <=900, 40 at <=560 (tokens.css, stepped in global.css), so any two
+neighbouring sections sit 2x apart: 128 / 96 / 80 of visible space. Never hard
+-code a section's vertical padding, and never add a per-breakpoint override —
+the token steps by itself; 72 such overrides were deleted.
+
+Where a section's own content carries space (a figure with empty pixels at
+its foot, media hanging past the padding), it is corrected by the *measured*
+amount next to the rule, e.g. `calc(var(--section-y) - 22px)`. Fixed-height
+Figma frames (heroes, NxtDealer's Overview / Typography / Colorography,
+Skill Wagon's typography box) are trimmed to "content end + token"; absolute
+art inside them is placed `calc(y + var(--section-y))`, not `y + 100`.
+The centred page heroes are padded, not fixed-height. The CTA card gets
+`margin-top: var(--section-y)` on `.outro` (a margin — the card is placed
+against the padding box). The AI tech section sizes to its fitted stage
+below 1240, where it used to keep its desktop height and leave 460-730px of
+empty band.
+
+**Measure the visible gap, not the boxes.** `vgaps.mjs` (scratchpad) renders
+each page, hides the nav, and counts the run of empty pixel rows (nearly
+every pixel within 14 levels of the row's commonest colour) at each section
+boundary — DOM content extents miss inline-SVG figures and positioned art.
+Two traps found doing it: an override on a section whose padding actually
+lives on its inner container *adds* space; and where media overlaps across a
+seam (Product Engineering's proof rows), fit the correction from several
+measured settings, not one.
+
 ## Home page (redesign) — Figma 664:2977
 
 `src/pages/index.astro` is the redesigned home page; the previous one lives on
@@ -501,7 +531,7 @@ Capabilities / Company / Contact (664:3250); "UX Capabilities" links to
 
 **The hero photo is masked, not exported.** Figma's subtract bakes the photo
 into the notched shape; here the photo is a normal `<Image>` and the notch is
-a 320 x 110 alpha crop of the subtract's own export (`hero-notch.png`) pinned
+a 320 x 110 corner region (now two vector pieces, see below) pinned
 bottom-right, unioned with two plain fills — so the fillets are Figma's and
 the notch keeps its size as the card narrows. The three dots are drawn as
 Figma has them over one photo.
@@ -532,7 +562,7 @@ never auto-plays under reduced motion. **The focus pause must test
 `:focus-visible`** — a mouse click on a dot focuses it too, and a plain
 `focusin` pause then froze the carousel for good after the first click.
 **The photo's notch stretches** to fit a longer button: the corner is two
-cut pieces (`hero-notch-left/right.png`) with a 36px band between, widened by
+vector pieces (`piece()` in `HomeHero.astro`) with a 36px band between, widened by
 `--notch-e` (a registered `@property`, so it eases). Slide 1 renders
 pixel-identical to the single-piece mask it replaced. **`mask-position` has
 no three-value form** (`right 20px bottom` is invalid there, unlike
@@ -563,6 +593,16 @@ is true (phone drawer, Capabilities) or keyboard focus is inside — and that
 must be `:focus-visible`, not `:focus-within`: a mouse click leaves focus on
 the clicked button and pinned the bar after any click. ScrollSmoother keeps
 the native scroll position, so `window` scroll events drive it.
+
+**The notch corner is drawn, not cut from the export — Figma's own shape is
+off.** The subtract's notch rectangle overhangs the card (0.68px right, 6px
+bottom), so its rounds land partly outside the photo and get sliced into a
+squashed near-diagonal above the button (the user spotted it). The corner is
+now two inline SVG mask pieces in which every notch corner is a 32px round:
+the photo's corner above the button and beside it round outward, the
+notch's top-left curves inward. A first redraw followed the rectangle's own
+rounds instead (inverted curves into the notch) and left two sharp tips —
+rejected; keep all three corners rounded.
 
 **The why-section rings are gradient strokes, and the design context says
 they are not.** It reports a flat 2px #834dfb; the render fades each ring to
@@ -602,7 +642,28 @@ shared `EyebrowBadge` itself (class `case-eyebrow`, pinned
 `align-self: flex-start` so it hugs rather than stretching in their column
 layouts). That moved desktop heights a little: LMS 9,750, Recruitment
 9,594, Automotive 10,063. A scan of every page for
-boxed uppercase labels found every one on the token.
+boxed uppercase labels found every one on the token. **And every eyebrow is the shared `EyebrowBadge`** — the capability pages
+drew their own copies (`proj__eyebrow`, `pes__`, `pep__`, `pf__`, `ais__`,
+`aind__`, `aen__`, `web__eyebrow`) and the project "Key Features" / "Product
+Outcomes" labels were bare tracked capitals; all now render the badge,
+`section` on light bands and `dark` on dark ones (Product Engineering's
+process band, the Skill Wagon project), with the hand-made styles deleted.
+Don't style a section label by hand: pass `<EyebrowBadge variant>`.
+
+**Every heading on the site is sentence case (by request)** — first word,
+the first word after a full stop, proper names (nuLyft, NxtDealer, Skill
+Wagon, Asterdata) and acronyms (AI, HR, CRM, JD, LMS, SaaS) keep their
+capitals; nothing else. Done twice over: the ten `text-transform:
+capitalize` rules on heading classes are gone (the nav links, job meta and
+project fact values keep theirs — not headings), and ~130 heading strings
+typed in Title Case in the data were rewritten. Intended exceptions: a
+subtitle after a dash keeps its first capital ("Phase 01 - Discover &
+define", "Skill Wagon - Redefining…"), illustration labels stay as drawn
+("Update Accounts", the old home's mock automation steps), and "Invidiual"
+stays a flagged Figma typo. New copy from Figma arrives in Title Case — set
+it in sentence case when it lands. Check with a crawl of `h1`–`h6` plus any
+`[class*=title]`, `[class*=__name]` text, not `h1`–`h4` alone: tab titles,
+step titles and diagram cards are styled headings without heading tags.
 
 **The nav labels are untracked, by request.** Figma sets them at 2px
 (`--tr-nav`); the user asked for it removed, so the nav departs from the
@@ -1269,6 +1330,19 @@ callback under `prefers-reduced-motion`. The hover is colour, not motion, and
 should survive — otherwise reduced-motion visitors hover glyph outlines and
 fall through the gaps between letters.
 
+### Text must sit above the screenshots
+
+The case-study exports carry ~60px of baked drop shadow per side, painted
+over a plate of the section ground, and the figures are positioned
+(`absolute`) while the copy beside them was not — so the overhang painted
+over the first words of the neighbouring text (the user caught "JD search &
+candidates ranking" cut at its start). `CaseHeader`, both Approach
+`.phase__copy`, both Screens `.shot__copy`, both case heroes' `.chero__copy`
+and Automotive's `.ahero__copy` now carry `position: relative; z-index: 1`.
+Check with `elementFromPoint` at each text line's two ends — if it lands on
+an `<img>`, the text is covered — on every page at several widths; a
+screenshot alone missed most of the twenty cases.
+
 ### The challenge section — redesigned for all three case studies
 
 Every frame draws the challenge as a red uppercase ✕ list beside a collage
@@ -1491,6 +1565,17 @@ native controls stay. Verify in full Chrome for Testing — the headless
 shell needs the metadata-ready check made before the listener, or it
 waits forever.
 
+**Key Features must fit the window while pinned.** The section is ~990
+tall; a 16" MacBook's window holds it, a 13-14" one does not, and the fifth
+tab sat below the fold for the whole pin (the user caught it).
+`cap-features.ts` `fit()` trims the 100px padding (to 24 at least), then
+scales `.proj__inner` about its top centre only if it still does not fit,
+giving the saved height back with a negative margin so the pin measures the
+scaled box; re-run on `refreshInit`. Measured: 1728x1000 untouched, 1512x860
+padding only, 1440x780 0.96, 1366x680 0.80-0.83, 1280x640 0.77 — all five
+rows on screen for every tab. `cap-pin.ts`'s `NAV_H` is 120 now (the
+floating card's foot); 83 was the old bar.
+
 **Key Features** pins one tab per scroll band on desktop; below 1280 the
 screen sits on top and a tap selects a row. The rail fills to the measured
 bottom of the active row there, since rows wrap to different heights.
@@ -1595,6 +1680,19 @@ auto-plays on desktop too, so it is not a hover replacement.
 zig-zag runs down — cards at 82% alternating sides, joined by a dashed
 S-elbow drawn in the card's own width units (18% of the column is 21.95% of
 a card).
+
+**Copy update — Figma 673:9776 (Oct 2026).** Content only, read line by line
+off the frame's 148 text layers. Changed: the hero (eyebrow "AI & automation",
+"Turning AI into practical solutions", new body, primary "Discuss Your AI
+Project" and no second button — `secondary: null`, rendered only when set);
+the four What We Do cards' kickers (now technology lists, set as typed:
+"LangChain · LLMs · Tool Calling · RAG", …), titles and bodies; the Where
+can we help title and body; the How we engineer it title, body and all four
+step bodies; the CTA title and body. Unchanged: every illustration label,
+the technology section, the seven industry cards. The What We Do title lost
+its `capitalize` — Figma sets every heading here as typed. Two lines are
+kept as drawn and flagged: "information that can searched" and
+"infrastructure that needed to bring".
 
 **The technology ecosystem replaced "What we've been building"** (Figma
 673:10175, Oct 2026). `sections/AiTechnology.astro`, data `technology` in

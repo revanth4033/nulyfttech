@@ -4,6 +4,11 @@
  * (Figma 637:2721 / 646:6095). The outer two are dimmed to 40%; the
  * middle one lifts with a soft shadow. The notch is a crop of Figma's
  * iPhone frame, shared with the Product Design page.
+ *
+ * Pointing at a phone makes it the lit one and dims the other two (by
+ * request); leaving the row restores the drawn state. On touch a tap does
+ * the same, and a tap outside the row restores it — nothing changes on its
+ * own.
  */
 import { Image } from "astro:assets";
 import FigmaFill from "./FigmaFill.astro";
@@ -17,10 +22,10 @@ interface Props {
 const { phones } = Astro.props;
 ---
 
-<div class="prow">
+<div class="prow" data-prow>
   {
     phones.map((ph) => (
-      <div class:list={["prow__phone", { "prow__phone--dim": ph.dim, "prow__phone--lit": !ph.dim }]}>
+      <div class:list={["prow__phone", { "prow__phone--dim": ph.dim, "prow__phone--lit": !ph.dim }]} data-prow-phone>
         <FigmaFill shot={ph} boxW={168} />
         <Image src={islandSrc} alt="" width={79} widths={[79, 158]} sizes="79px" class="prow__island" />
       </div>
@@ -46,11 +51,41 @@ const { phones } = Astro.props;
     background: #010101;
   }
 
+  .prow__phone {
+    transition:
+      opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .prow__phone--dim {
     opacity: 0.4;
   }
 
   .prow__phone--lit {
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.24);
+  }
+
+  /* One phone picked — by the pointer, or by a tap on touch — is lit and the
+     others dim, whichever it is. */
+  @media (hover: hover) and (pointer: fine) {
+    .prow:has(.prow__phone:hover) .prow__phone {
+      opacity: 0.4;
+      box-shadow: none;
+    }
+
+    .prow:has(.prow__phone:hover) .prow__phone:hover {
+      opacity: 1;
+      box-shadow: 0 0 32px rgba(0, 0, 0, 0.24);
+    }
+  }
+
+  .prow.is-picked .prow__phone {
+    opacity: 0.4;
+    box-shadow: none;
+  }
+
+  .prow.is-picked .prow__phone.is-picked {
+    opacity: 1;
     box-shadow: 0 0 32px rgba(0, 0, 0, 0.24);
   }
 
@@ -68,3 +103,30 @@ const { phones } = Astro.props;
     border-radius: 0 0 13.327px 13.327px;
   }
 </style>
+
+<script>
+  // Touch: a tap lights that phone; a tap anywhere else restores the row.
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  document.querySelectorAll<HTMLElement>("[data-prow]").forEach((row) => {
+    const phones = [...row.querySelectorAll<HTMLElement>("[data-prow-phone]")];
+    const clear = () => {
+      row.classList.remove("is-picked");
+      phones.forEach((p) => p.classList.remove("is-picked"));
+    };
+    phones.forEach((phone) =>
+      phone.addEventListener("click", (e) => {
+        if (fine.matches) return;
+        e.stopPropagation();
+        const again = phone.classList.contains("is-picked");
+        clear();
+        if (!again) {
+          row.classList.add("is-picked");
+          phone.classList.add("is-picked");
+        }
+      }),
+    );
+    document.addEventListener("click", (e) => {
+      if (!fine.matches && !row.contains(e.target as Node)) clear();
+    });
+  });
+</script>

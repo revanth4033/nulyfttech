@@ -13,6 +13,15 @@
  *
  * Tabs are not clickable — scroll is the only driver, by request.
  *
+ * The pinned frame must fit the window, or the last tab sits below the fold
+ * for the whole pin: the section is ~990 tall, a 16" MacBook's window has
+ * room for it and a 13-14" one (~700-800 under the nav) does not. `fit()`
+ * first trims the section's 100px padding, then — only if the content still
+ * does not fit — scales the content down about its top centre, handing the
+ * saved height back with a negative margin so the pin measures the scaled
+ * size. Re-run on every ScrollTrigger refresh (resize). A tall window gets
+ * the drawn layout untouched.
+ *
  * Below 1280 there is no pin (a pin is expensive on a phone). The panel
  * sits above the list and a tap on a row selects it — the rows become
  * buttons there, and only there; nothing advances on its own. The rail
@@ -20,7 +29,7 @@
  * different heights.
  */
 import { gsap, ScrollTrigger, prefersReducedMotion } from "./gsap";
-import { pinStart } from "./cap-pin";
+import { pinStart, NAV_H } from "./cap-pin";
 
 const STEP_VH = 55;
 const RAIL_H = 476;
@@ -70,6 +79,28 @@ sections.forEach((section) => {
   mm.add("(min-width: 1280px)", () => {
     if (prefersReducedMotion()) return;
 
+    const inner = section.querySelector<HTMLElement>(".proj__inner");
+    const PAD = 100; // the drawn padding
+    const MIN_PAD = 24;
+    const fit = () => {
+      if (!inner) return;
+      inner.style.transform = "";
+      inner.style.marginBottom = "";
+      section.style.paddingBlock = "";
+      const free = window.innerHeight - NAV_H;
+      const content = inner.offsetHeight;
+      const pad = Math.min(PAD, Math.max(MIN_PAD, (free - content) / 2));
+      if (pad < PAD) section.style.paddingBlock = `${pad}px`;
+      const scale = Math.min(1, (free - 2 * MIN_PAD) / content);
+      if (scale < 0.999) {
+        inner.style.transform = `scale(${scale.toFixed(4)})`;
+        inner.style.transformOrigin = "50% 0";
+        inner.style.marginBottom = `${(-content * (1 - scale)).toFixed(1)}px`;
+      }
+    };
+    fit();
+    ScrollTrigger.addEventListener("refreshInit", fit);
+
     ScrollTrigger.create({
       trigger: section,
       start: pinStart(section),
@@ -82,7 +113,16 @@ sections.forEach((section) => {
       },
     });
 
-    return () => show(0, true);
+    return () => {
+      ScrollTrigger.removeEventListener("refreshInit", fit);
+      if (inner) {
+        inner.style.transform = "";
+        inner.style.transformOrigin = "";
+        inner.style.marginBottom = "";
+      }
+      section.style.paddingBlock = "";
+      show(0, true);
+    };
   });
 
   mm.add("(max-width: 1279px)", () => {

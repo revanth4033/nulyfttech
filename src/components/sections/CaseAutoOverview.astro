@@ -19,7 +19,6 @@ import { overview } from "../../data/caseAuto";
  * containing block is the frame's *border* box, have to add it back. Without
  * this every piece of media sits 100px high.
  */
-const INSET = 100;
 
 const ov = overview;
 ---
@@ -63,7 +62,7 @@ const ov = overview;
       widths={[ov.phone.w, ov.phone.w * 2]}
       sizes={`${ov.phone.w}px`}
       class="aov__phone"
-      style={`left:${ov.phone.x}px;top:${ov.phone.y + INSET}px;width:${ov.phone.w}px`}
+      style={`left:${ov.phone.x}px;top:calc(${ov.phone.y}px + var(--section-y));width:${ov.phone.w}px`}
       data-animate
     />
   </div>
@@ -88,16 +87,17 @@ const ov = overview;
     width: 100%;
     max-width: 1240px;
     margin-inline: auto;
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
+  /* Drawn 698; the content ends at 566, then the section rhythm. */
   .aov__frame {
-    height: 698px;
+    height: calc(566px + var(--section-y));
   }
 
   .aov__copy {
     position: absolute;
-    top: 100px;
+    top: var(--section-y);
     left: 0;
     display: flex;
     flex-direction: column;
@@ -227,9 +227,6 @@ const ov = overview;
   }
 
   @media (max-width: 900px) {
-    .aov__frame {
-      padding-block: 64px;
-    }
 
     .aov__title {
       font-size: 22px;
@@ -244,9 +241,6 @@ const ov = overview;
 
   /* Mobile */
   @media (max-width: 560px) {
-    .aov__frame {
-      padding-block: 40px;
-    }
 
     .aov__title {
       font-size: 20px;
@@ -287,7 +281,5 @@ const ov = overview;
     .aov__modules {
       font-size: 14px;
     }
-
-    /* At 15/2.4 the longest point wrapped and closed the gap to its rule. */
   }
 </style>

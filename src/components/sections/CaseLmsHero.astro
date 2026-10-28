@@ -52,7 +52,9 @@ import { hero } from "../../data/caseLms";
 <style>
   .chero {
     position: relative;
-    min-height: 816px;
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 153px at the drawn height). */
+    min-height: calc(816px - 153px + var(--section-y));
     padding-top: var(--nav-h);
     background: var(--c-bg-light);
     overflow: hidden;
@@ -63,7 +65,7 @@ import { hero } from "../../data/caseLms";
     z-index: var(--z-content);
     width: 100%;
     max-width: var(--frame-w);
-    height: calc(816px - var(--nav-h));
+    height: calc(816px - 153px + var(--section-y) - var(--nav-h));
     margin-inline: auto;
   }
 
@@ -79,6 +81,10 @@ import { hero } from "../../data/caseLms";
   }
 
   .chero__copy {
+    /* Above the screenshots beside it: their baked drop shadow (~60px a
+       side) overhangs this column and painted over the first words. */
+    position: relative;
+    z-index: 1;
     display: flex;
     flex: none;
     flex-direction: column;
@@ -141,7 +147,7 @@ import { hero } from "../../data/caseLms";
   @media (max-width: 980px) {
     .chero {
       min-height: 0;
-      padding-bottom: 80px;
+      padding-bottom: var(--section-y);
     }
 
     .chero__frame {
@@ -174,7 +180,7 @@ import { hero } from "../../data/caseLms";
   /* Mobile — the hero already stacks at 980; this is scale and rhythm. */
   @media (max-width: 560px) {
     .chero {
-      padding-bottom: 40px;
+      padding-bottom: var(--section-y);
     }
 
     .chero__band {

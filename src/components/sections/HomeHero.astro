@@ -2,8 +2,6 @@
 import { Image } from "astro:assets";
 import PillButton from "../ui/PillButton.astro";
 import HeroBackdrop from "../ui/HeroBackdrop.astro";
-import notchLeft from "../../assets/images/home/hero-notch-left.png";
-import notchRight from "../../assets/images/home/hero-notch-right.png";
 import { heroSlides } from "../../data/home";
 
 /**
@@ -15,17 +13,40 @@ import { heroSlides } from "../../data/home";
  * The photo card is one 1240 x 450 shape with a notch bitten out of its
  * bottom-right corner, where the button sits. Figma builds it as a boolean
  * subtract; here the photo is masked so it can still be swapped. The notch
- * corner (320 x 110, cut from the subtract's own export so the fillets are
- * Figma's) is split in two — the left fillets and the right curve — with a
- * plain 36px band between them, so the notch can widen by `--notch-e` when a
- * slide's button is longer than slide 1's (the user's AI & Automation mock
- * widens it the same way). Two more fills cover the rest of the card. At
- * `--notch-e: 0` the pieces rebuild the original corner exactly.
+ * corner (320 x 110, drawn as vectors — see `piece` below) is split in
+ * two — the left fillets and the right curve — with a plain 36px band
+ * between them, so the notch can widen by `--notch-e` when a slide's button
+ * is longer than slide 1's (the user's AI & Automation mock widens it the
+ * same way). Two more fills cover the rest of the card.
  *
  * The shafts, glow and clouds behind it are `HeroBackdrop`, shared with the
  * Studio hero.
  */
 const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
+
+/*
+ * The two corner pieces, drawn as exact vectors (not cut from the export).
+ *
+ * Every corner of the notch is a 32px round, as on the rest of the card: the
+ * photo's corner above the button rounds outward, the notch's top-left
+ * curves inward, and the photo's corner beside the button rounds outward.
+ * (Figma's own subtract slices these: its notch rectangle overhangs the card
+ * by 0.68 and 6px, which left a squashed curve; a first redraw followed that
+ * rectangle's own rounds and left two sharp tips — the user wanted neither.)
+ *
+ * Each piece is 120 x 110 in the corner region's own coordinates (the region
+ * is the card's bottom-right 320 x 110, so its origin is card x 920, y 340);
+ * the path is the photo, everything else is the notch.
+ */
+const piece = (photo: string) =>
+  `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="110" viewBox="0 0 120 110"><path fill="#fff" d="${photo}"/></svg>`,
+  )}")`;
+// Left: the photo above the notch, the notch's inner top-left round, and the
+// photo's rounded corner where its bottom edge meets the notch.
+const notchLeft = piece("M0 0H120V36H84A32 32 0 0 0 52 68V78A32 32 0 0 1 20 110H0Z");
+// Right: the photo's rounded corner where its right edge meets the notch.
+const notchRight = piece("M0 0H120V4A32 32 0 0 1 88 36H0Z");
 
 /*
  * Slides: one per capability. Every slide's copy and button share one grid
@@ -78,7 +99,7 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
       <div
         class="hhero__photo"
         data-hero-photo
-        style={`--notch-l:url(${notchLeft.src});--notch-r:url(${notchRight.src});--notch-w:${NOTCH.w}px;--notch-h:${NOTCH.h}px;--notch-p:${NOTCH.piece}px;--notch-b:${NOTCH.band}px`}
+        style={`--notch-l:${notchLeft};--notch-r:${notchRight};--notch-w:${NOTCH.w}px;--notch-h:${NOTCH.h}px;--notch-p:${NOTCH.piece}px;--notch-b:${NOTCH.band}px`}
       >
         {
           heroSlides.map((sl, i) => (
@@ -134,7 +155,9 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
 <style>
   .hhero {
     position: relative;
-    height: 894px;
+    /* The band under the hero's content is the section rhythm, like every
+       other section's foot (measured empty run: 107px at the drawn height). */
+    height: calc(894px - 107px + var(--section-y));
     overflow: hidden;
     background: var(--c-bg-light);
   }
@@ -196,7 +219,6 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
     font-weight: 600;
     font-size: var(--fs-h2);
     line-height: normal;
-    text-transform: capitalize;
     color: var(--c-heading);
     /* Figma breaks after "Products"; balance would pull "Work" up. */
     text-wrap: wrap;
@@ -331,7 +353,7 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
   @media (max-width: 900px) {
     .hhero {
       height: auto;
-      padding-bottom: 64px;
+      padding-bottom: var(--section-y);
     }
 
     .hhero__inner {
@@ -379,9 +401,6 @@ const NOTCH = { w: 320, h: 110, piece: 120, band: 36 };
      copy — headline, line, button, then the picture. The dots stay on the
      photo. */
   @media (max-width: 560px) {
-    .hhero {
-      padding-bottom: 40px;
-    }
 
     .hhero__inner {
       gap: 20px;

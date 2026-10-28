@@ -126,7 +126,8 @@ const tiles = t.tiles.map((tile, i) => {
 <style>
   .atech {
     position: relative;
-    height: 1187px;
+    /* Drawn 1187 with 100 a side; the token takes 2 x (100 - token) off. */
+    height: calc(1187px - 2 * (100px - var(--section-y)));
     overflow: hidden;
     background: var(--c-bg-dark);
   }
@@ -140,7 +141,7 @@ const tiles = t.tiles.map((tile, i) => {
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding-top: 100px;
+    padding-top: var(--section-y);
     text-align: center;
   }
 
@@ -172,7 +173,7 @@ const tiles = t.tiles.map((tile, i) => {
 
   .atech__stage-wrap {
     position: absolute;
-    top: 136px;
+    top: calc(var(--section-y) + 36px);
     left: 0;
     right: 0;
   }
@@ -278,6 +279,27 @@ const tiles = t.tiles.map((tile, i) => {
   .atech__tile.is-on .atech__label {
     opacity: 1;
     translate: -50% 0;
+  }
+
+  /* Narrower than the design the stage is fitted down (fit.ts), but the
+     section kept its desktop height, leaving 460-730px of empty band under
+     a shrunken orbit. Here the section sizes to its content: the header,
+     then a window onto the fitted stage as tall as the drawn one in
+     proportion — the tiles end 76.7% of the stage's width down — then the
+     section rhythm. The rings still run off its foot, as drawn. */
+  @media (max-width: 1240px) {
+    .atech {
+      height: auto;
+      padding-bottom: var(--section-y);
+    }
+
+    .atech__stage-wrap {
+      position: relative;
+      top: auto;
+      height: calc(min(1240px, 100vw - 2 * var(--gutter)) * 0.767);
+      margin-top: 36px;
+      overflow: hidden;
+    }
   }
 
   @media (max-width: 900px) {

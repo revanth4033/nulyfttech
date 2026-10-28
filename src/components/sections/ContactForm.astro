@@ -82,7 +82,7 @@ const f = form.fields;
     background: var(--c-bg-footer);
     /* Figma ends the section 4px under the button; the footer below carries
        the breathing room. */
-    padding-block: 100px 4.03px;
+    padding-block: var(--section-y);
   }
 
   /* The art starts 42 down the section and is 1440 x 889, centred. */
@@ -249,9 +249,6 @@ const f = form.fields;
   }
 
   @media (max-width: 900px) {
-    .cform {
-      padding-top: 64px;
-    }
 
     .cform__inner {
       gap: 40px;
@@ -272,9 +269,6 @@ const f = form.fields;
   }
 
   @media (max-width: 560px) {
-    .cform {
-      padding-top: 40px;
-    }
 
     .cform__inner {
       gap: 32px;
@@ -320,6 +314,13 @@ const f = form.fields;
     /* The status line's -24 margins are tuned to the desktop's 48 gap. */
     .cform__status {
       margin-block: -16px;
+    }
+  }
+
+  /* The heading's own leading puts it 13px lower than the padding. */
+  @media (min-width: 901px) {
+    .cform {
+      padding-top: calc(var(--section-y) - 13px);
     }
   }
 </style>

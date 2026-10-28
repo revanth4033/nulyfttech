@@ -12,7 +12,8 @@ import { discuss } from "../../data/contact";
  * hidden, so they are left out. "Book a Call" scrolls to the form below.
  *
  * The illustration is a 2x raster of Figma's 14-path vector over the
- * section's ground — see ContactForm for why this page avoids live SVG art.
+ * section's ground, cropped to its visible curves (it carried ~50px of empty
+ * ground above and below, which doubled the gaps around this section) — see ContactForm for why this page avoids live SVG art.
  */
 ---
 
@@ -41,7 +42,7 @@ import { discuss } from "../../data/contact";
 <style>
   .discuss {
     background: var(--c-bg-light);
-    padding-block: 80px;
+    padding-block: var(--section-y);
   }
 
   .discuss__inner {
@@ -92,7 +93,7 @@ import { discuss } from "../../data/contact";
   .discuss :global(.discuss__art) {
     flex: none;
     width: 448px;
-    height: 429px;
+    height: 327px;
     mix-blend-mode: darken;
   }
 
@@ -109,7 +110,7 @@ import { discuss } from "../../data/contact";
     .discuss :global(.discuss__art) {
       width: 360px;
       height: auto;
-      aspect-ratio: 448 / 429;
+      aspect-ratio: 448 / 327;
     }
 
     .discuss__title {
@@ -127,9 +128,6 @@ import { discuss } from "../../data/contact";
   /* Stacked: the copy, then the curves centred under it, smaller — they are
      an ornament here, not a column. */
   @media (max-width: 900px) {
-    .discuss {
-      padding-block: 64px;
-    }
 
     .discuss__inner {
       flex-direction: column;
@@ -154,9 +152,6 @@ import { discuss } from "../../data/contact";
   }
 
   @media (max-width: 560px) {
-    .discuss {
-      padding-block: 40px;
-    }
 
     .discuss__inner {
       gap: 32px;
@@ -183,6 +178,28 @@ import { discuss } from "../../data/contact";
 
     .discuss :global(.discuss__art) {
       width: min(100%, 260px);
+    }
+  }
+
+  /* The lowest ~36px of the curves fade to almost nothing; let the section
+     close on the visible strokes. */
+  @media (min-width: 901px) {
+    .discuss :global(.discuss__art) {
+      margin-bottom: -36px;
+    }
+  }
+
+  /* Stacked, the same faint foot of the curves: ~27px at tablet, ~20 on a
+     phone. */
+  @media (max-width: 900px) {
+    .discuss :global(.discuss__art) {
+      margin-bottom: -27px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .discuss :global(.discuss__art) {
+      margin-bottom: -20px;
     }
   }
 </style>

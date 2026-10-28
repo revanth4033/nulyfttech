@@ -131,7 +131,7 @@ const drift = orbitDots.map((d, i) => {
 <style>
   .shape {
     background: var(--c-bg-light);
-    padding-block: 100px;
+    padding-block: var(--section-y);
   }
 
   .shape__inner {
@@ -162,7 +162,6 @@ const drift = orbitDots.map((d, i) => {
     font-size: var(--fs-h2);
     line-height: normal;
     letter-spacing: var(--tr-h2);
-    text-transform: capitalize;
     color: var(--c-ink);
   }
 
@@ -444,9 +443,6 @@ const drift = orbitDots.map((d, i) => {
   }
 
   @media (max-width: 900px) {
-    .shape {
-      padding-block: 64px;
-    }
 
     .shape__inner {
       gap: 40px 32px;
@@ -509,9 +505,6 @@ const drift = orbitDots.map((d, i) => {
   }
 
   @media (max-width: 560px) {
-    .shape {
-      padding-block: 40px;
-    }
 
     .shape__title {
       font-size: 24px;

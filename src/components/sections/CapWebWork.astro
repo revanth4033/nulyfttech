@@ -68,7 +68,7 @@ const rows = webWork.rows.map((cards, r) => {
     --step: calc(var(--card-w) + var(--gap));
     --wash: 300px;
     position: relative;
-    padding-block: 100px;
+    padding-block: var(--section-y);
     background: var(--c-bg-light);
     overflow: hidden;
   }
@@ -82,7 +82,6 @@ const rows = webWork.rows.map((cards, r) => {
     line-height: normal;
     letter-spacing: var(--tr-h2);
     text-align: center;
-    text-transform: capitalize;
     color: var(--c-heading);
   }
 
@@ -155,7 +154,6 @@ const rows = webWork.rows.map((cards, r) => {
   @media (max-width: 1279px) {
     .ww {
       --wash: 120px;
-      padding-block: 72px;
     }
 
     .ww__title {
@@ -172,7 +170,6 @@ const rows = webWork.rows.map((cards, r) => {
       --card-h: 194px;
       --gap: 12px;
       --wash: 40px;
-      padding-block: 48px;
     }
 
     .ww__title {
