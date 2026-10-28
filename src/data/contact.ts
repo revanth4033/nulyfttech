@@ -15,9 +15,9 @@ export const hero = {
 
 export const discuss = {
   // The spaced hyphen is the frame's own.
-  title: "Let’s discuss your use - case together",
+  title: "Let’s discuss your use case together",
   body: "Whether it’s a product idea or an operational challenge, we’re happy to discuss what makes sense for you.",
-  cta: { label: "Book a Call", href: "#contact-form" },
+  cta: { label: "Book a call", href: "#contact-form" },
 };
 
 /* --- The form (672:3866) ---------------------------------------------------- */
@@ -25,15 +25,15 @@ export const discuss = {
 export const form = {
   title: "Let's build something together",
   body: "Tell us about your project, challenge, or idea. We'll respond within 24 hours.",
-  submit: "Send Message",
+  submit: "Send message",
   /**
    * Placeholders as drawn. Figma reuses "John Doe" for the company and
    * message fields too — a stray copy, flagged to the user.
    */
   fields: {
-    name: { label: "Your Name", placeholder: "John Doe" },
-    email: { label: "Email Address", placeholder: "john@company.com" },
-    company: { label: "Company / Organization", placeholder: "John Doe" },
+    name: { label: "Your name", placeholder: "John Doe" },
+    email: { label: "Email address", placeholder: "john@company.com" },
+    company: { label: "Company / organization", placeholder: "John Doe" },
     message: {
       label: "What are you looking to build? What challenges are you facing?",
       placeholder: "John Doe",

@@ -52,13 +52,13 @@ export const hero = {
   emphasis: "business and user needs",
   body:
     "We combine an understanding of business objectives and user needs to design digital products that are practical, intuitive, and easy to use.",
-  cta: { label: "Talk To Our Design Team", href: "/contact" },
+  cta: { label: "Talk to our design team", href: "/contact" },
 
   pills: [
-    { label: "Recruitment Tech", icon: "icons/cap/ind-recruitment", side: "left", top: 150 },
-    { label: "E-Commerce", icon: "icons/cap/ind-ecommerce", side: "right", top: 150, w: 193 },
-    { label: "ED Tech", icon: "icons/cap/ind-edtech", side: "left", top: 367, w: 189 },
-    { label: "Financial Services", icon: "icons/cap/ind-financial", side: "right", top: 367 },
+    { label: "Recruitment tech", icon: "icons/cap/ind-recruitment", side: "left", top: 150 },
+    { label: "E-commerce", icon: "icons/cap/ind-ecommerce", side: "right", top: 150, w: 193 },
+    { label: "EdTech", icon: "icons/cap/ind-edtech", side: "left", top: 367, w: 189 },
+    { label: "Financial services", icon: "icons/cap/ind-financial", side: "right", top: 367 },
   ] satisfies HeroPill[],
 
   // Alternating low / high, tilted the opposite way on each row.
@@ -135,7 +135,7 @@ export interface Shot {
 import filmPoster from "../assets/images/cap-design/film-poster.jpg";
 
 export const approach = {
-  eyebrow: "OUR DESIGN APPROACH",
+  eyebrow: "Our design approach",
   title: "A structured approach to better product experiences",
   film: {
     /** In `public/`: astro:assets does not process video. 1920 x 1080,
@@ -153,32 +153,32 @@ export const approach = {
   steps: [
     {
       n: "01",
-      title: "Understand the Problem",
+      title: "Understand the problem",
       body: "We identify the underlying problem, understand user needs, and align the design approach with business objectives.",
     },
     {
       n: "02",
-      title: "Map the User Journey",
+      title: "Map the user journey",
       body: "We organize information and define clear user journeys around the tasks people need to complete.",
     },
     {
       n: "03",
-      title: "Define the Structure",
+      title: "Define the structure",
       body: "We establish the layout, content hierarchy, and interaction flow before developing the visual design.",
     },
     {
       n: "04",
-      title: "Establish the Design Language",
+      title: "Establish the design language",
       body: "We define the visual elements, typography, colors, and components that create a consistent experience across the product.",
     },
     {
       n: "05",
-      title: "Design the Interface",
+      title: "Design the interface",
       body: "We translate the structure and design language into clear interfaces and interactions across devices.",
     },
     {
       n: "06",
-      title: "Test and Refine",
+      title: "Test and refine",
       body: "We evaluate the experience with users, identify areas for improvement, and refine the design based on feedback.",
     },
   ],
@@ -264,7 +264,7 @@ export const projects: Project[] = [
     id: "asterdata",
     theme: "light",
     lead: {
-      eyebrow: "WHAT WE DESIGN",
+      eyebrow: "What we design",
       title: "Digital products built around real needs",
       body: "We design digital products that make tasks easier for users and help businesses meet their objectives. From simplifying complex workflows to improving everyday interactions, our focus is on making products more useful, intuitive, and effective.",
     },
@@ -368,35 +368,35 @@ export const projects: Project[] = [
         {
           icon: "icons/cap/feat-dashboard",
           title: "Personalized learning dashboard",
-          sub: "Your Entire Learning Journey, at a Glance",
+          sub: "Your entire learning journey, at a glance",
           shot: { src: skillFeature, alt: "Learner dashboard with weekly activity and course progress", crop: { w: 113.61, h: 251.92, left: -13.21, top: 0.11 } },
           caption: "A central view of courses, learning activity, progress, assessments, and upcoming tasks.",
         },
         {
           icon: "icons/cap/feat-play-lesson",
           title: "Course and content management",
-          sub: "Every Lesson Has Its Place",
+          sub: "Every lesson has its place",
           shot: { src: skillFeature2, alt: "Course player with lesson modules", crop: { w: 100, h: 261.43, left: 0.51, top: 0.14 } },
           caption: "Organized course materials and learning resources that make it easier for students to navigate their learning.",
         },
         {
           icon: "icons/cap/feat-live-tv",
           title: "Live & recorded learning",
-          sub: "Learning That Goes Beyond the Classroom",
+          sub: "Learning that goes beyond the classroom",
           shot: { src: skillFeature3, alt: "Live and recorded sessions", crop: { w: 100.24, h: 98.48, left: -0.06, top: 0.17 } },
           caption: "Access live sessions and recorded content to support different learning schedules and needs.",
         },
         {
           icon: "icons/cap/feat-chart-performance",
           title: "Progress & performance tracking",
-          sub: "Every Milestone, Clearly in View",
+          sub: "Every milestone, clearly in view",
           shot: { src: skillFeature4, alt: "Progress and performance charts", crop: { w: 100, h: 321.11, left: 0.06, top: -1.37 } },
           caption: "Track course completion, assessment results, and learning activity to understand progress over time.",
         },
         {
           icon: "icons/cap/feat-exam",
           title: "Assessments and quizzes",
-          sub: "Quick Quizzes, Meaningful Progress",
+          sub: "Quick quizzes, meaningful progress",
           shot: { src: skillFeature5, alt: "Assessment question screen", crop: { w: 100.15, h: 93.98, left: 0.03, top: 2.04 } },
           caption: "Complete assessments and quizzes to test understanding and evaluate learning progress.",
         },
@@ -419,7 +419,7 @@ export const projects: Project[] = [
     id: "automotive",
     theme: "light",
     name: "NxtDealer",
-    tagline: "A Visual-First Motorcycle Marketplace",
+    tagline: "A visual-first motorcycle marketplace",
     body: "NxtDealer is a marketplace designed to help users discover motorcycles through image-rich listings, detailed vehicle information, and intuitive search. The mobile experience also incorporates AI-powered reel creation, giving listings an additional way to present motorcycles through engaging visual content.",
     facts: [
       { label: "Technology", value: "Mobile App" },
@@ -510,7 +510,7 @@ import webBack2 from "../assets/images/cap-design/web-back-2.jpg";
 import webFront from "../assets/images/cap-design/web-front.png";
 
 export const websites = {
-  eyebrow: "Website Capability",
+  eyebrow: "Website capability",
   title: "Websites built around business needs",
   body: "We design and develop websites that reflect each business, its industry, and its audience \u2014 from corporate websites to SaaS platforms and product-led digital experiences.",
   slides: 5,
@@ -522,7 +522,7 @@ export const websites = {
   card: {
     title: "AI resume builder",
     body: "A resume-building tool that helps users create tailored resumes, check ATS compatibility, and manage multiple resume versions. It combines customizable templates, resume scoring, and organized storage in one interface.",
-    points: ["Customizable Resume Templates", "ATS Compatibility Check", "Resume Version Management"],
+    points: ["Customizable resume templates", "ATS compatibility check", "Resume version management"],
   },
 };
 

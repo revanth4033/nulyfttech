@@ -38,16 +38,16 @@ export interface Connector {
 
 export const hero = {
   height: 931,
-  eyebrow: "PRODUCT ENGINEERING",
+  eyebrow: "Product engineering",
   title: "Building products around",
   emphasis: "business requirements",
   body: "We take products from initial design through development and delivery, with each stage guided by the business\u2019s needs.",
-  primary: { label: "Discuss Your Project", href: "/contact" },
+  primary: { label: "Discuss your project", href: "/contact" },
   // The 673:9086 copy update drops the second button; PeHero renders one
   // only when it is set.
   secondary: null as { label: string; href: string } | null,
 
-  hub: { title: "The engineering layer", flow: "idea → Product →impact" },
+  hub: { title: "The engineering layer", flow: "idea → product → impact" },
 
   cards: [
     { icon: "icons/pe/layer-arch", title: "Architecture", sub: "Scalable systems built for growth", x: 429, y: 0 },
@@ -82,7 +82,7 @@ export const hero = {
 /* --- what we do -------------------------------------------------------------- */
 
 export const services = {
-  eyebrow: "WHAT WE DO",
+  eyebrow: "What we do",
   title: "From business challenges to products that work",
   body: "Whether you're building a new product, improving existing systems, or exploring AI, we bring together design and engineering to develop practical solutions around your business needs.",
   cards: [
@@ -112,7 +112,7 @@ export const services = {
 /* --- process (dark) -------------------------------------------------------- */
 
 export const process = {
-  eyebrow: "OUR DESIGN",
+  eyebrow: "Our design",
   title: "From what's broken to what's built",
   body: "Whether you're starting with an idea or bringing us an existing system, we find what needs to change, shape the right solution, and engineer it into a product built to move forward.",
   // Staggered: odd steps sit 64px in. Tops are Figma's.
@@ -133,17 +133,17 @@ export interface ProofItem {
 }
 
 export const proof = {
-  eyebrow: "SELECTED PRODUCT ENGINEERING",
+  eyebrow: "Selected product engineering",
   title: "Products we've engineered from concept to delivery",
   body: "A closer look at the products we've built, the engineering behind them, and how we've addressed specific business and user needs.",
   projects: [
     {
-      name: "AI powered recruitment platform",
+      name: "AI-powered recruitment platform",
       href: "/work/ai-recruitment-platform",
       items: [
         { label: "Intelligent candidate discovery", text: "Matches job requirements with relevant candidate profiles to support candidate search and shortlisting." },
-        { label: "Connected Recruitment Workflows", text: "Brings candidate information and recruitment activities together across hiring stages." },
-        { label: "Recruitment Data Intelligence", text: "Helps recruitment teams evaluate candidate profiles, review requirements, and gain insights from recruitment data." },
+        { label: "Connected recruitment workflows", text: "Brings candidate information and recruitment activities together across hiring stages." },
+        { label: "Recruitment data intelligence", text: "Helps recruitment teams evaluate candidate profiles, review requirements, and gain insights from recruitment data." },
       ],
       media: {
         kind: "browser" as const,
@@ -155,9 +155,9 @@ export const proof = {
       name: "Skillwagon",
       href: "/work/lms-education-saas",
       items: [
-        { label: "Flexible Learning Architecture", text: "Brings courses, assessments, projects, and learning resources together in one platform." },
-        { label: "Learning Progress Tracking", text: "Gives students and administrators a clear view of learning activity and progress." },
-        { label: "Multi-Format Learning", text: "Supports live sessions, recorded lessons, and other learning resources within one platform." },
+        { label: "Flexible learning architecture", text: "Brings courses, assessments, projects, and learning resources together in one platform." },
+        { label: "Learning progress tracking", text: "Gives students and administrators a clear view of learning activity and progress." },
+        { label: "Multi-format learning", text: "Supports live sessions, recorded lessons, and other learning resources within one platform." },
       ],
       media: {
         kind: "browser" as const,
@@ -169,9 +169,9 @@ export const proof = {
       name: "NxtDealer",
       href: "/work/nxtdealer",
       items: [
-        { label: "Structured Vehicle Listings", text: "Organizes vehicle details, specifications, images, and listing information." },
-        { label: "AI-Powered Reel Creation", text: "Uses vehicle images and details to generate promotional reels." },
-        { label: "Automated Content Generation", text: "Simplifies the process of turning vehicle listings into content for social media." },
+        { label: "Structured vehicle listings", text: "Organizes vehicle details, specifications, images, and listing information." },
+        { label: "AI-powered reel creation", text: "Uses vehicle images and details to generate promotional reels." },
+        { label: "Automated content generation", text: "Simplifies the process of turning vehicle listings into content for social media." },
       ],
       media: {
         kind: "phones" as const,
@@ -189,5 +189,5 @@ export const proof = {
 export const cta = {
   title: "Have a product to build or improve?",
   body: "Bring us your idea, business challenge, or existing product. We'll help you define the right approach and turn it into a well-engineered solution.",
-  button: "Discuss Your Project",
+  button: "Discuss your project",
 };

@@ -41,7 +41,7 @@ import { proof } from "../../data/capProductEngineering";
               <div class="pf__about">
                 <h3 class="pf__name">{p.name}</h3>
                 <div class="pf__list">
-                  <p class="pf__kicker">What we Engineered</p>
+                  <p class="pf__kicker">What we engineered</p>
                   <dl>
                     {p.items.map((it) => (
                       <div class="pf__item">
@@ -54,7 +54,7 @@ import { proof } from "../../data/capProductEngineering";
               </div>
               <div class="pf__cta">
                 <PillButton href={p.href} variant="outline" arrow={20} arrowIcon="icons/arrow-circle-20-outline">
-                  Full Case Study
+                  Full case study
                 </PillButton>
               </div>
             </div>
@@ -197,8 +197,6 @@ import { proof } from "../../data/capProductEngineering";
     font-weight: 600;
     font-size: var(--fs-xs);
     line-height: normal;
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
     color: var(--c-accent);
   }
 
@@ -214,8 +212,6 @@ import { proof } from "../../data/capProductEngineering";
     font-weight: 600;
     font-size: var(--fs-sm);
     line-height: normal;
-    letter-spacing: var(--tr-eyebrow-lg);
-    text-transform: uppercase;
     white-space: nowrap;
     color: var(--c-ink);
   }
@@ -327,7 +323,6 @@ import { proof } from "../../data/capProductEngineering";
 
     .pf__item dt {
       font-size: 12px;
-      letter-spacing: 1.2px;
     }
   }
 

@@ -399,7 +399,9 @@ import { craft } from "../../data/home";
       border-radius: 10px;
     }
 
-    .craft__chip :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .craft__chip :global(.icon) {
       width: 26px;
       height: 26px;
     }

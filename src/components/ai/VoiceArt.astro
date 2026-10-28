@@ -484,7 +484,9 @@ const outPaths = [
       height: 14px;
     }
 
-    .vo__check :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .vo__check :global(.icon) {
       width: 14px;
       height: 14px;
     }

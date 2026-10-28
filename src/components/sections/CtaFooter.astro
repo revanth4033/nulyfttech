@@ -41,7 +41,7 @@ interface Props {
 
 const {
   cta = true,
-  button = "Start a Conversation",
+  button = "Start a conversation",
   copyWidth = 504,
   title = "Have a product worth building?\nLet\u2019s talk about it",
   body = "Tell us what you\u2019re trying to solve, where you\u2019re stuck, or what you\u2019re planning next. We\u2019ll figure out the right way forward together.",
@@ -52,13 +52,13 @@ const {
  * Capabilities" is the design's label for the Product Design page.
  */
 const capabilities = [
-  { label: "UX Capabilities", href: "/product-design" },
-  { label: "Product Engineering", href: "/product-engineering" },
-  { label: "AI & Automation", href: "/ai-automation" },
+  { label: "UX capabilities", href: "/product-design" },
+  { label: "Product engineering", href: "/product-engineering" },
+  { label: "AI & automation", href: "/ai-automation" },
 ];
 const company = [
   { label: "Work", href: "/studio" },
-  { label: "About Us", href: "/about" },
+  { label: "About us", href: "/about" },
   { label: "Careers", href: "/careers" },
 ];
 const contact = [
@@ -115,7 +115,7 @@ const contact = [
       <div class="foot__brand">
         <span class="foot__logo">
           <Icon name="brand/nulyft-wordmark" width={97.083} height={48.539} />
-          <span class="foot__logo-sub"><em>technologies</em><em>Pvt Ltd</em></span>
+          <span class="foot__logo-sub"><em>technologies</em><em>Pvt. Ltd.</em></span>
         </span>
         <p class="foot__tagline">Products designed for people. Built for business.</p>
         <div class="foot__social">
@@ -149,7 +149,7 @@ const contact = [
     </div>
 
     <div class="foot__bar">
-      <p>&copy; 2026 NuLyft. All rights reserved.</p>
+      <p>&copy; 2026 nuLyft Technologies Pvt. Ltd. All rights reserved.</p>
       <ul class="foot__legal">
         <li><a href="/terms-and-conditions">Terms</a></li>
         <li><a href="/privacy-policy">Privacy</a></li>
@@ -476,7 +476,6 @@ const contact = [
     font-weight: 600;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
-    text-transform: uppercase;
     color: var(--c-bg-light);
   }
 
@@ -520,12 +519,12 @@ const contact = [
     width: 122px;
   }
 
+  /* Set as typed, sentence case, by request (Figma: capitals). */
   .foot__col-title {
     font-family: var(--font-sans);
     font-weight: 600;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
-    text-transform: uppercase;
     color: var(--c-bg-light);
   }
 

@@ -17,9 +17,9 @@ import PillButton from "./ui/PillButton.astro";
  * "Get Started" opens the Contact Us page.
  */
 const capabilities = [
-  { label: "Product Design", href: "/product-design" },
-  { label: "Product Engineering", href: "/product-engineering" },
-  { label: "AI & Automation", href: "/ai-automation" },
+  { label: "Product design", href: "/product-design" },
+  { label: "Product engineering", href: "/product-engineering" },
+  { label: "AI & automation", href: "/ai-automation" },
 ];
 
 type Link = { label: string; href: string } | { label: string; menu: typeof capabilities };
@@ -28,7 +28,7 @@ const links: Link[] = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/studio" },
   { label: "Capabilities", menu: capabilities },
-  { label: "About Us", href: "/about" },
+  { label: "About us", href: "/about" },
   { label: "Careers", href: "/careers" },
 ];
 
@@ -82,7 +82,7 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
       </ul>
     </nav>
 
-    <PillButton href="/contact" variant="outline" class="nav__cta">Get Started</PillButton>
+    <PillButton href="/contact" variant="outline" class="nav__cta">Get started</PillButton>
 
     <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
       <span class="visually-hidden">Menu</span>
@@ -117,7 +117,7 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
         )
       }
     </ul>
-    <PillButton href="/contact" variant="outline">Get Started</PillButton>
+    <PillButton href="/contact" variant="outline">Get started</PillButton>
   </div>
 </header>
 
@@ -180,8 +180,8 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     font-weight: 500;
     font-size: var(--fs-body);
     line-height: normal;
-    /* Figma tracks these 2px; the user asked for normal spacing. */
-    text-transform: capitalize;
+    /* Figma tracks these 2px; the user asked for normal spacing. Set as
+       typed — sentence case ("About us"), by request; no capitalize. */
     color: var(--c-ink);
     white-space: nowrap;
     transition: color var(--dur-fast) var(--ease-out);
@@ -339,8 +339,6 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     padding: 10px 0 2px;
     font-weight: 500;
     font-size: var(--fs-xs);
-    letter-spacing: 1px;
-    text-transform: uppercase;
     color: var(--c-muted);
   }
 

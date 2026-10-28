@@ -27,7 +27,7 @@ import screenDetails from "../assets/images/case-auto/screen-details.png";
  */
 
 export const hero = {
-  eyebrow: "NxtDealer - Case Study",
+  eyebrow: "NxtDealer - case study",
   title: "Turn bike stock into real ",
   /** Italic accent tail, set on its own line in the frame. */
   titleTail: "opportunities",
@@ -48,10 +48,10 @@ export const hero = {
 
 
 export const overview = {
-  eyebrow: "About The Project",
+  eyebrow: "About the project",
   title: "A marketplace built around every bike",
   body: "We designed a mobile platform that helps dealers easily manage, showcase, and sell bikes using AI-powered posts, stock management, and direct buyer connections all in one place.",
-  modules: ["Stock Feature", "Marketplace Feature", "Dashboard Analytics", "Content Creation"],
+  modules: ["Stock feature", "Marketplace feature", "Dashboard analytics", "Content creation"],
   facts: [
     { label: "Technology", value: "NxtDealer" },
     { label: "Scope", value: "Automotive Marketplace" },
@@ -62,7 +62,7 @@ export const overview = {
 };
 
 export const challenge = {
-  eyebrow: "The Challenge",
+  eyebrow: "The challenge",
   title: "Challenges in the current bike selling ecosystem",
   body: "The bike buying and selling process for dealers is still fragmented, time-consuming, and lacks digital efficiency, especially when managing inventory and reaching potential buyers.",
   /**
@@ -84,7 +84,7 @@ export interface PhaseItem {
 }
 
 export const approach = {
-  eyebrow: "our approch",
+  eyebrow: "Our approach",
   title: "From inventory to opportunity",
   intro:
     "We designed a simple, end-to-end experience for bike dealers to manage stock, create engaging content, and connect with buyers making the entire selling process faster, easier, and more effective.",
@@ -92,15 +92,15 @@ export const approach = {
     title: "Phase 01 - Discover & strategize",
     items: [
       {
-        title: "Understand the Dealer Journey",
+        title: "Understand the dealer journey",
         body: "Mapped the key challenges dealers face while managing and selling bikes.",
       },
       {
-        title: "Define the Core Experience",
+        title: "Define the core experience",
         body: "Identified essential features across stock, marketplace, content, and communication.",
       },
       {
-        title: "Plan the User Flow",
+        title: "Plan the user flow",
         body: "Structured a simple journey from adding a bike to showcasing and connecting.",
       },
     ] as PhaseItem[],
@@ -109,15 +109,15 @@ export const approach = {
     title: "Phase 02 - Structure & design",
     items: [
       {
-        title: "Create the Design System",
+        title: "Create the design system",
         body: "Developed reusable components, typography, colors, and interaction patterns.",
       },
       {
-        title: "Design for Clarity",
+        title: "Design for clarity",
         body: "Focused on clean layouts and strong visual hierarchy for everyday use.",
       },
       {
-        title: "Keep it Consistent",
+        title: "Keep it consistent",
         body: "Applied a unified visual language across the entire application.",
       },
     ] as PhaseItem[],
@@ -127,7 +127,7 @@ export const approach = {
     title: "Phase 03 - Refine the experience",
     items: [
       {
-        title: "Design Smart Interactions",
+        title: "Design smart interactions",
         body: "Made key actions like adding stock, publishing, and connecting feel effortless.",
       },
       {
@@ -135,7 +135,7 @@ export const approach = {
         body: "Refined spacing, hierarchy, and interactions for a smoother experience.",
       },
       {
-        title: "Shape the Final Product",
+        title: "Shape the final product",
         body: "Turned the complete design into a polished, modern mobile experience.",
       },
     ] as PhaseItem[],
@@ -199,10 +199,10 @@ export const colorography = {
 };
 
 export const screens = {
-  eyebrow: "UI Screens",
+  eyebrow: "UI screens",
   title: "Designed for every automobile user",
   intro:
-    "Explore the core screens of Application, designed to simplify navigation and create a seamless learning experience for users.",
+    "Explore the core screens of Application, designed to simplify navigation and create a seamless experience for users.",
   /**
    * Row A's three phones carry a much larger shadow than the rest: the export
    * is 1387x1263 for a 1240x1111 node, and its content measures x 18..1369
@@ -214,7 +214,7 @@ export const screens = {
   rowC: { src: screensRowC, x: -5.75, y: 2541.25, w: 1251.5, h: 662.5 },
   features: [
     {
-      title: "Invidiual stock view screen",
+      title: "Individual stock view screen",
       body: "Once a bike is added to stock, dealers get a dedicated view to manage all key actions in one place. They can edit details, share listings, create reels, and publish to the marketplace for better visibility.",
       phone: { src: screenStock, x: 170.25, y: -5.75, w: 311.5, h: 662.5 },
       copyX: 587,
@@ -223,7 +223,7 @@ export const screens = {
       mediaFirst: true,
     },
     {
-      title: "Marketplace invidiual bike details screen",
+      title: "Marketplace individual bike details screen",
       body: "Explore bikes from other dealers with key details like price, model, and condition at a glance. Save listings and connect instantly via WhatsApp or call for faster decisions.",
       phone: { src: screenDetails, x: 758.25, y: -5.75, w: 311.5, h: 662.5 },
       copyX: 0,

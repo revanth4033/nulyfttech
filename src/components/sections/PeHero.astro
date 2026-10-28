@@ -404,13 +404,12 @@ import { hero } from "../../data/capProductEngineering";
       gap: 12px;
     }
 
-    /* 35 characters of tracked capitals: at the desktop 14/2.4 the badge
-       breaks onto two lines; 10.5/0.8 keeps it one hugging pill. */
+    /* One hugging pill at 12px on a phone (it was 10.5/0.8 while every
+       eyebrow was set in tracked capitals). */
     .peh__head :global(.eyebrow) {
       gap: 8px;
       padding: 5px 12px 5px 5px;
-      font-size: 10.5px;
-      letter-spacing: 0.8px;
+      font-size: 12px;
     }
 
     .peh__head :global(.eyebrow__avatar) {
@@ -553,7 +552,9 @@ import { hero } from "../../data/capProductEngineering";
       border-radius: 8px;
     }
 
-    .peh__chip :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .peh__chip :global(.icon) {
       width: 15px;
       height: 15px;
     }

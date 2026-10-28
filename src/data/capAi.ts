@@ -17,7 +17,7 @@ export const hero = {
   title: "Turning AI into ",
   emphasis: "practical solutions",
   body: "We build AI agents, intelligent workflows, and AI-powered applications that simplify complex tasks, connect systems, and bring AI into everyday operations.",
-  primary: { label: "Discuss Your AI Project", href: "/contact" },
+  primary: { label: "Discuss your AI project", href: "/contact" },
   // The copy update (673:9776) drops the second button; rendered only when set.
   secondary: null as { label: string; href: string } | null,
   /** Logo discs on the 460px target, top-left positions and disc size. */
@@ -37,11 +37,11 @@ export const hero = {
 /* --- what we do (bento) ---------------------------------------------------- */
 
 export const services = {
-  eyebrow: "WHAT WE DO",
+  eyebrow: "What we do",
   title: "AI that moves work forward",
   body: "From answering questions to executing workflows, we build AI systems around the work your business already does.",
   agents: {
-    kicker: "LangChain · LLMs · Tool Calling · RAG",
+    kicker: "LangChain · LLMs · Tool calling · RAG",
     title: "AI agents & custom solutions",
     body: "Build AI agents and custom AI applications that understand context, retrieve relevant information, use tools, and carry out tasks.",
     role: "Sales Ops Assistant",
@@ -66,7 +66,7 @@ export const services = {
       { icon: "icons/ai/wf-email", title: "New invoice email", time: "You - 6 min", kind: "Trigger" },
       { icon: "icons/ai/wf-agent", title: "Extract the fields", time: "You - 8 min", kind: "AI" },
       { icon: "icons/ai/wf-check", title: "Match to purchase ", time: "You - 12 min", kind: "Rules" },
-      { icon: "icons/ai/wf-update", title: "Update Accounts", time: "You - 4 min", kind: "Trigger" },
+      { icon: "icons/ai/wf-update", title: "Update accounts", time: "You - 4 min", kind: "Trigger" },
     ],
     /**
      * Card centres in the 460 x 300 panel. Manual: scattered and tilted
@@ -81,30 +81,30 @@ export const services = {
     automated: [0, 1, 2, 3].map((i) => ({ x: 225.5, y: 101.25 + i * 50.75, r: 0 })),
   },
   doc: {
-    kicker: "Document Processing · Data Extraction · Intelligent Search",
+    kicker: "Document processing · Data extraction · Intelligent search",
     title: "Document & data intelligence",
     // "can searched" is the frame's own wording, kept as drawn — flagged.
-    body: "Turn documents & business data into structured information that can searched, analyzed, & used in business processes.",
-    caption: "Document → Usable Data",
+    body: "Turn documents & business data into structured information that can be searched, analyzed, & used in business processes.",
+    caption: "Document → usable data",
     /** Each field is read from the document line its number marks. */
     fields: [
       { label: "Vendor", value: "Northwind Supplies" },
-      { label: "Due Date", value: "30 Nov 2026" },
+      { label: "Due date", value: "30 Nov 2026" },
       { label: "Total", value: "₹ 1,85,999" },
     ],
   },
   voice: {
-    kicker: "AI Voice Agents · Chatbots · Speech Integration",
+    kicker: "AI voice agents · Chatbots · Speech integration",
     title: "Voice & conversational AI",
     body: "Develop AI-powered voice and chat experiences for customer enquiries, lead qualification, follow-ups, and other interactions.",
     channels: [
-      { icon: "icons/ai/voice-call", label: "Voice Call" },
+      { icon: "icons/ai/voice-call", label: "Voice call" },
       { icon: "icons/ai/voice-chat", label: "Chat" },
     ],
     role: "AI VOice & chat",
     /** Rendered word by word so each can light as the agent does it. */
     actions: ["Understands", "replies", "records"],
-    outcomes: ["Lead Qualified", "Demo booked", "CRM Updated"],
+    outcomes: ["Lead qualified", "Demo booked", "CRM Updated"],
     /** Figma's 53 waveform bars (647:6622), heights in px. */
     bars: [
       2, 3, 3.5, 3.99, 4, 4.5, 8, 8, 6, 5, 4.78, 12, 12, 8, 3, 0.7, 3, 10, 6, 8, 8.32, 13, 13.6, 9, 6, 5, 3,
@@ -127,7 +127,7 @@ export const technology = {
   eyebrow: "The technology ecosystem",
   title: "Different technologies. One solution",
   // Copy as drawn, including "Automation. Integrations".
-  body: "We bring together the best in AI, Automation. Integrations and Modern infrastructure to build solutions that work for your business",
+  body: "We bring together the best in AI, automation, integrations and modern infrastructure to build solutions that work for your business.",
   stage: { w: 1240, h: 1183.771, top: 136 },
   /** All three share the hub's centre. */
   center: { x: 616.546, y: 591.886 },
@@ -177,7 +177,7 @@ export const technology = {
 /* --- where can we help ------------------------------------------------------ */
 
 export const industries = {
-  eyebrow: "WHERE CAN WE HELP",
+  eyebrow: "Where can we help",
   title: "AI solutions for everyday business challenges",
   body: "AI creates value when it solves a real operational problem. We identify repetitive tasks, information-heavy processes, and decisions that can be improved with AI, automation, and connected systems.",
   cards: [
@@ -196,14 +196,14 @@ export const industries = {
 /* --- how we engineer it ---------------------------------------------------- */
 
 export const engineer = {
-  eyebrow: "How We Engineer It",
+  eyebrow: "How we engineer it",
   title: "From problem to practical solution",
   body: "We start by understanding the work that needs to change. Then we design, build, and integrate the right combination of AI, automation, and systems to make it happen.",
   // Zig-zag: x, y inside the 1240 x 455 stage.
   steps: [
     { icon: "icons/ai/eng-find", title: "Understand", body: "We map the workflow, identify repetitive tasks and decisions, understand the data involved, and find where AI can make a meaningful difference.", x: 0, y: 0 },
     { icon: "icons/ai/eng-model", title: "Architect", body: "We determine how AI models, agents, automation, APIs, knowledge systems, and human decisions should work together to solve the problem.", x: 316, y: 228 },
-    { icon: "icons/ai/eng-board", title: "Engineer", body: "We build the agents, retrieval systems, integrations, and the supporting infrastructure that needed to bring the solutions to life.", x: 632, y: 0 },
+    { icon: "icons/ai/eng-board", title: "Engineer", body: "We build the agents, retrieval systems, integrations, and the supporting infrastructure needed to bring the solutions to life.", x: 632, y: 0 },
     { icon: "icons/ai/eng-rocket", title: "Deploy & evolve", body: "We integrate the solution into your existing environment, monitor its performance, and refine it over time based on real-world results.", x: 948, y: 228 },
   ],
   // Dashed arrows: the art is a 115 x 170 vertical run turned on its side.

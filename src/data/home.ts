@@ -38,7 +38,7 @@ export const heroSlides: HeroSlide[] = [
     id: "product-design",
     title: { lead: "Design that makes products ", em: "work better" },
     body: "We look at how people use your product, where they get stuck, and what can be improved to make the experience better.",
-    cta: { label: "Our Design Approach", href: "/product-design" },
+    cta: { label: "Our design approach", href: "/product-design" },
     photo: heroDesign,
     photoAlt: "A designer sketching wireframes on paper at a desk beside a keyboard",
   },
@@ -47,7 +47,7 @@ export const heroSlides: HeroSlide[] = [
     title: { lead: "From idea to ", em: "finished product" },
     body: "We build web applications, mobile apps, and software products around what your business needs, turning ideas and requirements into products people can actually use.",
     // As written in the mock ("Build", not "Built") — flagged to the user.
-    cta: { label: "Products We\u2019ve Build", href: "/product-engineering" },
+    cta: { label: "Products we\u2019ve built", href: "/product-engineering" },
     photo: heroEngineering,
     photoAlt: "A developer's desk from above: a laptop and two monitors showing code, a hand on the keyboard",
   },
@@ -55,7 +55,7 @@ export const heroSlides: HeroSlide[] = [
     id: "ai-automation",
     title: { lead: "Improve the way your ", em: "business operates" },
     body: "We build AI-powered automation solutions that connect business processes, reduce manual work, and help teams manage their operations more efficiently.",
-    cta: { label: "Discover Our Capabilities", href: "/ai-automation" },
+    cta: { label: "Discover our capabilities", href: "/ai-automation" },
     photo: heroAi,
     photoAlt: "An AI assistant menu in a code editor offering Explain Code, Suggest Refactoring, Find Problems and Generate Code",
     // A touch above centre so the menu's first row, "Explain Code", is in.
@@ -96,7 +96,7 @@ export const about = {
     em: "We help you take that next step.",
   },
   lede: "More than a project, a technology partner. We work closely with our clients to understand what they need, explore the options, and develop solutions that fit their business.",
-  cta: { label: "Get To Know Us", href: "/about" },
+  cta: { label: "Get to know us", href: "/about" },
   /** The three starting points the About page draws, leading to the mark. */
   starts: ["A new idea to explore", "A challenge to overcome", "A new direction to take"],
   goal: "The next step",
@@ -130,9 +130,9 @@ export const craft = {
   },
   photo: {
     alt: "Two colleagues smiling at a laptop together at a shared table",
-    eyebrow: "From Complexity to Clarity",
+    eyebrow: "From complexity to clarity",
     title: "Make better things possible",
-    cta: { label: "Let’s Build Together", href: "/contact" },
+    cta: { label: "Let’s build together", href: "/contact" },
   },
 };
 
@@ -198,8 +198,8 @@ export const whyMark = { x: 569, y: 388, size: 80 };
 export const shaping = {
   title: "Shaping what businesses can do with technology",
   body: "The right solutions can change how a business operates, how people experience its products, and what it can achieve. We bring business understanding and technology together to turn those opportunities into reality.",
-  cta: { label: "Explore Our Work", href: "/studio" },
-  core: { lead: "Possibility into", title: "Progress" },
+  cta: { label: "Explore our work", href: "/studio" },
+  core: { lead: "Possibility into", title: "progress" },
   steps: [
     {
       icon: "icons/home/scan",

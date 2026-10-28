@@ -282,7 +282,9 @@ const elbows = [
       border-radius: 10px;
     }
 
-    .pep__chip :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .pep__chip :global(.icon) {
       width: 20px;
       height: 20px;
     }

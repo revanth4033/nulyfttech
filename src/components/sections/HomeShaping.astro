@@ -521,7 +521,9 @@ const drift = orbitDots.map((d, i) => {
       height: 48px;
     }
 
-    .shape__icon :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .shape__icon :global(.icon) {
       width: 24px;
       height: 24px;
     }

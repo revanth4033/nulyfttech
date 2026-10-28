@@ -12,7 +12,7 @@ export const hero = {
   title: { lead: "A new lift for ", em: "what's next" },
   body: [
     "Every business reaches a point where it needs to move forward a new idea to explore, a challenge to overcome, or a new direction to take.",
-    "NuLyft exists to help businesses take that next step.",
+    "nuLyft exists to help businesses take that next step.",
   ],
 };
 
@@ -72,7 +72,7 @@ export const pathDots = [
   { x: 455, y: 449 },
 ];
 
-export const nextStep = { label: "The Next Step", markX: 1026, markY: 228, labelX: 1106, labelY: 236 };
+export const nextStep = { label: "The next step", markX: 1026, markY: 228, labelX: 1106, labelY: 236 };
 
 /* --- More than a project (669:3672) ---------------------------------------- */
 
@@ -86,13 +86,13 @@ export const partner = {
     "Every business has different goals and challenges. Understanding them is what helps us find the right way forward.",
     "We work closely with our clients to understand what they need, explore the options, and develop solutions that fit their business.",
   ],
-  cta: { label: "Get To Know nuLyft", href: "/contact" },
+  cta: { label: "Get to know nuLyft", href: "/contact" },
   cards: [
     {
       tag: "Business understanding",
       title: "Start with the real need",
       // "Look" is capitalised in the frame; reproduced as drawn.
-      body: "We Look beyond the brief to understand what the business actually needs.",
+      body: "We look beyond the brief to understand what the business actually needs.",
     },
     {
       tag: "Thoughtful decisions",

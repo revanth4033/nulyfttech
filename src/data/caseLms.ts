@@ -26,7 +26,7 @@ import showcasePair from "../assets/images/case-lms/showcase-pair.jpg";
  */
 
 export const hero = {
-  eyebrow: "LMS Platform (in home) - Case Study",
+  eyebrow: "LMS platform (in home) - case study",
   /** Italic accent lead, then the roman remainder. */
   titleLead: "Skill Wagon",
   title: " - Redefining the learning experience",
@@ -43,12 +43,12 @@ export const hero = {
 };
 
 export const overview = {
-  eyebrow: "About The Project",
+  eyebrow: "About the project",
   title: "Where learning becomes seamless, scalable, and smart",
   body: "Skill Wagon is a modern SaaS-based Learning Management System that unifies courses, learners, instructors, and assessments into one powerful platform. It removes complexity from learning operations and delivers a smooth, engaging experience for both administrators and learners.",
-  modules: ["Student Module", "Mentor Module", "Admin Module", "Desktop + Mobile"],
+  modules: ["Student module", "Mentor module", "Admin module", "Desktop + Mobile"],
   facts: [
-    { label: "Client", value: "SKillwagon" },
+    { label: "Client", value: "Skill Wagon" },
     { label: "Technology", value: "EDTech" },
     { label: "Scope", value: "Web & Mobile" },
     { label: "Business Type", value: "B2B" },
@@ -80,7 +80,7 @@ export const overview = {
 };
 
 export const challenge = {
-  eyebrow: "The Challenge",
+  eyebrow: "The challenge",
   title: "Learning was happening everywhere - except in one connected place.",
   body: "Skill Wagon was designed to address the growing complexity of managing learning, learners, and training operations in a single ecosystem.",
   /**
@@ -138,7 +138,7 @@ export interface Phase {
 }
 
 export const approach = {
-  eyebrow: "Our Approach",
+  eyebrow: "Our approach",
   title: "From understanding to experience",
   body: "We approached Skill Wagon by deeply understanding users, workflows, and LMS challenges, then translating them into a scalable product experience.",
   phases: [
@@ -146,15 +146,15 @@ export const approach = {
       title: "Phase 01 - Discover & define",
       items: [
         {
-          title: "Understand the Problem",
+          title: "Understand the problem",
           body: "Identified challenges across learners, instructors, and admins.",
         },
         {
-          title: "Research & Discover",
+          title: "Research & discover",
           body: "Studied users, workflows, and existing LMS experiences.",
         },
         {
-          title: "Define the Experience",
+          title: "Define the experience",
           body: "Mapped journeys, requirements, and core product flows.",
         },
       ],
@@ -163,15 +163,15 @@ export const approach = {
       title: "Phase 02 - Structure & design",
       items: [
         {
-          title: "Wireframe the Flow",
+          title: "Wireframe the flow",
           body: "Built low-fidelity wireframes to establish structure and navigation.",
         },
         {
-          title: "Build the Design System",
+          title: "Build the design system",
           body: "Created reusable components, styles, and interaction patterns.",
         },
         {
-          title: "Shape the Experience",
+          title: "Shape the experience",
           body: "Transformed wireframes into a consistent and visual language.",
         },
       ],
@@ -182,15 +182,15 @@ export const approach = {
       title: "Phase 03 - Build & refine",
       items: [
         {
-          title: "Design the Product",
+          title: "Design the product",
           body: "Designed complete LMS experience across key features & workflows.",
         },
         {
-          title: "Refine & Validate",
+          title: "Refine & validate",
           body: "Reviewed flows & refined the experience through usability feedback.",
         },
         {
-          title: "Deliver the Final Product",
+          title: "Deliver the final product",
           body: "Brought everything together into a scalable, seamless SaaS platform.",
         },
       ],
@@ -219,7 +219,7 @@ export const typography = {
   callouts: [
     { label: "Heading", weight: "Semi bold" },
     { label: "Button label", weight: "Regular" },
-    { label: "Body Text", weight: "Regular" },
+    { label: "Body text", weight: "Regular" },
   ],
 };
 
@@ -248,7 +248,7 @@ export interface Screen extends Media {
 const CARD_OFF = { x: -61, y: -29 };
 
 export const screens = {
-  eyebrow: "UI Screens",
+  eyebrow: "UI screens",
   title: "Designed for every learning journey",
   body: "Explore the core screens of Skill Wagon, designed to simplify navigation and create a seamless learning experience for both admins and learners.",
   blocks: [

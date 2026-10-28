@@ -530,7 +530,9 @@ const renderW = (s: HeroScreen) =>
       border-radius: 7px;
     }
 
-    .chero__pill-icon :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .chero__pill-icon :global(.icon) {
       width: 14px;
       height: 14px;
     }

@@ -104,7 +104,7 @@ const CONNECTORS = [
               arrowIcon={dark ? "icons/cap/arrow-circle-20-outline-white" : "icons/arrow-circle-20-outline"}
               class="proj__btn"
             >
-              Full Case Study
+              Full case study
             </PillButton>
           </div>
         </div>
@@ -151,7 +151,7 @@ const CONNECTORS = [
   <section class="proj__features" data-features>
     <div class="proj__inner">
       <header class="proj__head">
-        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker">Key Features</EyebrowBadge>
+        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker">Key features</EyebrowBadge>
         <h2 class="proj__title">{p.features.title}</h2>
       </header>
 
@@ -227,7 +227,7 @@ const CONNECTORS = [
   <section class="proj__outcomes" data-section>
     <div class="proj__inner">
       <header class="proj__head">
-        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker" data-animate>Product Outcomes</EyebrowBadge>
+        <EyebrowBadge variant={dark ? "dark" : "section"} class="proj__kicker" data-animate>Product outcomes</EyebrowBadge>
         <div class="proj__head-copy">
           <h2 class="proj__title" data-animate>{p.outcomes.title}</h2>
           <p class="proj__head-body" style={`width:${p.outcomes.bodyW}px`} data-animate>
@@ -1128,7 +1128,9 @@ const CONNECTORS = [
       border-radius: 10px;
     }
 
-    .feat__icon :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .feat__icon :global(.icon) {
       width: 22px;
       height: 22px;
     }

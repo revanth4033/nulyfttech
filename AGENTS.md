@@ -396,6 +396,15 @@ a pill's radius into pulse progress, so the two cannot drift if the timing
 changes. Expect the lift to *peak* ~17px of travel after the wavefront
 crosses the pill — that is the rise time, not an error.
 
+**Resize an icon's box, never just its `svg`.** `<Icon size>` sets the span;
+the svg fills it. A phone rule written as `.chip :global(svg) { width: 24px }`
+shrank the drawing inside the span's desktop size, which parked it in the
+span's top-left — 1.5-3px off centre in every chip that did it (home Craft
+and Shaping, About paths, Product Design hero pills and Key Features, PE hero
+and Process, AI voice ticks; the user spotted it on a phone). Write it as
+`.chip :global(.icon) { width; height }`. Check with a sweep comparing each
+`span.icon > svg` rect centre to its span and to a painted square parent.
+
 **`<Icon>` is inline-flex.** Wrappers that position it need `line-height: 0`,
 or they measure taller than their art by a descender and any box-based check
 reports the wrong height.
@@ -664,6 +673,41 @@ stays a flagged Figma typo. New copy from Figma arrives in Title Case — set
 it in sentence case when it lands. Check with a crawl of `h1`–`h6` plus any
 `[class*=title]`, `[class*=__name]` text, not `h1`–`h4` alone: tab titles,
 step titles and diagram cards are styled headings without heading tags.
+
+**The house copy rules (user's, Oct 2026) — apply to every new string.**
+(1) The brand is always "nuLyft"; the company "nuLyft Technologies Pvt.
+Ltd.". (2) Sentence case for headings, labels, links and **every button**
+("Get started", "Full case study", "Get to know us") — proper names and
+acronyms keep their capitals; items in a "·" list each open with a capital.
+(3) Capitals only for compact metadata: Studio project meta, case-study and
+project fact labels/values, the legal pages' field labels, the PE service
+tags and the illustrations' tiny key labels. (4) Hyphenate compound
+adjectives ("AI-powered", "visual-first"); no spaced hyphens in a word
+("E-commerce", "use case"). (5) Fix typos rather than reproduce them — the
+old "as drawn" exceptions are gone ("Invidiual", "our approch", "can
+searched", "We Look", "SKillwagon", NxtDealer's "learning experience").
+Audit with a crawl of every visible heading/label/button/link for words
+capitalised mid-phrase and for CSS `uppercase`/`capitalize`, then grep the
+data for strings that only render in hidden states (other hero slides, tab
+panes, the mobile drawer). The old home (`/home-old`) is not linked and was
+left as it is.
+
+**Labels are sentence case too, not capitals (by request, Oct 2026).**
+Every eyebrow (`EyebrowBadge`, all variants), the footer column titles and
+"Follow us on", the "The Next Step" goal labels (home and About) and the
+mobile drawer's group label used to be uppercased by CSS; the transforms and
+the caps tracking (`--tr-eyebrow*` on the badge) are gone, so the text shows
+as typed. Type them in sentence case — "About the project", not "About The
+Project". Phone overrides that shrank long hero badges to fit caps (case
+heroes, PE and AI heroes) now sit at 12px; Recruitment's 44-character label
+steps to 10px below 360. Still in capitals on purpose: the Studio project
+meta lines and case-study fact labels (small metadata, the user's call).
+The nav links lost `capitalize` ("About us"). The brand is always "nuLyft",
+even opening a sentence; the footer bar reads "© 2026 nuLyft Technologies
+Pvt. Ltd.", the logo lockup "technologies / Pvt. Ltd.". The Figma typo "our
+approch" is now "Our approach" (lowercase made it read as a bug). Known and
+left: between 981 and 1240 the case heroes' copy column is ~223px, so their
+badge (and headline) wrap — the column, not the label, is the problem.
 
 **The nav labels are untracked, by request.** Figma sets them at 2px
 (`--tr-nav`); the user asked for it removed, so the nav departs from the

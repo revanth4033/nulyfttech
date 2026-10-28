@@ -274,7 +274,6 @@ const px = (n: number) => `${n}px`;
     font-size: 18px;
     line-height: 24px;
     letter-spacing: var(--tr-project-title);
-    text-transform: uppercase;
     color: var(--c-ink);
     white-space: nowrap;
   }
@@ -412,7 +411,9 @@ const px = (n: number) => `${n}px`;
       height: 40px;
     }
 
-    .paths__chip :global(svg) {
+    /* Size the icon's box, not just the drawing: shrinking only the svg
+       left it in the top-left of its box, off centre in the chip. */
+    .paths__chip :global(.icon) {
       width: 20px;
       height: 20px;
     }

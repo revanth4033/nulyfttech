@@ -32,7 +32,7 @@ import screen5 from "../assets/images/case-rec/screen-5.png";
  */
 
 export const hero = {
-  eyebrow: "AI powered recruitment platform - Case Study",
+  eyebrow: "AI-powered recruitment platform - case study",
   /** Roman lead, then an italic tail. */
   title: "Every requirement. Every candidate. ",
   titleTail: "One hiring engine.",
@@ -46,10 +46,10 @@ export const hero = {
 };
 
 export const overview = {
-  eyebrow: "About The Project",
+  eyebrow: "About the project",
   title: "Making recruitment easier to manage, from start to finish",
   body: "A recruitment platform built to help teams handle client requirements, manage candidates, track hiring progress, and stay on top of everything through reports and dashboards all in one place.",
-  modules: ["Requirements Module", "Candidates Module", "Reports Module", "Dashboard Mobile"],
+  modules: ["Requirements module", "Candidates module", "Reports module", "Dashboard mobile"],
   facts: [
     { label: "Technology", value: "HR Recruitment" },
     { label: "Scope", value: "Web & Mobile" },
@@ -69,7 +69,7 @@ export const overview = {
 };
 
 export const challenge = {
-  eyebrow: "The Challenge",
+  eyebrow: "The challenge",
   /**
    * Figma still carries the LMS frame's line here ("Learning was happening
    * everywhere - except in one connected place."), a stray paste. Rewritten
@@ -100,7 +100,7 @@ export interface Phase {
 }
 
 export const approach = {
-  eyebrow: "our approch",
+  eyebrow: "Our approach",
   title: "From chaos to intelligent automation",
   body: "We tackled this project by diving deep into the day-to-day friction of recruiters, hiring managers, and clients transforming scattered workflows into a single, cohesive experience.",
   phases: [
@@ -108,15 +108,15 @@ export const approach = {
       title: "Phase 01 - Discover & uncover",
       items: [
         {
-          title: "Map Recruitment Bottlenecks",
+          title: "Map recruitment bottlenecks",
           body: "Uncovered pipeline friction to eliminate communication gaps and drop-offs.",
         },
         {
-          title: "Decode User & Client Needs",
+          title: "Decode user & client needs",
           body: "Synthesized client intake, candidate submissions, and reporting needs.",
         },
         {
-          title: "Frame the Architecture",
+          title: "Frame the architecture",
           body: "Mapped core journeys for requirement tracking, sourcing, and analytics.",
         },
       ],
@@ -125,15 +125,15 @@ export const approach = {
       title: "Phase 02 - Wireframe & systemize",
       items: [
         {
-          title: "Blueprint the Core Flows",
+          title: "Blueprint the core flows",
           body: "Wireframed master data hubs, global candidate screens, and funnels.",
         },
         {
-          title: "Build a Scalable Design System",
+          title: "Build a scalable design system",
           body: "Created modular UI components and data visualization patterns.",
         },
         {
-          title: "Integrate Smart AI Interactions",
+          title: "Integrate smart AI interactions",
           body: "Designed seamless patterns for automated JD matching and scoring.",
         },
       ],
@@ -145,15 +145,15 @@ export const approach = {
       title: "Phase 03 - Build, test & refine",
       items: [
         {
-          title: "Craft High-Fidelity Experience",
+          title: "Craft a high-fidelity experience",
           body: "Designed polished UI screens covering the full recruitment lifecycle.",
         },
         {
-          title: "Test & Validate With Users",
+          title: "Test & validate with users",
           body: "Tested bulk actions and filtering to streamline recruiter workflows.",
         },
         {
-          title: "Deliver a Launch-Ready Platform",
+          title: "Deliver a launch-ready platform",
           body: "Finalized a scalable recruitment ecosystem ready for deployment.",
         },
       ],
@@ -244,7 +244,7 @@ export interface Screen {
 }
 
 export const screens = {
-  eyebrow: "UI Screens",
+  eyebrow: "UI screens",
   title: "An intuitive interface built for seamless hiring",
   body: "Presents an end-to-end visual experience designed to streamline candidate tracking, simplify complex requirements, and deliver actionable hiring insights.",
   blocks: [

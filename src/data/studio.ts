@@ -69,8 +69,8 @@ export const projects: Project[] = [
   },
   {
     id: "ai-recruitment-platform",
-    title: "AI powered recruitment platform",
-    meta: "Product Design & Engineering · HR Recruitment · 2026",
+    title: "AI-powered recruitment platform",
+    meta: "Product Design & Engineering · HR Tech · 2026",
     href: "/work/ai-recruitment-platform",
     span: "half",
     media: {
@@ -82,7 +82,7 @@ export const projects: Project[] = [
   {
     id: "nxtdealer",
     title: "NxtDealer",
-    meta: "Product Design & Engineering · E - Commerce · 2026",
+    meta: "Product Design & Engineering · E-Commerce · 2026",
     href: "/work/nxtdealer",
     span: "full",
     media: {

@@ -225,8 +225,14 @@ import { hero } from "../../data/caseRec";
     /* This label is 44 characters against the LMS hero's 35, so it needs a
        step further down to hold one line in a 339px column. */
     .chero__band :global(.eyebrow__label) {
-      font-size: 9px;
-      letter-spacing: 0.6px;
+      font-size: 12px;
+    }
+  }
+
+  /* 44 characters: one line needs 10px below 360. */
+  @media (max-width: 359px) {
+    .chero__band :global(.eyebrow__label) {
+      font-size: 10px;
     }
   }
 </style>
