@@ -24,6 +24,14 @@ import { technology as t } from "../../data/capAi";
  * names itself, and its ring brightens. (A line to the hub with a travelling
  * dot was tried and taken out at the user's request.)
  *
+ * Phones (<= 700) get a different layout, chosen by the user: fitted to a
+ * phone the orbit was 24 unlabelled 26px squares in a crowded ring. There
+ * the stage is hidden and the same tiles are listed by group (`t.groups`) —
+ * the nuLyft mark on top, then each group's name over a four-up grid of
+ * logo-and-name tiles. Its icons are second copies of the stage's, so they
+ * carry a `uid`: the stage is `display: none` there, and a copy that shares
+ * the hidden one's gradient ids renders blank.
+ *
  * Float: every tile bobs on its own slow loop — 4-6px over a 4-7s cycle, a
  * third drifting 1-2px sideways too — phases spread so no two move together.
  * It is a CSS animation, not GSAP: 24 tiles re-positioned from the main
@@ -56,6 +64,16 @@ const tiles = t.tiles.map((tile, i) => {
   const float = `--fy:${(amp / 2).toFixed(2)}px;--fx:${(sway / 2).toFixed(2)}px;--fd:${half.toFixed(2)}s;--fdel:${(-rand(i, 3) * half * 2).toFixed(2)}s`;
   return { ...tile, cx, cy, ring, float };
 });
+
+const byName = new Map(t.tiles.map((tile) => [tile.name, tile]));
+const groups = t.groups.map((g) => ({
+  title: g.title,
+  tiles: g.tiles.map((name) => {
+    const tile = byName.get(name);
+    if (!tile) throw new Error(`AiTechnology: no tile named "${name}"`);
+    return tile;
+  }),
+}));
 ---
 
 <section class="atech" data-section="ai-technology">
@@ -118,7 +136,35 @@ const tiles = t.tiles.map((tile, i) => {
     </div>
   </div>
 
-  <ul class="visually-hidden">
+  <div class="atech__groups container">
+    <span class="atech__ghub" aria-hidden="true">
+      <Icon name="brand/ai/tech-hub" size={72} uid="m" />
+    </span>
+    {
+      groups.map((g) => (
+        <section class="atech__group" aria-label={g.title} data-animate>
+          <h3 class="atech__group-title">{g.title}</h3>
+          <ul class="atech__grid">
+            {g.tiles.map((tile) => (
+              <li class="atech__gtile">
+                <span class="atech__gicon" aria-hidden="true">
+                  <Icon
+                    name={`icons/ai-tech/${tile.icon}`}
+                    width={((tile.w ?? 32) * 0.75)}
+                    height={((tile.h ?? 32) * 0.75)}
+                    uid="m"
+                  />
+                </span>
+                <span class="atech__gname">{tile.name}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+
+  <ul class="visually-hidden atech__names">
     {t.tiles.map((tile) => <li>{tile.name}</li>)}
   </ul>
 </section>
@@ -307,6 +353,122 @@ const tiles = t.tiles.map((tile, i) => {
       font-size: 28px;
       letter-spacing: -1px;
       white-space: normal;
+    }
+  }
+
+  /* --- phone: the tiles by group ------------------------------------------ */
+
+  .atech__groups {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    /* The grid lists every name, so the screen-reader list would repeat it. */
+    .atech__stage-wrap,
+    .atech__names {
+      display: none;
+    }
+
+    .atech__groups {
+      position: relative;
+      z-index: var(--z-content);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-top: 32px;
+    }
+
+    /* The mark the orbit turns around, kept as the section's anchor. */
+    .atech__ghub {
+      position: relative;
+      display: flex;
+      align-self: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+    }
+
+    .atech__ghub::before {
+      content: "";
+      position: absolute;
+      inset: -18px;
+      z-index: -1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(131, 77, 251, 0.35), rgba(131, 77, 251, 0) 70%);
+    }
+
+    .atech__group-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: var(--fs-xxs);
+      font-weight: 600;
+      line-height: 16px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--c-eyebrow-text-dark);
+    }
+
+    /* A hairline running out from the label. */
+    .atech__group-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(131, 77, 251, 0.24);
+    }
+
+    .atech__grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      list-style: none;
+    }
+
+    /* The desktop tile, named: same fill and hairline. */
+    .atech__gtile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 4px 12px;
+      border: 1px solid rgba(131, 77, 251, 0.24);
+      border-radius: var(--r-card);
+      background: #21163b;
+      text-align: center;
+    }
+
+    .atech__gicon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+    }
+
+    .atech__gname {
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 14px;
+      color: var(--c-bg-light);
+      overflow-wrap: break-word;
+    }
+  }
+
+  /* Four across holds down to 320 (a 66px tile) with a tighter tile — three
+     across left a lone tile on five of the six groups. */
+  @media (max-width: 379px) {
+    .atech__grid {
+      gap: 6px;
+    }
+
+    .atech__gtile {
+      padding: 12px 2px 10px;
+    }
+
+    .atech__gname {
+      font-size: 10px;
+      line-height: 13px;
     }
   }
 </style>

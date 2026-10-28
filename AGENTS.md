@@ -1733,7 +1733,14 @@ coordinates, read per tile with `use_figma` (they sit in nested, offset
 groups). The rings are SVG circles with a vertical white gradient stroke at
 0.36 — the design context reports that stroke as flat transparent white, so
 it reads as "no rings" unless you check `strokes` directly. Below 1240 the
-stage scales via `fit.ts` (no text in it); its mobile layout is still to do.
+stage scales via `fit.ts` (no text in it), down to 701. **At 700 and below it
+is a different layout, chosen by the user** (the fitted orbit was 24
+unlabelled 26px squares — "clumsy"): the nuLyft mark, then the same tiles
+named and grouped under six headings (`technology.groups` in `capAi.ts`,
+each tile in exactly one group by name; a missing name fails the build),
+four across down to 320. Its icons are second copies of the stage's and
+carry `uid="m"` — the stage is `display: none` there, and copies sharing the
+hidden one's gradient ids render blank.
 The AI hero's "Explore Our Work" pointed at `#ai-work`, which went with the
 old section — it now opens `/studio`.
 

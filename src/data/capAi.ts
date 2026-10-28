@@ -159,6 +159,19 @@ export const technology = {
     { name: "OpenAI", icon: "openai", x: 1175, y: 542.89 },
     { name: "Mistral AI", icon: "mistral", x: 1079, y: 885.89, w: 35 },
   ] as { name: string; icon: string; x: number; y: number; w?: number; h?: number }[],
+  /**
+   * The phone layout (<= 700) — not in Figma, chosen by the user: the orbit
+   * at phone scale was 24 unlabelled 26px squares. The same tiles, named and
+   * grouped; every tile above appears in exactly one group, by `name`.
+   */
+  groups: [
+    { title: "AI models", tiles: ["Claude", "OpenAI", "Gemini", "Mistral AI", "Meta"] },
+    { title: "Agents & retrieval", tiles: ["LangChain", "LlamaIndex", "Pinecone", "Database search"] },
+    { title: "Data & infrastructure", tiles: ["PostgreSQL", "MongoDB", "Redis", "IoT"] },
+    { title: "Automation", tiles: ["n8n", "Make", "Power Automate"] },
+    { title: "Voice & media", tiles: ["Vapi", "ElevenLabs", "Twilio", "Media playback"] },
+    { title: "Business apps", tiles: ["Slack", "Microsoft Teams", "Salesforce", "Jira"] },
+  ],
 };
 
 /* --- where can we help ------------------------------------------------------ */
