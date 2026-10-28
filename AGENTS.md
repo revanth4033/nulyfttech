@@ -1782,6 +1782,18 @@ CTA + footer (539:705). Everything else on the page is adapted in code.
 global gutter steps 100 -> 32 (<=900) -> 16 (<=560). Every mobile section runs
 40px of block padding.
 
+**`normalizeScroll` is off on touch-only devices — and it must stay off.**
+With it on, a finger scroll moved the page while `smoother.scrollTop()` and
+every ScrollTrigger kept reading 0, so on a real phone nothing below the
+first screen ever revealed: the home page's third section scrolled past as an
+empty frame with only its grid lines (the user caught it on the live site).
+Every page was affected. `main.ts` sets `normalizeScroll:
+ScrollTrigger.isTouch !== 1`; mouse and trackpad keep it. **Test touch with
+real gestures** — CDP `Input.synthesizeScrollGesture` with
+`gestureSourceType: "touch"` on a mobile device context. Every earlier mobile
+check moved the page with `scrollTo`, which bypasses the touch path and
+showed nothing wrong.
+
 **Read the breakpoint through `gsap.matchMedia`, never once at load.** Four
 scripts (`why-orbit`, `process-scroll`, `industries`, `cta-fan`) checked
 `matchMedia(...).matches` a single time when the module ran. A page opened wide

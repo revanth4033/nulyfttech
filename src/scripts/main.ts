@@ -24,7 +24,13 @@ function boot() {
     smooth: 1.2,          // seconds it takes to "catch up" to native scroll
     effects: true,        // enables data-speed / data-lag attributes
     smoothTouch: false,   // native scrolling on touch feels better + is accessible
-    normalizeScroll: true,
+    // Mouse and trackpad only. On a touch-only device it takes over the
+    // finger scroll in a way the smoother never hears: the page moves, but
+    // `scrollTop()` stays at 0, so no ScrollTrigger below the first screen
+    // ever fires and every section past it stays at its hidden reveal state
+    // (seen on a phone on the live site). Touch already scrolls natively
+    // here (`smoothTouch: false`), so turning it off there loses nothing.
+    normalizeScroll: ScrollTrigger.isTouch !== 1,
   });
 
   // Re-measure once webfonts land — line heights shift and would otherwise
