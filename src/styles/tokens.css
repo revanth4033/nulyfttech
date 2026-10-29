@@ -34,7 +34,8 @@
   --c-step-bg: rgba(131, 77, 251, 0.08);          /* Careers perk chips */
 
   /* --- Careers ----------------------------------------------------------- */
-  --c-perk-border: #f3edff;   /* the bento cards' hairline */
+  --c-perk-border: #f3edff;
+  --c-menu-hover: #f4f4f7;    /* neutral row hover in the nav drop-down */   /* the bento cards' hairline */
   --c-perk-body: #747080;     /* a touch warmer than --c-muted */
   --c-photo-tint: rgba(227, 214, 246, 0.15);
   --c-job-rule: rgba(143, 143, 143, 0.5);

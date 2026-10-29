@@ -152,10 +152,27 @@ import { hero } from "../../data/caseRec";
       gap: 32px;
     }
 
+    /* The copy keeps 400 and the screenshot gives way: with the card held at
+       569 the copy was left 223px at 1024, and the badge and headline wrapped
+       word by word. The card scales (its image is width: 100%). */
     .chero__copy {
-      flex: 1;
+      flex: 1 1 400px;
       width: auto;
+      min-width: 400px;
+    }
+
+    .chero__media {
+      flex: 0 1 569px;
       min-width: 0;
+    }
+
+    /* The badge's compact size (its phone size): at 14/2.4 the Recruitment
+       label alone needs ~440px and wrapped in the 400 column. */
+    .chero__band :global(.eyebrow) {
+      gap: 8px;
+      padding: 6px 14px 6px 6px;
+      font-size: 12px;
+      letter-spacing: 1.2px;
     }
   }
 
@@ -229,7 +246,14 @@ import { hero } from "../../data/caseRec";
     }
   }
 
-  /* 44 characters: one line needs 10px below 360. */
+  /* 31 tracked capitals: one line needs tighter tracking below 380, and
+     10px below 360. */
+  @media (max-width: 379px) {
+    .chero__band :global(.eyebrow__label) {
+      letter-spacing: 0.6px;
+    }
+  }
+
   @media (max-width: 359px) {
     .chero__band :global(.eyebrow__label) {
       font-size: 10px;

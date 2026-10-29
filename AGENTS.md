@@ -692,6 +692,18 @@ data for strings that only render in hidden states (other hero slides, tab
 panes, the mobile drawer). The old home (`/home-old`) is not linked and was
 left as it is.
 
+**Eyebrows went back to capitals (29 Oct 2026, by request)** — the
+sentence-case pass below is reverted for eyebrows only. `EyebrowBadge` is
+`text-transform: uppercase` again with its caps tracking (`--tr-eyebrow*`),
+and so is the home Craft caption's eyebrow; the eyebrow *text* stays typed
+in sentence case. Everything else in the note below still holds (footer
+titles, goal labels, step titles, buttons show as typed). The capability
+page names are Title Case as names in the header drop-down and footer
+("Product Design" — the footer's "UX capabilities" is gone). Case-study hero
+eyebrows are just the product: "LMS platform", "AI-powered recruitment
+platform", "NxtDealer"; Recruitment's tracks 0.6 below 380 and drops to 10px
+below 360 to hold one line.
+
 **Labels are sentence case too, not capitals (by request, Oct 2026).**
 Every eyebrow (`EyebrowBadge`, all variants), the footer column titles and
 "Follow us on", the "The Next Step" goal labels (home and About) and the
@@ -705,9 +717,12 @@ meta lines and case-study fact labels (small metadata, the user's call).
 The nav links lost `capitalize` ("About us"). The brand is always "nuLyft",
 even opening a sentence; the footer bar reads "© 2026 nuLyft Technologies
 Pvt. Ltd.", the logo lockup "technologies / Pvt. Ltd.". The Figma typo "our
-approch" is now "Our approach" (lowercase made it read as a bug). Known and
-left: between 981 and 1240 the case heroes' copy column is ~223px, so their
-badge (and headline) wrap — the column, not the label, is the problem.
+approch" is now "Our approach" (lowercase made it read as a bug). Between 981
+and 1240 the LMS and Recruitment heroes' copy column was ~223px (the card
+held its 569); now the copy keeps 400 (`flex: 1 1 400px`), the card gives way
+(`flex: 0 1 569px`), and the badge drops to its compact 12/1.2 size there —
+one line for the badge and a 3-4 line headline, 1440 untouched. The legal
+pages' "On this page" label is in tracked capitals like the eyebrows.
 
 **The nav labels are untracked, by request.** Figma sets them at 2px
 (`--tr-nav`); the user asked for it removed, so the nav departs from the
@@ -1066,7 +1081,8 @@ components — home, the centred page hero, the three capability heroes, the
 three case studies and `/home-old` — now set it `font-style: normal` at the
 headline's own weight. Colour is kept where a frame tints it (LMS and
 Automotive's accent). The home page's "A little about nuLyft" statement
-follows the same rule: upright, still purple. One knock-on: the upright "One Hiring Engine." is
+follows the same rule: upright, and since 29 Oct one colour (the purple
+second sentence was dropped by request). One knock-on: the upright "One Hiring Engine." is
 wider than the italic, and the Recruitment headline dropped "Engine." to a
 third line at 1440 — its title takes 24px of the gap before the card there.
 Check line counts against the last build whenever emphasis styling changes.

@@ -36,9 +36,10 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     font-family: var(--font-sans);
     font-weight: 600;
     line-height: normal;
-    /* Set as typed, in sentence case (by request) — Figma draws every
-       eyebrow in tracked capitals. The caps tracking went with it. */
-    letter-spacing: 0;
+    /* Every eyebrow in tracked capitals, as Figma draws them (by request —
+       a sentence-case pass was tried and reverted). Type the text itself in
+       sentence case; the capitals are this rule's job. */
+    text-transform: uppercase;
     color: var(--c-accent);
   }
 
@@ -47,6 +48,7 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     border: 0.8px solid var(--c-eyebrow-border-hero);
     border-radius: var(--r-eyebrow);
     font-size: var(--fs-xs);
+    letter-spacing: var(--tr-eyebrow);
   }
 
   .eyebrow--section {
@@ -54,6 +56,7 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     border: 0.8px solid var(--c-eyebrow-border);
     border-radius: var(--r-eyebrow-sm);
     font-size: var(--fs-xxs);
+    letter-spacing: var(--tr-eyebrow-sm);
   }
 
   .eyebrow--studio {
@@ -61,6 +64,7 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     border: 0.8px solid var(--c-eyebrow-border-studio);
     border-radius: var(--r-eyebrow);
     font-size: var(--fs-sm);
+    letter-spacing: var(--tr-eyebrow-lg);
   }
 
   .eyebrow--dark {
@@ -68,6 +72,7 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     border: 0.8px solid var(--c-eyebrow-border-hero);
     border-radius: var(--r-eyebrow);
     font-size: var(--fs-xs);
+    letter-spacing: var(--tr-eyebrow);
     color: var(--c-eyebrow-text-dark);
   }
 
@@ -83,12 +88,15 @@ const { variant = "section", class: className, ...rest } = Astro.props;
     .eyebrow--dark {
       padding: 6px 12px;
       font-size: 12px;
+      letter-spacing: 0.6px;
     }
 
-    /* The centred page heroes' badge steps down with the others. */
+    /* The centred page heroes' badge: 14/2.4 is a desktop size; at that
+       tracking a long label is a third of a phone column. */
     .eyebrow--studio {
       padding: 6px 14px 6px 6px;
       font-size: 12px;
+      letter-spacing: 1.2px;
     }
 
     /* Keep the badge hugging its text rather than filling the column. */

@@ -32,7 +32,7 @@ import screen5 from "../assets/images/case-rec/screen-5.png";
  */
 
 export const hero = {
-  eyebrow: "AI-powered recruitment platform - case study",
+  eyebrow: "AI-powered recruitment platform",
   /** Roman lead, then an italic tail. */
   title: "Every requirement. Every candidate. ",
   titleTail: "One hiring engine.",

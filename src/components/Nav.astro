@@ -17,9 +17,9 @@ import PillButton from "./ui/PillButton.astro";
  * "Get Started" opens the Contact Us page.
  */
 const capabilities = [
-  { label: "Product design", href: "/product-design" },
-  { label: "Product engineering", href: "/product-engineering" },
-  { label: "AI & automation", href: "/ai-automation" },
+  { label: "Product Design", href: "/product-design" },
+  { label: "Product Engineering", href: "/product-engineering" },
+  { label: "AI & Automation", href: "/ai-automation" },
 ];
 
 type Link = { label: string; href: string } | { label: string; menu: typeof capabilities };
@@ -224,6 +224,7 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
     top: calc(100% + 26px + 12px);
     left: -16px;
     display: grid;
+    gap: 4px;
     min-width: 240px;
     padding: 8px;
     background: var(--c-surface);
@@ -257,7 +258,10 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
   }
 
   .nav__sub a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     padding: 10px 12px;
     border-radius: 8px;
     font-weight: 500;
@@ -270,11 +274,26 @@ const inMenu = capabilities.some((c) => isCurrent(c.href));
       color var(--dur-fast) var(--ease-out);
   }
 
+  /* Hover and the current page must not look alike (the user caught the
+     two lavender rows reading as one block): hover is a neutral grey, the
+     current page keeps the lavender and purple with a dot at its end. */
   .nav__sub a:hover,
-  .nav__sub a:focus-visible,
+  .nav__sub a:focus-visible {
+    background: var(--c-menu-hover);
+  }
+
   .nav__sub a[aria-current="page"] {
     background: var(--c-eyebrow-bg);
     color: var(--c-accent);
+  }
+
+  .nav__sub a[aria-current="page"]::after {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--c-accent);
   }
 
   /* --- CTA --------------------------------------------------------------- */

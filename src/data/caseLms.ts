@@ -26,7 +26,7 @@ import showcasePair from "../assets/images/case-lms/showcase-pair.jpg";
  */
 
 export const hero = {
-  eyebrow: "LMS platform (in home) - case study",
+  eyebrow: "LMS platform",
   /** Italic accent lead, then the roman remainder. */
   titleLead: "Skill Wagon",
   title: " - Redefining the learning experience",

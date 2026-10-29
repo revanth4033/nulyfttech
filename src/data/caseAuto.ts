@@ -27,7 +27,7 @@ import screenDetails from "../assets/images/case-auto/screen-details.png";
  */
 
 export const hero = {
-  eyebrow: "NxtDealer - case study",
+  eyebrow: "NxtDealer",
   title: "Turn bike stock into real ",
   /** Italic accent tail, set on its own line in the frame. */
   titleTail: "opportunities",
