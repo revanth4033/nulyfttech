@@ -1,6 +1,6 @@
 ---
 import Icon from "../ui/Icon.astro";
-import { jobs, jobsHeader, jobsEmpty } from "../../data/careers";
+import { jobs, jobsHeader } from "../../data/careers";
 
 /**
  * Currently Open Positions — Figma 503:3939.
@@ -13,32 +13,17 @@ import { jobs, jobsHeader, jobsEmpty } from "../../data/careers";
  * as the affordance. Until there is an application URL the card renders as a
  * plain article instead of a dead anchor.
  *
- * With nothing open, the listing and its heading give way to an empty state —
- * the heading is "Currently Open Positions", which would be a lie over an
- * empty grid. Fill `jobs` in `data/careers.ts` and the listing comes back.
+ * Rendered only while `jobs` has roles; with nothing open the page shows
+ * `CareersApply` (open applications) in its place instead. Fill `jobs` in
+ * `data/careers.ts` and the listing comes back.
  */
-const hasRoles = jobs.length > 0;
 ---
 
 <section class="jobs" id="open-roles" data-section>
-  <div class:list={["container", "jobs__inner", { "jobs__inner--empty": !hasRoles }]}>
-    {hasRoles && <h2 class="jobs__title" data-animate>{jobsHeader.title}</h2>}
+  <div class="container jobs__inner">
+    <h2 class="jobs__title" data-animate>{jobsHeader.title}</h2>
 
-    {
-      !hasRoles && (
-        <div class="empty">
-          <Icon name={jobsEmpty.illustration} width={200} height={180} class="empty__art" />
-          <h2 class="empty__title" data-animate>
-            {jobsEmpty.title}
-          </h2>
-          <p class="empty__body" data-animate>
-            {jobsEmpty.body}
-          </p>
-        </div>
-      )
-    }
-
-    <ul class="jobs__grid" hidden={!hasRoles}>
+    <ul class="jobs__grid">
       {
         jobs.map((job) => (
           <li class="job" data-animate>
@@ -96,44 +81,6 @@ const hasRoles = jobs.length > 0;
     /* Figma: 100 top + 42 heading + 64 + 784 grid + 100 bottom = 1090 */
     gap: 64px;
     padding-block: var(--section-y);
-  }
-
-  /* Nothing open: the band shrinks to the empty state and centres it. */
-  .jobs__inner--empty {
-    align-items: center;
-    padding-block: var(--section-y);
-  }
-
-  .empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    max-width: 520px;
-    text-align: center;
-  }
-
-  .empty :global(.empty__art) {
-    margin-bottom: 16px;
-  }
-
-  .empty__title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: var(--fs-h3);
-    line-height: 1.3;
-    letter-spacing: var(--tr-h2);
-    color: var(--c-heading);
-  }
-
-  .empty__body {
-    font-size: var(--fs-body);
-    line-height: var(--lh-body);
-    color: var(--c-muted);
-  }
-
-  .jobs__grid[hidden] {
-    display: none;
   }
 
   .jobs__title {
@@ -290,33 +237,11 @@ const hasRoles = jobs.length > 0;
   /* ------------------------------------------------------------------------
      Mobile
 
-     The empty state's heading was 32 against a 20px section heading, which
-     made the one thing on the page shout. Same 40px block rhythm as the rest.
+     Same 40px block rhythm as the rest.
      ------------------------------------------------------------------------ */
   @media (max-width: 560px) {
     .jobs__inner {
       gap: 32px;
-    }
-
-    .empty {
-      gap: 12px;
-    }
-
-    .empty :global(.empty__art) {
-      width: 160px;
-      height: 144px;
-      margin-bottom: 8px;
-    }
-
-    .empty__title {
-      font-size: 20px;
-      line-height: normal;
-      letter-spacing: -1px;
-    }
-
-    .empty__body {
-      font-size: 14px;
-      line-height: 22px;
     }
 
     .jobs__title {

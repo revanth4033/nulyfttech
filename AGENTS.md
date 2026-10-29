@@ -1113,6 +1113,20 @@ gutter leave 40px unused at the right — that is what the frame draws, and it
 is reproduced rather than stretched to fill. Almost certainly unintended in
 the design; flagged to the user.
 
+**With no roles, the page asks for a resume (`CareersApply.astro`, by
+request).** It replaced the "No openings right now" empty state; that state's
+`no-openings.svg` stays as the pitch panel's mark, above the label. `careers.astro` renders `CareersJobs` when
+`jobs` has entries and `CareersApply` when it is empty; copy in `apply` in
+`data/careers.ts`. One card: pitch on a lavender panel, form on white
+(name, email, area of interest, LinkedIn/portfolio, resume drop zone, note),
+stacking below 980. **UI only, by decision — a developer is adding the
+backend.** `deliver()` in the component's script is the one hook; it gets the
+FormData (resume included) and the form swaps to a thank-you when it
+resolves. The file input is transparent and covers the drop zone, so click
+and drop both work natively; type (.pdf/.doc/.docx) and size (5 MB) are
+checked in script, since a hidden input cannot show the browser's bubble.
+Touch screens read "Tap to upload your resume" instead of "Drop…".
+
 **The role listing ships empty, by request.** Figma's six cards are one
 placeholder repeated six times, and the user asked for the section to be
 hidden. `jobs` in `data/careers.ts` is `[]`, and `CareersJobs.astro` branches

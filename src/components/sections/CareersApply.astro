@@ -1,0 +1,745 @@
+---
+import Icon from "../ui/Icon.astro";
+import EyebrowBadge from "../ui/EyebrowBadge.astro";
+import PillButton from "../ui/PillButton.astro";
+import { apply } from "../../data/careers";
+
+/**
+ * Open applications — shown on the Careers page while there are no roles
+ * (`jobs` is empty). Not in Figma: it replaced a "No openings right now"
+ * empty state at the user's request, so the section invites a resume instead
+ * of only saying no.
+ *
+ * One card in two panels: the pitch on a lavender panel (label, heading,
+ * note, what to send), the form on white. Stacks below 980.
+ *
+ * UI only, by decision — there is no backend yet. Submitting checks the
+ * fields (native validity for the text fields, our own for the resume, whose
+ * input is hidden behind the drop zone and so cannot show the browser's
+ * bubble), then hands a FormData to `deliver()` and swaps the form for a
+ * thank-you. `deliver()` is the one function to connect to the real endpoint.
+ */
+const f = apply.fields;
+const accept = apply.accept.join(",");
+---
+
+<section class="apply" id="open-roles" data-section>
+  <div class="container">
+    <div class="apply__card" data-animate>
+      <div class="apply__pitch">
+        <Icon name={apply.illustration} width={120} height={108} class="apply__art" />
+        <EyebrowBadge class="apply__eyebrow">{apply.eyebrow}</EyebrowBadge>
+        <h2 class="apply__title">{apply.title}</h2>
+        <p class="apply__body">{apply.body}</p>
+
+        <div class="apply__send">
+          <p class="apply__send-title">{apply.pointsTitle}</p>
+          <ul class="apply__points">
+            {apply.points.map((p) => (
+              <li>
+                <Icon name="icons/home/circle-check" size={20} />
+                {p}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="apply__side">
+        <form
+          class="apply__form"
+          data-apply-form
+          data-accept={accept}
+          data-max={apply.maxBytes}
+          novalidate
+        >
+          <div class="apply__row">
+            <label class="apply__field">
+              <span class="apply__label">{f.name.label}</span>
+              <input class="apply__input" type="text" name="name" autocomplete="name" placeholder={f.name.placeholder} required />
+            </label>
+            <label class="apply__field">
+              <span class="apply__label">{f.email.label}</span>
+              <input class="apply__input" type="email" name="email" autocomplete="email" placeholder={f.email.placeholder} required />
+            </label>
+          </div>
+
+          <div class="apply__row">
+            <label class="apply__field">
+              <span class="apply__label">{f.interest.label}</span>
+              <span class="apply__select">
+                <select class="apply__input" name="interest" required>
+                  <option value="" disabled selected>{f.interest.placeholder}</option>
+                  {f.interest.options.map((o) => <option value={o}>{o}</option>)}
+                </select>
+              </span>
+            </label>
+            <label class="apply__field">
+              <span class="apply__label">
+                {f.link.label} <span class="apply__optional">{f.link.optional}</span>
+              </span>
+              <input class="apply__input" type="text" name="link" inputmode="url" autocomplete="url" placeholder={f.link.placeholder} />
+            </label>
+          </div>
+
+          <div class="apply__field">
+            <span class="apply__label" id="apply-resume-label">{f.resume.label}</span>
+            <div class="apply__drop" data-drop>
+              <input
+                class="apply__file"
+                id="apply-resume"
+                type="file"
+                name="resume"
+                accept={accept}
+                aria-labelledby="apply-resume-label"
+                aria-describedby="apply-resume-hint apply-resume-error"
+                data-file
+              />
+              <div class="apply__drop-empty">
+                <span class="apply__drop-icon"><Icon name="icons/careers/upload" size={24} /></span>
+                <span class="apply__drop-text apply__drop-text--pointer">
+                  {f.resume.prompt} <label for="apply-resume" class="apply__browse">{f.resume.browse}</label>
+                </span>
+                <span class="apply__drop-text apply__drop-text--touch">{f.resume.promptTouch}</span>
+                <span class="apply__hint" id="apply-resume-hint">{f.resume.hint}</span>
+              </div>
+              <div class="apply__drop-file" hidden data-file-row>
+                <span class="apply__drop-icon"><Icon name="icons/careers/file" size={24} /></span>
+                <span class="apply__file-meta">
+                  <span class="apply__file-name" data-file-name></span>
+                  <span class="apply__hint" data-file-size></span>
+                </span>
+                <button type="button" class="apply__remove" data-file-remove>{f.resume.remove}</button>
+              </div>
+            </div>
+            <p
+              class="apply__error"
+              id="apply-resume-error"
+              data-file-error
+              data-missing={f.resume.errors.missing}
+              data-type={f.resume.errors.type}
+              data-size={f.resume.errors.size}
+              aria-live="polite"
+            ></p>
+          </div>
+
+          <label class="apply__field">
+            <span class="apply__label">
+              {f.note.label} <span class="apply__optional">{f.note.optional}</span>
+            </span>
+            <textarea class="apply__input apply__input--area" name="note" placeholder={f.note.placeholder}></textarea>
+          </label>
+
+          <div class="apply__submit">
+            <PillButton type="submit" flat arrow={20}>{apply.submit}</PillButton>
+            <p class="apply__privacy">
+              {apply.privacy.lead} <a href={apply.privacy.href}>{apply.privacy.link}</a>.
+            </p>
+          </div>
+        </form>
+
+        <div class="apply__done" hidden data-apply-done tabindex="-1">
+          <span class="apply__done-icon"><Icon name="icons/home/circle-check" size={32} /></span>
+          <h3 class="apply__done-title" data-done-title data-template={apply.done.title}></h3>
+          <p class="apply__done-body">{apply.done.body}</p>
+          <button type="button" class="apply__again" data-apply-again>{apply.done.again}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .apply {
+    position: relative;
+    padding-block: var(--section-y);
+    background: var(--c-bg-light);
+  }
+
+  .apply__card {
+    display: grid;
+    grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--c-surface);
+    box-shadow:
+      inset 0 0 0 1px var(--c-perk-border),
+      var(--sh-card);
+  }
+
+  /* --- the pitch ---------------------------------------------------------- */
+
+  .apply__pitch {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 56px;
+    background: var(--c-eyebrow-bg);
+  }
+
+  /* The clipboard-and-magnifier from the old "no openings" state. Its art
+     starts 24 of 200 units in and ends 21 of 180 short of the foot; the
+     margins take that back so its ink lines up with the label's left edge
+     and sits 8px over it. */
+  .apply__pitch :global(.apply__art) {
+    margin: -4px 0 -4px -14.4px;
+  }
+
+  .apply__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: 1.25;
+    letter-spacing: -1px;
+    color: var(--c-heading);
+  }
+
+  .apply__body {
+    font-size: var(--fs-body);
+    line-height: 26px;
+    letter-spacing: var(--tr-body);
+    color: var(--c-muted);
+  }
+
+  .apply__send {
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--c-eyebrow-border);
+    width: 100%;
+  }
+
+  .apply__send-title {
+    margin-bottom: 14px;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--c-ink);
+  }
+
+  .apply__points {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+  }
+
+  .apply__points li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-ink);
+  }
+
+  .apply__points :global(.icon) {
+    color: var(--c-accent);
+  }
+
+  /* --- the form ----------------------------------------------------------- */
+
+  .apply__side {
+    padding: 56px;
+  }
+
+  .apply__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .apply__form[hidden] {
+    display: none;
+  }
+
+  .apply__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .apply__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .apply__label {
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: 19px;
+    color: var(--c-ink);
+  }
+
+  .apply__optional {
+    font-weight: 400;
+    color: var(--c-muted);
+  }
+
+  /* 16px text at every width: iOS zooms into any field set smaller. */
+  .apply__input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid var(--c-card-border);
+    border-radius: var(--r-card);
+    background: var(--c-surface);
+    font: inherit;
+    font-size: var(--fs-body);
+    color: var(--c-ink);
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .apply__input::placeholder {
+    color: #9b98a6;
+  }
+
+  .apply__input:focus {
+    outline: none;
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(131, 77, 251, 0.15);
+  }
+
+  /* Native checks, shown only once the visitor has tried to send. */
+  .apply__form.is-checked .apply__input:invalid {
+    border-color: var(--c-danger);
+  }
+
+  .apply__input--area {
+    height: 112px;
+    padding: 12px 14px;
+    resize: vertical;
+    line-height: var(--lh-body);
+  }
+
+  .apply__select {
+    position: relative;
+    display: block;
+  }
+
+  .apply__select select {
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  /* The empty choice reads as a placeholder. */
+  .apply__select select:invalid {
+    color: #9b98a6;
+  }
+
+  .apply__select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 8px;
+    height: 8px;
+    margin-top: -6px;
+    border-right: 2px solid var(--c-muted);
+    border-bottom: 2px solid var(--c-muted);
+    rotate: 45deg;
+    pointer-events: none;
+  }
+
+  /* --- resume drop zone ---------------------------------------------------- */
+
+  .apply__drop {
+    position: relative;
+    border: 1.5px dashed var(--c-eyebrow-border);
+    border-radius: var(--r-card);
+    background: var(--c-bg-light);
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .apply__drop.is-drag,
+  .apply__drop:focus-within {
+    border-color: var(--c-accent);
+    background: var(--c-eyebrow-bg);
+  }
+
+  .apply__drop.is-error {
+    border-color: var(--c-danger);
+  }
+
+  .apply__drop.has-file {
+    border-style: solid;
+  }
+
+  /* The real input covers the zone, so a click or a drop anywhere on it
+     works natively; it is see-through, and the zone draws the UI. */
+  .apply__file {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .apply__drop.has-file .apply__file {
+    display: none;
+  }
+
+  .apply__drop-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .apply__drop.has-file .apply__drop-empty {
+    display: none;
+  }
+
+  .apply__drop-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 4px;
+    border-radius: 50%;
+    background: var(--c-accent-tint);
+    color: var(--c-accent);
+  }
+
+  .apply__drop-text {
+    font-size: var(--fs-sm);
+    line-height: 20px;
+    color: var(--c-ink);
+  }
+
+  .apply__drop-text--touch {
+    display: none;
+    font-weight: 600;
+    color: var(--c-accent);
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .apply__drop-text--pointer {
+      display: none;
+    }
+
+    .apply__drop-text--touch {
+      display: inline;
+    }
+  }
+
+  .apply__browse {
+    font-weight: 600;
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .apply__hint {
+    font-size: var(--fs-xxs);
+    line-height: 16px;
+    color: var(--c-muted);
+  }
+
+  .apply__drop-file {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .apply__drop-file[hidden] {
+    display: none;
+  }
+
+  .apply__drop-file .apply__drop-icon {
+    flex: none;
+    margin: 0;
+  }
+
+  .apply__file-meta {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .apply__file-name {
+    overflow: hidden;
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    line-height: 20px;
+    color: var(--c-ink);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .apply__remove,
+  .apply__again {
+    flex: none;
+    padding: 6px 4px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--c-accent);
+    cursor: pointer;
+  }
+
+  .apply__error {
+    min-height: 0;
+    font-size: var(--fs-xxs);
+    line-height: 16px;
+    color: var(--c-danger);
+  }
+
+  .apply__error:empty {
+    display: none;
+  }
+
+  /* --- submit -------------------------------------------------------------- */
+
+  .apply__submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    margin-top: 4px;
+  }
+
+  .apply__privacy {
+    flex: 1 1 220px;
+    font-size: var(--fs-xxs);
+    line-height: 18px;
+    color: var(--c-muted);
+  }
+
+  .apply__privacy a {
+    color: var(--c-accent);
+    text-underline-offset: 2px;
+  }
+
+  /* --- thanks -------------------------------------------------------------- */
+
+  .apply__done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    min-height: 360px;
+    text-align: center;
+    outline: none;
+  }
+
+  .apply__done[hidden] {
+    display: none;
+  }
+
+  .apply__done-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: var(--c-accent-tint);
+    color: var(--c-accent);
+  }
+
+  .apply__done-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-lg);
+    line-height: 32px;
+    color: var(--c-heading);
+  }
+
+  .apply__done-body {
+    max-width: 360px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+  }
+
+  /* --- tablet and phone ---------------------------------------------------- */
+
+  @media (max-width: 1240px) {
+    .apply__pitch,
+    .apply__side {
+      padding: 40px;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .apply__card {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .apply__pitch,
+    .apply__side {
+      padding: 28px 20px;
+    }
+
+    .apply__pitch :global(.apply__art) {
+      width: 88px;
+      height: 79px;
+      margin: -3px 0 -2px -10.6px;
+    }
+
+    .apply__title {
+      font-size: 22px;
+      line-height: 30px;
+      letter-spacing: -0.4px;
+    }
+
+    .apply__body,
+    .apply__points li {
+      font-size: 15px;
+      line-height: 24px;
+    }
+
+    .apply__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .apply__form {
+      gap: 16px;
+    }
+
+    .apply__submit :global(.pill) {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Open-applications form — UI only. Connect `deliver()` to the backend.
+   */
+  const KB = 1024;
+  const sizeLabel = (bytes: number) =>
+    bytes >= KB * KB ? `${(bytes / KB / KB).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / KB))} KB`;
+
+  /**
+   * Hand the application to the backend. Resolve when it has been accepted;
+   * reject to keep the form on screen. Nothing is sent yet — the site is
+   * static, and the endpoint is the developer's to add.
+   */
+  async function deliver(_data: FormData): Promise<void> {
+    // TODO(backend): POST `_data` (name, email, interest, link, note, resume)
+    // to the careers endpoint and throw on a non-2xx response.
+  }
+
+  document.querySelectorAll<HTMLFormElement>("[data-apply-form]").forEach((form) => {
+    const side = form.parentElement!;
+    const done = side.querySelector<HTMLElement>("[data-apply-done]")!;
+    const drop = form.querySelector<HTMLElement>("[data-drop]")!;
+    const input = form.querySelector<HTMLInputElement>("[data-file]")!;
+    const row = form.querySelector<HTMLElement>("[data-file-row]")!;
+    const nameEl = form.querySelector<HTMLElement>("[data-file-name]")!;
+    const sizeEl = form.querySelector<HTMLElement>("[data-file-size]")!;
+    const error = form.querySelector<HTMLElement>("[data-file-error]")!;
+    const accept = (form.dataset.accept ?? "").split(",");
+    const max = Number(form.dataset.max);
+
+    const fileProblem = (file: File | undefined) => {
+      if (!file) return error.dataset.missing!;
+      const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+      if (!accept.includes(ext)) return error.dataset.type!;
+      if (file.size > max) return error.dataset.size!;
+      return "";
+    };
+
+    const showError = (msg: string) => {
+      error.textContent = msg;
+      drop.classList.toggle("is-error", !!msg);
+      input.setAttribute("aria-invalid", msg ? "true" : "false");
+    };
+
+    const render = () => {
+      const file = input.files?.[0];
+      const problem = file ? fileProblem(file) : "";
+      if (file && problem) {
+        input.value = "";
+        drop.classList.remove("has-file");
+        row.hidden = true;
+        showError(problem);
+        return;
+      }
+      drop.classList.toggle("has-file", !!file);
+      row.hidden = !file;
+      if (file) {
+        nameEl.textContent = file.name;
+        sizeEl.textContent = sizeLabel(file.size);
+        showError("");
+      }
+    };
+
+    input.addEventListener("change", render);
+
+    // Highlight while a file is dragged over; the input itself takes the drop.
+    ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, () => drop.classList.add("is-drag")));
+    ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("is-drag")));
+
+    form.querySelector("[data-file-remove]")!.addEventListener("click", () => {
+      input.value = "";
+      render();
+      input.focus();
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      form.classList.add("is-checked");
+      const problem = fileProblem(input.files?.[0]);
+      showError(problem);
+
+      // Text fields first (native bubbles), then the resume.
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      if (problem) {
+        drop.scrollIntoView({ block: "center", behavior: "smooth" });
+        return;
+      }
+
+      const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+      if (button) button.disabled = true;
+      try {
+        await deliver(new FormData(form));
+        const name = (new FormData(form).get("name") as string).trim().split(/\s+/)[0];
+        const title = done.querySelector<HTMLElement>("[data-done-title]")!;
+        title.textContent = (title.dataset.template ?? "").replace("{name}", name);
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+
+    done.querySelector("[data-apply-again]")!.addEventListener("click", () => {
+      form.reset();
+      form.classList.remove("is-checked");
+      render();
+      showError("");
+      done.hidden = true;
+      form.hidden = false;
+      form.querySelector<HTMLInputElement>("input[name=name]")?.focus();
+    });
+  });
+</script>
